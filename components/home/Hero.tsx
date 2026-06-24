@@ -140,7 +140,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="text-5xl md:text-7xl font-bold mb-4 leading-tight tracking-tight"
-            style={{ background: "linear-gradient(135deg, #9B6B9B 0%, #2EC4B6 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+            style={{ background: "linear-gradient(135deg, #8B2FC9 0%, #00BFFF 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
           >
             {t("title")}
           </motion.h1>
