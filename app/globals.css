@@ -8,19 +8,63 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-inter);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-mauve: #9B6B9B;
+  --color-mauve-dark: #7A5580;
+  --color-lilac: #EDE0F5;
+  --color-lilac-dark: #D9C5E8;
+  --color-turquoise: #2EC4B6;
+  --color-turquoise-dark: #25a99d;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.333%); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes border-spin {
+  to { transform: rotate(360deg); }
+}
+
+.gradient-border-outer {
+  position: relative;
+  padding: 2px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.gradient-border-outer::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: conic-gradient(from 0deg, #9B6B9B, #2EC4B6, #6366f1, #f97316, #EDE0F5, #9B6B9B);
+  animation: border-spin 5s linear infinite;
+  z-index: 0;
+}
+
+.gradient-border-inner {
+  position: relative;
+  z-index: 1;
 }

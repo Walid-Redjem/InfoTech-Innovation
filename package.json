@@ -1,26 +1,43 @@
 {
-  "name": "innovation-club",
+  "name": "infotech-innovation",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "jest",
+    "test:unit": "jest --testPathPatterns=unit",
+    "test:e2e": "playwright test",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.4",
+    "firebase": "^12.15.0",
+    "framer-motion": "^12.41.0",
+    "lucide-react": "^1.21.0",
     "next": "16.2.9",
+    "next-intl": "^4.13.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
+    "jest-environment-node": "^30.4.1",
+    "playwright": "^1.61.0",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.11",
     "typescript": "^5"
   }
 }

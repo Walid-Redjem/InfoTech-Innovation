@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "join": "Join Us",
+    "issues": "Issues & Ideas",
+    "surveys": "Surveys",
+    "activities": "Activities"
+  },
+  "home": {
+    "hero": {
+      "title": "InfoTech Innovation",
+      "subtitle": "Algeria's digital hub for youth, educators, and institutions — where community ideas become real solutions.",
+      "cta_join": "Join Us",
+      "cta_issue": "Submit an Issue",
+      "cta_idea": "Share an Idea"
+    },
+    "stats": {
+      "participants": "Participants",
+      "projects": "Projects",
+      "partners": "Partners"
+    },
+    "about": {
+      "title": "About InfoTech Innovation",
+      "description": "InfoTech Innovation is an Algerian initiative that bridges the gap between young talent and the digital world. We offer structured programs in coding, digital design, and technology — equipping the next generation with real skills to solve real problems."
+    },
+    "services": {
+      "title": "What We Offer",
+      "join": {
+        "title": "Join the Community",
+        "description": "Register as a youth, teacher, or institution and become part of a growing network of changemakers."
+      },
+      "issues": {
+        "title": "Submit an Issue",
+        "description": "Identify and share community problems so we can tackle them together with the right people."
+      },
+      "ideas": {
+        "title": "Share an Idea",
+        "description": "Have a solution in mind? Share your idea and let the community help turn it into reality."
+      },
+      "surveys": {
+        "title": "Participate in Surveys",
+        "description": "Answer surveys that help us understand the needs of our community better."
+      },
+      "activities": {
+        "title": "Explore Activities",
+        "description": "Browse photos, videos, and reports from our past events and workshops."
+      },
+      "chatbot": {
+        "title": "Digital Assistant",
+        "description": "Our intelligent chatbot guides you through the platform and helps you find what you need."
+      }
+    }
+  },
+  "join": {
+    "title": "Join Us",
+    "subtitle": "Choose your profile and fill in your details. We will get back to you shortly.",
+    "profiles": {
+      "youth": "Youth",
+      "teacher": "Teacher",
+      "institution": "Institution"
+    },
+    "fields": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "age": "Age",
+      "institution_name": "Institution Name",
+      "specialty": "Specialty",
+      "contact_person": "Contact Person",
+      "interests": "Areas of Interest",
+      "contribution": "How would you like to contribute?",
+      "partnership": "Type of Partnership",
+      "description": "Why are you looking to contact us?",
+      "description_placeholder": "Tell us about your institution and how you'd like to collaborate...",
+      "birth_certificate": "Birth Certificate",
+      "resume": "Resume / CV",
+      "selfie": "Profile Photo (Selfie)",
+      "degree": "Diploma / Degree",
+      "underage_form": "Signed Parental Consent Form"
+    },
+    "upload_hint": "PDF, JPG or PNG — max 5MB",
+    "underage": {
+      "title": "Parental Consent Required",
+      "description": "Since you are under 17, a signed parental consent form is required. Download the form below, fill it out, and upload the signed copy.",
+      "download": "Download the form",
+      "upload_label": "Upload signed form"
+    },
+    "adult_form": {
+      "title": "Registration Form Required",
+      "description": "Please download the registration form, fill it out, and upload the signed copy before submitting.",
+      "download": "Download registration form",
+      "upload_label": "Upload filled form"
+    },
+    "interests": {
+      "education": "Education",
+      "environment": "Environment",
+      "technology": "Technology",
+      "youth": "Youth",
+      "health": "Health",
+      "other": "Other"
+    },
+    "contribution": {
+      "volunteer": "Volunteer",
+      "mentor": "Mentor",
+      "ideas": "Share Ideas",
+      "sponsor": "Sponsor",
+      "other": "Other"
+    },
+    "partnership": {
+      "financial": "Financial Support",
+      "technical": "Technical Support",
+      "training": "Training & Workshops",
+      "network": "Network & Visibility",
+      "other": "Other"
+    },
+    "submit": "Register",
+    "submitting": "Registering...",
+    "success_title": "Registration successful!",
+    "success_message": "Thank you for joining us. We will be in touch with you soon.",
+    "error": "Something went wrong. Please try again.",
+    "duplicate_email": "This email is already registered. Please use a different email address.",
+    "required": "This field is required."
+  },
+  "issues": {
+    "title": "Issues & Ideas",
+    "subtitle": "Share a community problem or propose an idea. Every voice matters.",
+    "type_label": "What is the topic?",
+    "types": {
+      "education": "Education",
+      "environment": "Environment",
+      "youth": "Youth",
+      "technology": "Technology",
+      "health": "Health",
+      "other": "Other"
+    },
+    "fields": {
+      "title": "Issue Title",
+      "title_placeholder": "Summarize the problem in one line",
+      "description": "Describe the Problem",
+      "description_placeholder": "Explain the problem in detail. What is happening? Where? How does it affect the community?",
+      "affected_group": "Who is Affected?",
+      "affected_group_placeholder": "e.g. students, elderly, women, youth...",
+      "solution": "Initial Solution Idea (Optional)",
+      "solution_placeholder": "Do you have a suggestion to solve this problem? Share it here."
+    },
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "success_title": "Thank you for sharing!",
+    "success_message": "Your issue has been submitted. Our team will review it and follow up.",
+    "submit_another": "Submit another",
+    "error": "Something went wrong. Please try again."
+  },
+  "surveys": {
+    "title": "Surveys",
+    "subtitle": "Your opinion matters. Help us understand your community better.",
+    "empty_title": "No surveys available yet",
+    "empty_message": "Check back soon — new surveys will be published regularly.",
+    "context": {
+      "education": "Education",
+      "youth": "Youth",
+      "activity": "Activity",
+      "general": "General"
+    },
+    "questions_count": "questions",
+    "start": "Start Survey",
+    "back": "Back to surveys",
+    "submit": "Submit Answers",
+    "submitting": "Submitting...",
+    "success_title": "Thank you for your response!",
+    "success_message": "Your answers have been recorded successfully.",
+    "back_to_surveys": "See other surveys",
+    "error": "Something went wrong. Please try again.",
+    "required": "This field is required."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "terms": "Terms & Privacy"
+  }
+}

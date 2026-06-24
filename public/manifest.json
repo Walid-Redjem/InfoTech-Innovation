@@ -1,0 +1,16 @@
+{
+  "name": "InfoTech Innovation",
+  "short_name": "InfoTech",
+  "description": "A digital platform for community innovation and education",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EDE0F5",
+  "theme_color": "#9B6B9B",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "categories": ["education", "community"],
+  "lang": "ar"
+}
