@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InfoTech Innovation — منصة الابتكار المجتمعي
+
+A bilingual (Arabic / English) full-stack community platform built for InfoTech Innovation Algeria. Youth, teachers, and institutions can register, submit community issues & ideas, fill surveys, and stay connected with local innovation initiatives.
+
+**Live:** https://innovation-club-two.vercel.app
+
+---
+
+## Features
+
+- **Bilingual (AR/EN) with full RTL support** — every page switches language seamlessly
+- **3-profile registration** — Youth, Teacher, Institution — each with tailored fields and document uploads
+- **Email OTP verification** — HMAC-signed, rate-limited (3 attempts / 10 min)
+- **Cloudinary file uploads** — birth certificates, CVs, diplomas, parental consent forms
+- **Issues & Ideas** — citizens submit community problems with category and affected group
+- **Surveys** — admin creates multi-type surveys (text / multiple choice / rating); users respond
+- **Admin dashboard** — full management: review registrations, approve/reject with email, manage issues, analytics
+- **Analytics tab** — KPI cards, monthly trend chart, donut charts, survey engagement table, recent activity feed
+- **Email notifications** — admin on new registration, user on approve/reject, broadcast on new survey (Resend API)
+- **Visual effects** — parallax hero, animated gradient border on CTAs, confetti burst on registration success
+- **PWA** — installable on mobile with manifest + theme color
+- **92 unit tests + 36 E2E tests** (Jest + Playwright)
+
+---
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Styling | Tailwind CSS v4 |
+| Animations | Framer Motion |
+| i18n | next-intl (AR/EN, RTL) |
+| Database | Firebase Firestore |
+| Auth | Firebase Auth |
+| File Storage | Cloudinary (unsigned uploads) |
+| Email | Resend API |
+| Hosting | Vercel |
+| Testing | Jest + Playwright |
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone & install
+
+```bash
+git clone https://github.com/Walid-Redjem/InfoTech-Innovation.git
+cd InfoTech-Innovation
+npm install
+```
+
+### 2. Set up environment variables
+
+Create a `.env.local` file at the root:
+
+```env
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+
+# Cloudinary
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+
+# Resend
+RESEND_API_KEY=
+
+# OTP
+OTP_SECRET=your-secret-here
+
+# Admin
+ADMIN_EMAIL=your-admin-email@example.com
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — the app defaults to Arabic (`/ar`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+app/
+├── [locale]/           # All public pages (AR/EN routing)
+│   ├── page.tsx        # Home
+│   ├── about/
+│   ├── join/           # Registration form
+│   ├── issues/
+│   ├── surveys/
+│   ├── activities/
+│   ├── terms/
+│   └── admin/          # Protected dashboard
+├── api/
+│   ├── send-code/      # OTP generation (rate-limited)
+│   ├── verify-code/    # HMAC token verification
+│   ├── notify-admin/   # Email admin on new registration
+│   ├── review-registration/  # Approve / reject + email user
+│   └── notify-survey/  # Broadcast survey to approved members
+components/
+├── home/               # Hero, Stats, Services, Marquee, About
+├── layout/             # Navbar, Footer
+└── forms/              # FileUpload (Cloudinary)
+lib/
+├── firebase.ts
+├── otp.ts              # generateCode, signToken, isCodeValid
+├── formatDate.ts
+└── exportCSV.ts
+messages/
+├── en.json
+└── ar.json
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Admin Access
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Go to `/en/admin/login` (or `/ar/admin/login`). Sign in with the Firebase Auth account created for the admin. The dashboard is a full overlay — separate from the public site.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Tests
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Unit tests (92 tests across 7 suites)
+npm run test:unit
+
+# E2E tests (36 tests — Chromium + Mobile Safari)
+npm run test:e2e
+```
+
+---
+
+## Deployment
+
+The project is deployed on **Vercel**. All environment variables must be added in the Vercel project settings under *Settings → Environment Variables*.
+
+Firestore is currently in **test mode** — security rules should be tightened before going to production.
+
+---
+
+## License
+
+Private project — built for InfoTech Innovation, Algeria. All rights reserved.
