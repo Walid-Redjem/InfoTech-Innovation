@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -8,6 +8,8 @@ import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";
 import FileUpload from "@/components/forms/FileUpload";
+import FloatingInput from "@/components/forms/FloatingInput";
+import { useToast } from "@/components/Toast";
 import Link from "next/link";
 
 type Profile = "youth" | "teacher" | "institution";
@@ -26,6 +28,7 @@ export default function JoinPage() {
   const t = useTranslations("join");
   const locale = useLocale();
   const ar = locale === "ar";
+  const { showToast } = useToast();
 
   const [selected, setSelected] = useState<Profile>("youth");
   const [form, setForm] = useState<Record<string, string>>({});
@@ -35,6 +38,9 @@ export default function JoinPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [shaking, setShaking] = useState(false);
+  const [memberCount, setMemberCount] = useState<number | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // OTP state
   const [otpToken, setOtpToken] = useState("");
@@ -50,9 +56,39 @@ export default function JoinPage() {
   const isUnderage = selected === "youth" && age > 0 && age < 17;
   const isAdult = selected === "youth" && age >= 17;
 
+  // Autosave draft
+  useEffect(() => {
+    const saved = localStorage.getItem(`join_draft_${selected}`);
+    if (saved) { try { const d = JSON.parse(saved); setForm(d.form || {}); setInterests(d.interests || []); } catch {} }
+  }, [selected]);
+  useEffect(() => {
+    if (Object.keys(form).length) localStorage.setItem(`join_draft_${selected}`, JSON.stringify({ form, interests }));
+  }, [form, interests, selected]);
+
+  // Social proof count
+  useEffect(() => {
+    import("firebase/firestore").then(async ({ getCountFromServer, collection }) => {
+      try {
+        const { db } = await import("@/lib/firebase");
+        const snap = await getCountFromServer(collection(db, "registrations"));
+        setMemberCount(snap.data().count);
+      } catch {}
+    });
+  }, []);
+
+  function formatPhone(value: string) {
+    const d = value.replace(/\D/g, "").slice(0, 10);
+    if (d.length <= 3) return d;
+    if (d.length <= 6) return `${d.slice(0,3)} ${d.slice(3)}`;
+    if (d.length <= 8) return `${d.slice(0,3)} ${d.slice(3,6)} ${d.slice(6)}`;
+    return `${d.slice(0,3)} ${d.slice(3,6)} ${d.slice(6,8)} ${d.slice(8,10)}`;
+  }
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors(prev => ({ ...prev, [e.target.name]: false }));
+    const { name, value } = e.target;
+    const formatted = name === "phone" ? formatPhone(value) : value;
+    setForm(prev => ({ ...prev, [name]: formatted }));
+    setErrors(prev => ({ ...prev, [name]: false }));
   }
 
   function toggleInterest(key: string) {
@@ -64,12 +100,20 @@ export default function JoinPage() {
     setErrors(prev => ({ ...prev, [key]: false }));
   }
 
+  function isValidEmail(email: string) {
+    return email.toLowerCase().trim().endsWith("@gmail.com");
+  }
+
+  const emailErrorMsg = ar
+    ? "يجب أن يكون البريد الإلكتروني @gmail.com"
+    : "Email must be a @gmail.com address";
+
   function validate() {
     const newErrors: Record<string, boolean> = {};
 
     if (selected === "youth") {
       if (!form.name?.trim()) newErrors.name = true;
-      if (!form.email?.trim()) newErrors.email = true;
+      if (!form.email?.trim() || !isValidEmail(form.email)) newErrors.email = true;
       if (!form.phone?.trim()) newErrors.phone = true;
       if (!form.age?.trim()) newErrors.age = true;
       if (!form.contribution) newErrors.contribution = true;
@@ -80,7 +124,7 @@ export default function JoinPage() {
 
     if (selected === "teacher") {
       if (!form.name?.trim()) newErrors.name = true;
-      if (!form.email?.trim()) newErrors.email = true;
+      if (!form.email?.trim() || !isValidEmail(form.email)) newErrors.email = true;
       if (!form.phone?.trim()) newErrors.phone = true;
       if (!form.institution_name?.trim()) newErrors.institution_name = true;
       if (!form.specialty?.trim()) newErrors.specialty = true;
@@ -94,7 +138,7 @@ export default function JoinPage() {
     if (selected === "institution") {
       if (!form.institution_name?.trim()) newErrors.institution_name = true;
       if (!form.contact_person?.trim()) newErrors.contact_person = true;
-      if (!form.email?.trim()) newErrors.email = true;
+      if (!form.email?.trim() || !isValidEmail(form.email)) newErrors.email = true;
       if (!form.phone?.trim()) newErrors.phone = true;
       if (!form.partnership) newErrors.partnership = true;
     }
@@ -105,7 +149,11 @@ export default function JoinPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      setShaking(true);
+      setTimeout(() => setShaking(false), 500);
+      return;
+    }
     setSubmitting(true);
     setError(false);
     try {
@@ -226,6 +274,7 @@ export default function JoinPage() {
       confetti({ particleCount: 160, spread: 80, colors: ["#9B6B9B", "#2EC4B6", "#EDE0F5", "#f97316", "#6366f1"], origin: { y: 0.55 } });
       setTimeout(() => confetti({ particleCount: 80, spread: 120, colors: ["#9B6B9B", "#2EC4B6", "#EDE0F5"], origin: { y: 0.5, x: 0.3 } }), 300);
       setTimeout(() => confetti({ particleCount: 80, spread: 120, colors: ["#9B6B9B", "#2EC4B6", "#f97316"], origin: { y: 0.5, x: 0.7 } }), 500);
+      showToast(ar ? "تم التسجيل بنجاح! 🎉" : "Registration successful! 🎉", "success");
       setSuccess(true);
     } catch {
       setOtpError(ar ? "حدث خطأ. حاول مرة أخرى." : "Something went wrong. Try again.");
@@ -327,6 +376,54 @@ export default function JoinPage() {
 
       <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
         <div className="max-w-2xl mx-auto">
+          {/* Breadcrumbs */}
+          {(() => { const B = require("@/components/Breadcrumbs").default; return <B crumbs={[{ label: ar ? "انضم إلينا" : "Join Us" }]} />; })()}
+
+          {/* Social proof */}
+          {memberCount !== null && memberCount > 0 && (
+            <div className="flex items-center gap-2 mb-6 text-sm text-gray-500">
+              <div className="flex -space-x-1.5">
+                {["#9B6B9B","#2EC4B6","#6366f1"].map(c => (
+                  <div key={c} className="w-6 h-6 rounded-full border-2 border-white" style={{ background: c }} />
+                ))}
+              </div>
+              <span>
+                {ar ? `انضم ${memberCount}+ عضو بالفعل` : `${memberCount}+ members already joined`}
+              </span>
+            </div>
+          )}
+
+          {/* Step indicator */}
+          <div className="flex items-center justify-center mb-10 gap-0">
+            {[
+              { label: ar ? "التفاصيل" : "Details",  active: !showOtp && !success, done: showOtp || success },
+              { label: ar ? "التحقق"   : "Verify",   active: showOtp,              done: success },
+              { label: ar ? "تم!"      : "Done!",    active: success,              done: false },
+            ].map((step, i, arr) => (
+              <div key={i} className="flex items-center">
+                <div className="flex flex-col items-center gap-1">
+                  <motion.div
+                    animate={{ scale: step.active ? 1.15 : 1 }}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                      step.done  ? "bg-turquoise border-turquoise text-white" :
+                      step.active? "bg-mauve border-mauve text-white shadow-lg shadow-mauve/30" :
+                                   "bg-white border-gray-200 text-gray-400"
+                    }`}
+                  >
+                    {step.done ? "✓" : i + 1}
+                  </motion.div>
+                  <span className={`text-xs font-medium ${step.active ? "text-mauve" : step.done ? "text-turquoise" : "text-gray-400"}`}>
+                    {step.label}
+                  </span>
+                </div>
+                {i < arr.length - 1 && (
+                  <div className={`w-16 md:w-24 h-[2px] mx-1 mb-4 rounded-full transition-colors ${
+                    step.done ? "bg-turquoise" : "bg-gray-200"
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
 
           {/* Profile selector */}
           <div className="grid grid-cols-3 gap-4 mb-8">
@@ -342,24 +439,16 @@ export default function JoinPage() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-5">
+          <form ref={formRef} onSubmit={handleSubmit} className={`bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-5 ${shaking ? "shake" : ""}`}>
 
             {/* ── YOUTH ── */}
             {selected === "youth" && <>
-              <Field label={t("fields.name")} error={errors.name}>
-                <input name="name" value={form.name || ""} onChange={handleChange} className={inputClass(errors.name)} placeholder={t("fields.name")} />
-              </Field>
+              <FloatingInput name="name" label={t("fields.name")} value={form.name || ""} onChange={handleChange} error={errors.name} required />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label={t("fields.email")} error={errors.email}>
-                  <input name="email" type="email" value={form.email || ""} onChange={handleChange} className={inputClass(errors.email)} placeholder={t("fields.email")} />
-                </Field>
-                <Field label={t("fields.phone")} error={errors.phone}>
-                  <input name="phone" type="tel" value={form.phone || ""} onChange={handleChange} className={inputClass(errors.phone)} placeholder="06 xx xx xx xx" />
-                </Field>
+                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required />
+                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required />
               </div>
-              <Field label={t("fields.age")} error={errors.age}>
-                <input name="age" type="number" min={8} max={35} value={form.age || ""} onChange={handleChange} className={inputClass(errors.age)} placeholder={t("fields.age")} />
-              </Field>
+              <FloatingInput name="age" label={t("fields.age")} type="number" min="8" max="35" value={form.age || ""} onChange={handleChange} error={errors.age} required />
               <Field label={t("fields.interests")}>
                 <div className="flex flex-wrap gap-2">
                   {interestKeys.map(key => (
@@ -439,24 +528,14 @@ export default function JoinPage() {
 
             {/* ── TEACHER ── */}
             {selected === "teacher" && <>
-              <Field label={t("fields.name")} error={errors.name}>
-                <input name="name" value={form.name || ""} onChange={handleChange} className={inputClass(errors.name)} placeholder={t("fields.name")} />
-              </Field>
+              <FloatingInput name="name" label={t("fields.name")} value={form.name || ""} onChange={handleChange} error={errors.name} required />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label={t("fields.email")} error={errors.email}>
-                  <input name="email" type="email" value={form.email || ""} onChange={handleChange} className={inputClass(errors.email)} placeholder={t("fields.email")} />
-                </Field>
-                <Field label={t("fields.phone")} error={errors.phone}>
-                  <input name="phone" type="tel" value={form.phone || ""} onChange={handleChange} className={inputClass(errors.phone)} placeholder="06 xx xx xx xx" />
-                </Field>
+                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required />
+                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label={t("fields.institution_name")} error={errors.institution_name}>
-                  <input name="institution_name" value={form.institution_name || ""} onChange={handleChange} className={inputClass(errors.institution_name)} placeholder={t("fields.institution_name")} />
-                </Field>
-                <Field label={t("fields.specialty")} error={errors.specialty}>
-                  <input name="specialty" value={form.specialty || ""} onChange={handleChange} className={inputClass(errors.specialty)} placeholder={t("fields.specialty")} />
-                </Field>
+                <FloatingInput name="institution_name" label={t("fields.institution_name")} value={form.institution_name || ""} onChange={handleChange} error={errors.institution_name} required />
+                <FloatingInput name="specialty" label={t("fields.specialty")} value={form.specialty || ""} onChange={handleChange} error={errors.specialty} required />
               </div>
               <Field label={t("fields.interests")}>
                 <div className="flex flex-wrap gap-2">
@@ -492,19 +571,11 @@ export default function JoinPage() {
 
             {/* ── INSTITUTION ── */}
             {selected === "institution" && <>
-              <Field label={t("fields.institution_name")} error={errors.institution_name}>
-                <input name="institution_name" value={form.institution_name || ""} onChange={handleChange} className={inputClass(errors.institution_name)} placeholder={t("fields.institution_name")} />
-              </Field>
-              <Field label={t("fields.contact_person")} error={errors.contact_person}>
-                <input name="contact_person" value={form.contact_person || ""} onChange={handleChange} className={inputClass(errors.contact_person)} placeholder={t("fields.contact_person")} />
-              </Field>
+              <FloatingInput name="institution_name" label={t("fields.institution_name")} value={form.institution_name || ""} onChange={handleChange} error={errors.institution_name} required />
+              <FloatingInput name="contact_person" label={t("fields.contact_person")} value={form.contact_person || ""} onChange={handleChange} error={errors.contact_person} required />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label={t("fields.email")} error={errors.email}>
-                  <input name="email" type="email" value={form.email || ""} onChange={handleChange} className={inputClass(errors.email)} placeholder={t("fields.email")} />
-                </Field>
-                <Field label={t("fields.phone")} error={errors.phone}>
-                  <input name="phone" type="tel" value={form.phone || ""} onChange={handleChange} className={inputClass(errors.phone)} placeholder="06 xx xx xx xx" />
-                </Field>
+                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required />
+                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required />
               </div>
               <Field label={t("fields.partnership")} error={errors.partnership}>
                 <select name="partnership" value={form.partnership || ""} onChange={handleChange} className={inputClass(errors.partnership)}>
@@ -513,9 +584,12 @@ export default function JoinPage() {
                 </select>
               </Field>
               <Field label={t("fields.description")}>
-                <textarea name="description" value={form.description || ""} onChange={handleChange}
-                  rows={4} placeholder={t("fields.description_placeholder")}
-                  className={`${inputClass(false)} resize-none`} />
+                <div className="relative">
+                  <textarea name="description" value={form.description || ""} onChange={handleChange}
+                    rows={4} placeholder={t("fields.description_placeholder")} maxLength={500}
+                    className={`${inputClass(false)} resize-none pb-6`} />
+                  <span className="absolute bottom-2 end-3 text-xs text-gray-400">{(form.description || "").length}/500</span>
+                </div>
               </Field>
             </>}
 

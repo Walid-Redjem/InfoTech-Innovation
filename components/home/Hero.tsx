@@ -10,11 +10,11 @@ const wordsAr = ["المجتمع", "المستقبل", "التعليم", "الج
 
 const particles = Array.from({ length: 18 }, (_, i) => ({
   id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 4 + 2,
-  duration: Math.random() * 6 + 5,
-  delay: Math.random() * 4,
+  x: (i * 17 + 13) % 100,
+  y: (i * 23 + 7) % 100,
+  size: 2 + (i % 5),
+  duration: 5 + (i % 7),
+  delay: (i * 0.35) % 4,
 }));
 
 const floatingShapes = [
@@ -30,6 +30,7 @@ export default function Hero() {
   const words = isRTL ? wordsAr : wordsEn;
 
   const [wordIndex, setWordIndex] = useState(0);
+  const [glitching, setGlitching] = useState(false);
 
   const { scrollY } = useScroll();
   const blobY    = useTransform(scrollY, [0, 600], [0, -180]);
@@ -42,6 +43,27 @@ export default function Hero() {
     }, 2500);
     return () => clearInterval(interval);
   }, [words.length]);
+
+  useEffect(() => {
+    let offTimeout: ReturnType<typeof setTimeout>;
+    let interval: ReturnType<typeof setInterval>;
+
+    function runGlitch() {
+      setGlitching(true);
+      offTimeout = setTimeout(() => setGlitching(false), 450);
+    }
+
+    const initial = setTimeout(() => {
+      runGlitch();
+      interval = setInterval(runGlitch, 3000);
+    }, 1300);
+
+    return () => {
+      clearTimeout(initial);
+      clearTimeout(offTimeout);
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <section className="relative overflow-hidden min-h-[92vh] flex items-center py-16 md:py-20 px-5 md:px-6"
@@ -57,6 +79,17 @@ export default function Hero() {
           "radial-gradient(ellipse at 20% 50%, #9B6B9B22 0%, transparent 60%)",
         ]}}
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+      />
+
+      {/* Scanning beam */}
+      <motion.div
+        className="absolute left-0 right-0 h-[2px] pointer-events-none z-10"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 20%, rgba(46,196,182,0.95) 50%, rgba(255,255,255,0.4) 80%, transparent 100%)",
+          boxShadow: "0 0 14px rgba(46,196,182,0.9), 0 0 40px rgba(46,196,182,0.4)",
+        }}
+        animate={{ y: ["-10px", "95vh"] }}
+        transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 6, ease: "linear" }}
       />
 
       {/* Dot grid — slow parallax */}
@@ -89,6 +122,7 @@ export default function Hero() {
       </motion.div>
 
       <motion.div className="relative max-w-5xl mx-auto text-center w-full" style={{ y: contentY }}>
+        <div className="bg-white/15 backdrop-blur-md border border-white/30 rounded-3xl px-6 py-10 md:px-14 md:py-14 shadow-2xl shadow-mauve/5">
 
         {/* Badge */}
         <motion.div
@@ -100,15 +134,17 @@ export default function Hero() {
           {locale === "ar" ? "منصة ابتكار مجتمعي" : "Community Innovation Platform"}
         </motion.div>
 
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="text-5xl md:text-7xl font-bold mb-4 leading-tight tracking-tight"
-          style={{ background: "linear-gradient(135deg, #9B6B9B 0%, #2EC4B6 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
-        >
-          {t("title")}
-        </motion.h1>
+        {/* Title with glitch */}
+        <div className={glitching ? "glitch-title" : ""}>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-5xl md:text-7xl font-bold mb-4 leading-tight tracking-tight"
+            style={{ background: "linear-gradient(135deg, #9B6B9B 0%, #2EC4B6 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+          >
+            {t("title")}
+          </motion.h1>
+        </div>
 
         {/* Typewriter line */}
         <motion.div
@@ -185,6 +221,7 @@ export default function Hero() {
             className="w-[2px] h-8 bg-gradient-to-b from-mauve to-transparent rounded-full"
           />
         </motion.div>
+        </div>
       </motion.div>
     </section>
   );

@@ -7,15 +7,17 @@ import { exportCSV } from "@/lib/exportCSV";
 import { formatDate } from "@/lib/formatDate";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useRouter, useParams, usePathname } from "next/navigation";
+import { useRouter, useParams, usePathname, useSearchParams } from "next/navigation";
 import {
   Users, AlertCircle, ClipboardList, PlusCircle,
   Download, LogOut, Trash2, UserCheck, Rocket, Globe, BarChart3,
   ChevronRight, Menu, X, Search, CheckCircle2, Clock,
-  FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink
+  FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink,
+  Printer, Copy, ChevronsUpDown, ChevronUp, ChevronDown,
+  CalendarDays, Pencil, ImageIcon, MapPin
 } from "lucide-react";
 
-type Tab = "registrations" | "issues" | "responses" | "create" | "analytics";
+type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities";
 
 interface Question {
   id: string; text: string; type: "text" | "choice" | "rating";
@@ -27,7 +29,15 @@ export default function AdminDashboard() {
   const router = useRouter();
   const params = useParams();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
+
+  // Persist filters in URL
+  function updateParam(key: string, value: string) {
+    const sp = new URLSearchParams(searchParams.toString());
+    if (value && value !== "all" && value !== "") sp.set(key, value); else sp.delete(key);
+    router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+  }
   const ar = locale === "ar";
 
   function switchLocale() {
@@ -42,10 +52,11 @@ export default function AdminDashboard() {
     { key: "issues",        label: ar ? "الإشكاليات والأفكار" : "Issues & Ideas",   icon: AlertCircle },
     { key: "responses",     label: ar ? "ردود الاستبيانات"    : "Survey Responses", icon: ClipboardList },
     { key: "analytics",     label: ar ? "الإحصائيات"          : "Analytics",        icon: BarChart3 },
+    { key: "activities",    label: ar ? "الأنشطة"             : "Activities",       icon: CalendarDays },
     { key: "create",        label: ar ? "إنشاء استبيان"       : "Create Survey",    icon: PlusCircle },
   ];
 
-  const [tab, setTab] = useState<Tab>("registrations");
+  const [tab, setTab] = useState<Tab>((searchParams.get("tab") as Tab) || "registrations");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Registration modal
@@ -60,15 +71,55 @@ export default function AdminDashboard() {
   const [responses, setResponses]         = useState<Record<string, unknown>[]>([]);
   const [allResponses, setAllResponses]   = useState<Record<string, unknown>[]>([]);
   const [selectedSurvey, setSelectedSurvey] = useState("");
-  const [catFilter, setCatFilter]       = useState("all");
-  const [regStatusFilter, setRegStatusFilter] = useState("all");
-  const [typeFilter, setTypeFilter]     = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [searchQuery, setSearchQuery]   = useState("");
+  const [activities, setActivities] = useState<Record<string,unknown>[]>([]);
+  const [activityForm, setActivityForm] = useState({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" });
+  const [editingActivity, setEditingActivity] = useState<string|null>(null);
+  const [savingActivity, setSavingActivity] = useState(false);
+  const [showActivityForm, setShowActivityForm] = useState(false);
+  const [catFilter, setCatFilter]       = useState(searchParams.get("cat") || "all");
+  const [regStatusFilter, setRegStatusFilter] = useState(searchParams.get("regStatus") || "all");
+  const [typeFilter, setTypeFilter]     = useState(searchParams.get("type") || "all");
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "all");
+  const [searchQuery, setSearchQuery]   = useState(searchParams.get("q") || "");
   const [regPage, setRegPage]           = useState(0);
   const PAGE_SIZE                       = 10;
+  const [sortField, setSortField]       = useState<string>("createdAt");
+  const [sortDir, setSortDir]           = useState<"asc"|"desc">("desc");
+  const [selectedIds, setSelectedIds]   = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading]   = useState(false);
+  const [copiedLink, setCopiedLink]     = useState(false);
+
+  function toggleSort(field: string) {
+    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDir("asc"); }
+  }
+
+  function SortIcon({ field }: { field: string }) {
+    if (sortField !== field) return <ChevronsUpDown className="w-3 h-3 opacity-40" />;
+    return sortDir === "asc" ? <ChevronUp className="w-3 h-3 text-mauve" /> : <ChevronDown className="w-3 h-3 text-mauve" />;
+  }
+
+  async function bulkApprove() {
+    if (!selectedIds.size) return;
+    setBulkLoading(true);
+    await Promise.all([...selectedIds].map(id =>
+      updateDoc(doc(db, "registrations", id), { status: "approved" })
+    ));
+    setRegistrations(prev => prev.map(r => selectedIds.has(String(r.id)) ? { ...r, status: "approved" } : r));
+    setSelectedIds(new Set());
+    setBulkLoading(false);
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  }
+
+  function handlePrint() { window.print(); }
 
   const [overviewStats, setOverviewStats] = useState({ registrations: 0, issues: 0, surveys: 0, responses: 0 });
+  const [loading, setLoading] = useState(true);
 
   // Create survey state
   const [surveyTitle, setSurveyTitle]     = useState("");
@@ -84,18 +135,25 @@ export default function AdminDashboard() {
   useEffect(() => { fetchAll(); }, []);
 
   async function fetchAll() {
-    const [regSnap, issSnap, surSnap, resSnap] = await Promise.all([
+    setLoading(true);
+    try {
+    const [regSnap, issSnap, surSnap, resSnap, actSnap] = await Promise.all([
       getDocs(collection(db, "registrations")),
       getDocs(collection(db, "issues")),
       getDocs(collection(db, "surveys")),
       getDocs(collection(db, "surveyResponses")),
+      getDocs(collection(db, "activities")),
     ]);
     const regs = regSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const iss  = issSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const surs = surSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const res  = resSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    setRegistrations(regs); setIssues(iss); setSurveys(surs); setAllResponses(res);
+    const acts = actSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    setRegistrations(regs); setIssues(iss); setSurveys(surs); setAllResponses(res); setActivities(acts);
     setOverviewStats({ registrations: regs.length, issues: iss.length, surveys: surs.length, responses: res.length });
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function fetchResponses(surveyId: string) {
@@ -190,8 +248,13 @@ export default function AdminDashboard() {
         String(r.phone || "").toLowerCase().includes(q)
       );
     }
+    result = [...result].sort((a, b) => {
+      const av = String(a[sortField] ?? "");
+      const bv = String(b[sortField] ?? "");
+      return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
     return result;
-  }, [registrations, catFilter, regStatusFilter, searchQuery]);
+  }, [registrations, catFilter, regStatusFilter, searchQuery, sortField, sortDir]);
 
   const filteredRegs = useMemo(() =>
     allFilteredRegs.slice(regPage * PAGE_SIZE, (regPage + 1) * PAGE_SIZE),
@@ -343,7 +406,7 @@ export default function AdminDashboard() {
             <nav className="p-4 space-y-1 flex-1">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-3">{ar ? "القائمة" : "Navigation"}</p>
               {tabs.map(({ key, label, icon: Icon }) => (
-                <button key={key} onClick={() => { setTab(key); setSidebarOpen(false); }}
+                <button key={key} onClick={() => { setTab(key); updateParam("tab", key); setSidebarOpen(false); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                     tab === key
                       ? "bg-gradient-to-r from-mauve to-mauve/80 text-white shadow-md shadow-mauve/20"
@@ -387,23 +450,44 @@ export default function AdminDashboard() {
           </div>
 
           {/* Tab content */}
+          {loading && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-3 animate-pulse">
+              {[100, 80, 95, 70, 85].map((w, i) => (
+                <div key={i} className="flex gap-4 items-center">
+                  <div className="h-4 bg-gray-200 rounded-full flex-1" style={{ maxWidth: `${w}%` }} />
+                  <div className="h-4 w-16 bg-gray-200 rounded-full" />
+                  <div className="h-4 w-20 bg-gray-200 rounded-full" />
+                </div>
+              ))}
+            </div>
+          )}
           <AnimatePresence mode="wait">
-            <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+            <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className={loading ? "hidden" : ""}>
 
               {/* ── REGISTRATIONS ── */}
               {tab === "registrations" && (
                 <Section title={ar ? "التسجيلات" : "Registrations"} count={allFilteredRegs.length}
                   onExport={() => exportCSV(allFilteredRegs as Record<string,unknown>[], "registrations")}
                   exportLabel={ar ? "تصدير CSV" : "Export CSV"}
+                  extraActions={
+                    <div className="flex gap-2">
+                      <button onClick={copyLink} className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve transition-colors bg-white shadow-sm">
+                        <Copy className="w-3.5 h-3.5" />{copiedLink ? (ar ? "تم النسخ!" : "Copied!") : (ar ? "نسخ الرابط" : "Copy link")}
+                      </button>
+                      <button onClick={handlePrint} className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve transition-colors bg-white shadow-sm">
+                        <Printer className="w-3.5 h-3.5" />{ar ? "طباعة" : "Print"}
+                      </button>
+                    </div>
+                  }
                   filter={
                     <div className="flex gap-2 flex-wrap">
-                      <Select value={catFilter} onChange={v => { setCatFilter(v); setRegPage(0); }} options={[
+                      <Select value={catFilter} onChange={v => { setCatFilter(v); updateParam("cat", v); setRegPage(0); }} options={[
                         { value: "all",         label: ar ? "جميع الفئات"  : "All categories" },
                         { value: "youth",       label: ar ? "شباب"         : "Youth" },
                         { value: "teacher",     label: ar ? "معلمون"       : "Teachers" },
                         { value: "institution", label: ar ? "مؤسسات"       : "Institutions" },
                       ]} />
-                      <Select value={regStatusFilter} onChange={v => { setRegStatusFilter(v); setRegPage(0); }} options={[
+                      <Select value={regStatusFilter} onChange={v => { setRegStatusFilter(v); updateParam("regStatus", v); setRegPage(0); }} options={[
                         { value: "all",      label: ar ? "جميع الحالات" : "All statuses" },
                         { value: "pending",  label: ar ? "قيد المراجعة" : "Pending" },
                         { value: "approved", label: ar ? "مقبول"        : "Approved" },
@@ -411,25 +495,79 @@ export default function AdminDashboard() {
                     </div>
                   }
                   searchQuery={searchQuery}
-                  onSearch={v => { setSearchQuery(v); setRegPage(0); }}
+                  onSearch={v => { setSearchQuery(v); updateParam("q", v); setRegPage(0); }}
                   searchPlaceholder={ar ? "ابحث بالاسم أو البريد..." : "Search by name or email..."}
                 >
-                  <DataTable
-                    headers={ar
-                      ? ["الاسم / المؤسسة", "البريد الإلكتروني", "الهاتف", "الفئة", "التاريخ", ""]
-                      : ["Name / Institution", "Email", "Phone", "Category", "Date", ""]}
-                    rows={filteredRegs.map(r => [
-                      String(r.name || r.institution_name || "—"),
-                      String(r.email || "—"),
-                      String(r.phone || "—"),
-                      String(r.category || "—"),
-                      formatDate(r.createdAt),
-                      "view",
-                    ])}
-                    badges={{ 3: { youth: "purple", teacher: "teal", institution: "indigo" } }}
-                    onRowClick={(i) => setSelectedReg(filteredRegs[i])}
-                    viewCol={5}
-                  />
+                  {/* Bulk action bar */}
+                  {selectedIds.size > 0 && (
+                    <div className="flex items-center gap-3 mb-3 bg-mauve/10 rounded-xl px-4 py-2.5">
+                      <span className="text-sm font-semibold text-mauve">{selectedIds.size} {ar ? "محدد" : "selected"}</span>
+                      <button onClick={bulkApprove} disabled={bulkLoading}
+                        className="flex items-center gap-1.5 text-xs bg-turquoise text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-turquoise-dark transition-colors disabled:opacity-60">
+                        <CheckCircle2 className="w-3.5 h-3.5" />{ar ? "قبول الكل" : "Approve all"}
+                      </button>
+                      <button onClick={() => setSelectedIds(new Set())} className="text-xs text-gray-400 hover:text-gray-600 ms-auto">
+                        {ar ? "إلغاء التحديد" : "Deselect all"}
+                      </button>
+                    </div>
+                  )}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-100 bg-gray-50/50">
+                            <th className="px-4 py-3.5 w-10">
+                              <input type="checkbox" className="accent-mauve"
+                                checked={filteredRegs.length > 0 && filteredRegs.every(r => selectedIds.has(String(r.id)))}
+                                onChange={e => {
+                                  if (e.target.checked) setSelectedIds(new Set(filteredRegs.map(r => String(r.id))));
+                                  else setSelectedIds(new Set());
+                                }} />
+                            </th>
+                            {[
+                              { label: ar ? "الاسم" : "Name", field: "name" },
+                              { label: ar ? "البريد" : "Email", field: "email" },
+                              { label: ar ? "الهاتف" : "Phone", field: "phone" },
+                              { label: ar ? "الفئة" : "Category", field: "category" },
+                              { label: ar ? "التاريخ" : "Date", field: "createdAt" },
+                              { label: "", field: "" },
+                            ].map(({ label, field }) => (
+                              <th key={label} onClick={() => field && toggleSort(field)}
+                                className={`text-left px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap ${field ? "cursor-pointer hover:text-mauve select-none" : ""}`}>
+                                <span className="inline-flex items-center gap-1">{label}{field && <SortIcon field={field} />}</span>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredRegs.length === 0 ? (
+                            <tr><td colSpan={7} className="py-16 text-center text-gray-400 text-sm">{ar ? "لا توجد تسجيلات." : "No registrations yet."}</td></tr>
+                          ) : filteredRegs.map((r, i) => (
+                            <motion.tr key={String(r.id)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
+                              className="border-b border-gray-50 hover:bg-lilac/20 transition-colors">
+                              <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
+                                <input type="checkbox" className="accent-mauve"
+                                  checked={selectedIds.has(String(r.id))}
+                                  onChange={e => setSelectedIds(prev => { const n = new Set(prev); e.target.checked ? n.add(String(r.id)) : n.delete(String(r.id)); return n; })} />
+                              </td>
+                              <td className="px-5 py-3.5 font-medium text-gray-700">{String(r.name || r.institution_name || "—")}</td>
+                              <td className="px-5 py-3.5 text-gray-500">{String(r.email || "—")}</td>
+                              <td className="px-5 py-3.5 text-gray-500">{String(r.phone || "—")}</td>
+                              <td className="px-5 py-3.5">
+                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${colorMap[String(r.category || "")] || "bg-gray-100 text-gray-600"}`}>{String(r.category || "—")}</span>
+                              </td>
+                              <td className="px-5 py-3.5 text-gray-400 text-xs whitespace-nowrap">{formatDate(r.createdAt)}</td>
+                              <td className="px-5 py-3.5">
+                                <button onClick={() => setSelectedReg(r)} className="inline-flex items-center gap-1 text-xs font-semibold text-mauve bg-lilac px-3 py-1.5 rounded-full hover:bg-lilac-dark transition-colors">
+                                  <Eye className="w-3 h-3" /> {ar ? "عرض" : "View"}
+                                </button>
+                              </td>
+                            </motion.tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                   {totalRegPages > 1 && (
                     <div className="flex items-center justify-between mt-4">
                       <p className="text-xs text-gray-400">
@@ -521,7 +659,17 @@ export default function AdminDashboard() {
               {/* ── RESPONSES ── */}
               {tab === "responses" && (
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "ردود الاستبيانات" : "Survey Responses"}</h2>
+                  <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
+                    <h2 className="text-xl font-bold text-gray-800">{ar ? "ردود الاستبيانات" : "Survey Responses"}</h2>
+                    {responses.length > 0 && (
+                      <button onClick={() => {
+                        const rows = responses.map(r => ({ ...((r.answers as Record<string,unknown>) || {}), date: formatDate(r.createdAt) }));
+                        exportCSV(rows, `responses-${selectedSurvey}`);
+                      }} className="flex items-center gap-2 text-sm bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-mauve hover:text-mauve transition-colors text-gray-500 shadow-sm">
+                        <Download className="w-4 h-4" /> {ar ? "تصدير CSV" : "Export CSV"}
+                      </button>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-400 mb-6">{ar ? "اختر استبياناً لعرض ردوده" : "Select a survey to view its responses"}</p>
                   <Select value={selectedSurvey} onChange={v => { setSelectedSurvey(v); if (v) fetchResponses(v); }}
                     options={[{ value: "", label: ar ? "اختر استبياناً..." : "Select a survey..." }, ...surveys.map(s => ({ value: String(s.id), label: String(s.title) }))]}
@@ -552,6 +700,121 @@ export default function AdminDashboard() {
                       </motion.div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* ── ACTIVITIES ── */}
+              {tab === "activities" && (
+                <div>
+                  <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">{ar ? "الأنشطة" : "Activities"}</h2>
+                      <p className="text-sm text-gray-400">{activities.length} {ar ? "نشاط" : "activities"}</p>
+                    </div>
+                    <button onClick={() => { setShowActivityForm(true); setEditingActivity(null); setActivityForm({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" }); }}
+                      className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-mauve/20">
+                      <PlusCircle className="w-4 h-4" />{ar ? "إضافة نشاط" : "Add Activity"}
+                    </button>
+                  </div>
+
+                  {/* Activity form */}
+                  {showActivityForm && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                      className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 space-y-4">
+                      <h3 className="font-bold text-gray-700">{editingActivity ? (ar ? "تعديل النشاط" : "Edit Activity") : (ar ? "نشاط جديد" : "New Activity")}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          { label: "Title (EN)", key: "title" }, { label: "العنوان (AR)", key: "titleAr" },
+                          { label: "Description (EN)", key: "description" }, { label: "الوصف (AR)", key: "descriptionAr" },
+                          { label: "Location (EN)", key: "location" }, { label: "الموقع (AR)", key: "locationAr" },
+                          { label: "Date", key: "date" }, { label: "Image URL (Cloudinary)", key: "imageUrl" },
+                        ].map(({ label, key }) => (
+                          <div key={key}>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{label}</label>
+                            <input value={(activityForm as Record<string,string>)[key] || ""} onChange={e => setActivityForm(p => ({ ...p, [key]: e.target.value }))}
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors" />
+                          </div>
+                        ))}
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Category</label>
+                          <select value={activityForm.category} onChange={e => setActivityForm(p => ({ ...p, category: e.target.value }))}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors">
+                            {["workshop","event","competition","training","other"].map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 pt-2">
+                        <button disabled={savingActivity} onClick={async () => {
+                          if (!activityForm.title.trim()) return;
+                          setSavingActivity(true);
+                          try {
+                            if (editingActivity) {
+                              await updateDoc(doc(db, "activities", editingActivity), { ...activityForm, active: true });
+                              setActivities(prev => prev.map(a => a.id === editingActivity ? { ...a, ...activityForm } : a));
+                            } else {
+                              const ref = await addDoc(collection(db, "activities"), { ...activityForm, active: true, createdAt: serverTimestamp() });
+                              setActivities(prev => [...prev, { id: ref.id, ...activityForm, active: true }]);
+                            }
+                            setShowActivityForm(false); setEditingActivity(null);
+                          } finally { setSavingActivity(false); }
+                        }} className="bg-mauve text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-mauve-dark transition-colors disabled:opacity-60">
+                          {savingActivity ? "Saving…" : (editingActivity ? (ar ? "حفظ التعديلات" : "Save Changes") : (ar ? "نشر النشاط" : "Publish Activity"))}
+                        </button>
+                        <button onClick={() => setShowActivityForm(false)} className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-500 text-sm hover:bg-gray-50 transition-colors">
+                          {ar ? "إلغاء" : "Cancel"}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Activities list */}
+                  {activities.length === 0 && !showActivityForm ? (
+                    <div className="text-center py-20 text-gray-400">
+                      <CalendarDays className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                      <p className="text-sm">{ar ? "لا توجد أنشطة بعد. أضف أول نشاط!" : "No activities yet. Add the first one!"}</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {activities.map((a, i) => (
+                        <motion.div key={String(a.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                          className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                          {a.imageUrl ? (
+                            <div className="h-36 overflow-hidden relative">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={String(a.imageUrl)} alt={String(a.title)} className="w-full h-full object-cover" />
+                            </div>
+                          ) : (
+                            <div className="h-24 bg-lilac/30 flex items-center justify-center">
+                              <ImageIcon className="w-8 h-8 text-mauve/30" />
+                            </div>
+                          )}
+                          <div className="p-4">
+                            <span className="text-xs font-bold text-mauve uppercase tracking-wide">{String(a.category || "")}</span>
+                            <h3 className="font-bold text-gray-800 mb-1 truncate">{String(a.title || "")}</h3>
+                            {a.date ? <p className="text-xs text-gray-400 flex items-center gap-1"><CalendarDays className="w-3 h-3" />{String(a.date)}</p> : null}
+                            {a.location ? <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{String(a.location)}</p> : null}
+                            <div className="flex gap-2 mt-3">
+                              <button onClick={() => {
+                                setEditingActivity(String(a.id));
+                                setActivityForm({ title: String(a.title||""), titleAr: String(a.titleAr||""), description: String(a.description||""), descriptionAr: String(a.descriptionAr||""), date: String(a.date||""), category: String(a.category||"workshop"), location: String(a.location||""), locationAr: String(a.locationAr||""), imageUrl: String(a.imageUrl||"") });
+                                setShowActivityForm(true);
+                              }} className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-mauve bg-lilac px-3 py-1.5 rounded-lg hover:bg-lilac-dark transition-colors">
+                                <Pencil className="w-3 h-3" />{ar ? "تعديل" : "Edit"}
+                              </button>
+                              <button onClick={async () => {
+                                if (!confirm(ar ? "هل تريد حذف هذا النشاط؟" : "Delete this activity?")) return;
+                                const { deleteDoc, doc: firestoreDoc } = await import("firebase/firestore");
+                                await deleteDoc(firestoreDoc(db, "activities", String(a.id)));
+                                setActivities(prev => prev.filter(x => x.id !== a.id));
+                              }} className="flex items-center justify-center gap-1 text-xs font-semibold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors">
+                                <Trash2 className="w-3 h-3" />{ar ? "حذف" : "Delete"}
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1139,10 +1402,11 @@ function RegistrationModal({ reg, ar, onClose, onReview, actionLoading, rejectio
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
 
-function Section({ title, count, onExport, exportLabel = "Export CSV", filter, children, searchQuery, onSearch, searchPlaceholder }: {
+function Section({ title, count, onExport, exportLabel = "Export CSV", filter, children, searchQuery, onSearch, searchPlaceholder, extraActions }: {
   title: string; count: number; onExport: () => void; exportLabel?: string;
   filter?: React.ReactNode; children: React.ReactNode;
   searchQuery?: string; onSearch?: (v: string) => void; searchPlaceholder?: string;
+  extraActions?: React.ReactNode;
 }) {
   return (
     <div>
@@ -1153,6 +1417,7 @@ function Section({ title, count, onExport, exportLabel = "Export CSV", filter, c
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           {filter}
+          {extraActions}
           <button onClick={onExport}
             className="flex items-center gap-2 text-sm bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-mauve hover:text-mauve transition-colors text-gray-500 shadow-sm">
             <Download className="w-4 h-4" /> {exportLabel}

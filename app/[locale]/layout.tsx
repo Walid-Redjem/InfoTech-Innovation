@@ -7,6 +7,15 @@ import Footer from "@/components/layout/Footer";
 import HtmlAttributes from "@/components/HtmlAttributes";
 import ScrollProgress from "@/components/ScrollProgress";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import BackToTop from "@/components/BackToTop";
+import IntroLoader from "@/components/IntroLoader";
+import PageTransition from "@/components/PageTransition";
+import { ToastProvider } from "@/components/Toast";
+import CursorSpotlight from "@/components/CursorSpotlight";
+import OfflineIndicator from "@/components/OfflineIndicator";
+import PWAInstallBanner from "@/components/PWAInstallBanner";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import FloatingSectionDots from "@/components/FloatingSectionDots";
 
 export default async function LocaleLayout({
   children,
@@ -25,12 +34,22 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <HtmlAttributes />
-      <ScrollProgress />
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <WhatsAppButton />
+      <ToastProvider>
+        <div className="grain-overlay" aria-hidden />
+        <HtmlAttributes />
+        <CursorSpotlight />
+        <IntroLoader />
+        <ScrollProgress />
+        <OfflineIndicator />
+        <Navbar />
+        <FloatingSectionDots />
+        <PageTransition>{children}</PageTransition>
+        <Footer />
+        <WhatsAppButton />
+        <BackToTop />
+        <MobileBottomNav />
+        <PWAInstallBanner />
+      </ToastProvider>
     </NextIntlClientProvider>
   );
 }

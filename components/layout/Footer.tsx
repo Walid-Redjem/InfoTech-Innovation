@@ -14,6 +14,7 @@ export default function Footer() {
     { href: "/issues", label: t("issues") },
     { href: "/surveys", label: t("surveys") },
     { href: "/activities", label: t("activities") },
+    { href: "/faq", label: locale === "ar" ? "الأسئلة الشائعة" : "FAQ" },
     { href: "/terms", label: tf("terms") },
   ];
 

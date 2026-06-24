@@ -112,6 +112,47 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Timeline */}
+      <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-lilac/20 to-white">
+        <div className="max-w-3xl mx-auto">
+          <AnimatedSection className="text-center mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-turquoise mb-2 block">{ar ? "مسيرتنا" : "Our Journey"}</span>
+            <h2 className="text-3xl font-bold text-mauve">{ar ? "التسلسل الزمني" : "Timeline"}</h2>
+            <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
+          </AnimatedSection>
+          <div className="relative">
+            {/* Center line */}
+            <div className="absolute start-6 md:start-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-mauve via-turquoise to-lilac-dark opacity-30 md:-translate-x-1/2" />
+            <div className="space-y-8">
+              {[
+                { year: "2022", en: "Founded InfoTech Innovation", ar: "تأسيس InfoTech Innovation", descEn: "InfoTech Innovation was established in Algeria with a mission to connect youth, educators, and institutions.", descAr: "تأسست InfoTech Innovation في الجزائر بمهمة ربط الشباب والمعلمين والمؤسسات.", color: "#9B6B9B" },
+                { year: "2023", en: "Platform Launch", ar: "إطلاق المنصة", descEn: "Launched the digital platform with 50+ founding members from across the country.", descAr: "أُطلقت المنصة الرقمية مع أكثر من 50 عضواً مؤسساً من أنحاء الوطن.", color: "#2EC4B6" },
+                { year: "2024", en: "Institutional Partnerships", ar: "شراكات مؤسسية", descEn: "Established partnerships with 3 national institutions and launched our first community surveys.", descAr: "أُبرمت شراكات مع 3 مؤسسات وطنية وأُطلقت أولى الاستبيانات المجتمعية.", color: "#6366f1" },
+                { year: "2025", en: "Growing Community", ar: "نمو المجتمع", descEn: "Expanded to 200+ active members across multiple regions with dozens of community issues addressed.", descAr: "توسعنا لأكثر من 200 عضو نشط عبر مناطق متعددة مع معالجة عشرات القضايا المجتمعية.", color: "#f97316" },
+                { year: "2026", en: "Full Platform", ar: "المنصة الكاملة", descEn: "Launched the complete digital hub with real-time surveys, issue tracking, and AI-powered analytics.", descAr: "إطلاق المنصة الرقمية الكاملة مع الاستبيانات الفورية وتتبع القضايا والتحليلات.", color: "#22c55e" },
+              ].map((item, i) => (
+                <AnimatedSection key={i} delay={i * 0.1}>
+                  <div className={`flex items-start gap-4 md:gap-0 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
+                    {/* Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      className="ms-12 md:ms-0 md:w-[calc(50%-2rem)] bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:shadow-mauve/10 transition-shadow"
+                      style={{ borderLeftColor: item.color, borderLeftWidth: 3 }}
+                    >
+                      <span className="text-xs font-black uppercase tracking-widest mb-1 block" style={{ color: item.color }}>{item.year}</span>
+                      <h3 className="font-bold text-gray-800 mb-1">{ar ? item.ar : item.en}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">{ar ? item.descAr : item.descEn}</p>
+                    </motion.div>
+                    {/* Dot on center line */}
+                    <div className="absolute start-[18px] md:start-1/2 md:-translate-x-1/2 mt-5 w-5 h-5 rounded-full border-4 border-white shadow-md flex-shrink-0" style={{ backgroundColor: item.color }} />
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <AnimatedSection>
         <section className="py-20 px-6 bg-mauve text-center relative overflow-hidden">

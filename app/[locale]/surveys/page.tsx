@@ -5,6 +5,7 @@ import { collection, getDocs, addDoc, query, where, serverTimestamp } from "fire
 import { db } from "@/lib/firebase";
 import { ClipboardList, CheckCircle2, Star, ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";
 
 type QuestionType = "text" | "choice" | "rating";
@@ -94,6 +95,8 @@ export default function SurveysPage() {
         locale,
         createdAt: serverTimestamp(),
       });
+      confetti({ particleCount: 130, spread: 75, colors: ["#9B6B9B","#2EC4B6","#EDE0F5","#6366f1"], origin: { y: 0.55 } });
+      setTimeout(() => confetti({ particleCount: 60, spread: 100, colors: ["#9B6B9B","#2EC4B6"], origin: { y: 0.5, x: 0.3 } }), 350);
       setView("success");
     } catch {
       setError(true);

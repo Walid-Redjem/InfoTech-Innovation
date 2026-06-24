@@ -5,6 +5,16 @@
   --foreground: #171717;
 }
 
+html.dark {
+  --background: #0d0d1a;
+  --foreground: #f0eaf8;
+}
+
+html.dark body {
+  background: #0d0d1a;
+  color: #f0eaf8;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -68,3 +78,90 @@ body {
   position: relative;
   z-index: 1;
 }
+
+@keyframes glitch-anim {
+  0%   { transform: translateX(0);    clip-path: none;                                          filter: none; }
+  10%  { transform: translateX(-4px); clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);        filter: hue-rotate(90deg) saturate(4); }
+  20%  { transform: translateX(4px);  clip-path: polygon(0 66%, 100% 66%, 100% 100%, 0 100%);  filter: hue-rotate(-90deg) brightness(1.4); }
+  30%  { transform: translateX(-2px); clip-path: none;                                          filter: saturate(5) brightness(1.2); }
+  40%  { transform: translateX(3px);  clip-path: polygon(0 40%, 100% 40%, 100% 58%, 0 58%);    filter: hue-rotate(180deg); }
+  50%  { transform: translateX(0);    clip-path: none;                                          filter: none; }
+  60%  { transform: translateX(-5px); clip-path: polygon(0 8%, 100% 8%, 100% 22%, 0 22%);      filter: saturate(3); }
+  70%  { transform: translateX(2px);  clip-path: none;                                          filter: none; }
+  80%  { transform: translateX(-1px); clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%);    filter: hue-rotate(45deg); }
+  90%  { transform: translateX(2px);  clip-path: none;                                          filter: none; }
+  100% { transform: translateX(0);    clip-path: none;                                          filter: none; }
+}
+
+.glitch-title {
+  animation: glitch-anim 0.45s steps(1) 1 forwards;
+}
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid #9B6B9B;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ── Text selection ── */
+::selection { background: #EDE0F5; color: #7A5580; }
+
+/* ── Skip to content ── */
+.skip-link {
+  position: fixed; top: -100%; left: 1rem; z-index: 9999;
+  background: #9B6B9B; color: #fff; padding: 0.5rem 1rem;
+  border-radius: 0 0 8px 8px; font-weight: 700; font-size: 0.875rem;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* ── Shake ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 50%, 90% { transform: translateX(-7px); }
+  30%, 70% { transform: translateX(7px); }
+}
+.shake { animation: shake 0.45s cubic-bezier(0.36,0.07,0.19,0.97) both; }
+
+/* ── Neon pulse on headings ── */
+@keyframes neon-pulse {
+  0%, 100% { text-shadow: 0 0 6px rgba(155,107,155,0.35), 0 0 14px rgba(155,107,155,0.15); }
+  50% { text-shadow: 0 0 14px rgba(155,107,155,0.7), 0 0 35px rgba(155,107,155,0.35), 0 0 55px rgba(46,196,182,0.15); }
+}
+.neon-heading { animation: neon-pulse 3.5s ease-in-out infinite; }
+
+/* ── Grain overlay ── */
+.grain-overlay {
+  pointer-events: none; position: fixed; inset: 0; z-index: 2;
+  opacity: 0.028; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Magnetic button ── */
+.magnetic { transition: transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+
+/* ── Ripple ── */
+.ripple-container { position: relative; overflow: hidden; }
+@keyframes ripple-expand {
+  to { transform: scale(4); opacity: 0; }
+}
+.ripple-wave {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  width: 40px; height: 40px; margin: -20px;
+  pointer-events: none; animation: ripple-expand 0.6s linear forwards;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Mobile safe area ── */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }

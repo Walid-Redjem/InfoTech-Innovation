@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
 import { UserPlus, FileSearch, Sparkles, BarChart3, CalendarCheck, BrainCircuit } from "lucide-react";
 import { useRef } from "react";
@@ -22,16 +22,23 @@ function TiltCard({ children, className }: { children: React.ReactNode; classNam
   const rotateX = useSpring(useTransform(y, [-80, 80], [8, -8]), { stiffness: 300, damping: 30 });
   const rotateY = useSpring(useTransform(x, [-80, 80], [-8, 8]), { stiffness: 300, damping: 30 });
 
+  const shimmerX = useTransform(x, [-80, 80], [0, 100]);
+  const shimmerY = useTransform(y, [-80, 80], [0, 100]);
+  const holoBgPos = useMotionTemplate`${shimmerX}% ${shimmerY}%`;
+  const holoOpacity = useSpring(0, { stiffness: 150, damping: 20 });
+
   function handleMouseMove(e: React.MouseEvent) {
     const rect = ref.current?.getBoundingClientRect();
     if (!rect) return;
     x.set(e.clientX - rect.left - rect.width / 2);
     y.set(e.clientY - rect.top - rect.height / 2);
+    holoOpacity.set(1);
   }
 
   function handleMouseLeave() {
     x.set(0);
     y.set(0);
+    holoOpacity.set(0);
   }
 
   return (
@@ -40,9 +47,20 @@ function TiltCard({ children, className }: { children: React.ReactNode; classNam
       style={{ rotateX, rotateY, transformPerspective: 900 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={className}
+      className={`relative rounded-3xl ${className || ""}`}
     >
       {children}
+      {/* Holographic shimmer overlay */}
+      <motion.div
+        className="absolute inset-0 rounded-3xl pointer-events-none"
+        style={{
+          background: "linear-gradient(105deg, transparent 38%, rgba(155,107,155,0.35) 45%, rgba(46,196,182,0.35) 54%, rgba(99,102,241,0.25) 61%, transparent 68%)",
+          backgroundSize: "300% 300%",
+          backgroundPosition: holoBgPos,
+          mixBlendMode: "screen",
+          opacity: holoOpacity,
+        }}
+      />
     </motion.div>
   );
 }

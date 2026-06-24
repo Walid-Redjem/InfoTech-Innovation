@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only Firebase Auth users (admins) are authenticated
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // Registrations
+    // - Anyone can create (registration form)
+    // - Anyone can list (needed for duplicate email check on join form)
+    // - Only admin can read individual records, update, delete
+    match /registrations/{id} {
+      allow create: if
+        request.resource.data.keys().hasAll(['email', 'category', 'status']) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.email is string;
+      allow list: if true;
+      allow get, update, delete: if isAdmin();
+    }
+
+    // Issues
+    // - Anyone can create
+    // - Only admin can read, update (status toggle), delete
+    match /issues/{id} {
+      allow create: if
+        request.resource.data.keys().hasAll(['title', 'description', 'type']) &&
+        request.resource.data.title is string &&
+        request.resource.data.title.size() > 0 &&
+        request.resource.data.title.size() < 300;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Surveys
+    // - Anyone can read (public survey list page)
+    // - Only admin can create, update, delete
+    match /surveys/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Survey Responses
+    // - Anyone can create (fill a survey)
+    // - Only admin can read, delete
+    match /surveyResponses/{id} {
+      allow create: if
+        request.resource.data.keys().hasAll(['surveyId', 'answers']) &&
+        request.resource.data.surveyId is string;
+      allow read, delete: if isAdmin();
+    }
+
+    // Activities
+    // - Anyone can read active activities (public activities page)
+    // - Only admin can create, update, delete
+    match /activities/{id} {
+      allow read: if resource.data.active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Block everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

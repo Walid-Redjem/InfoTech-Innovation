@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { CheckCircle2, BookOpen, Leaf, Users, Cpu, Heart, MoreHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";
 
 const typeKeys = ["education", "environment", "youth", "technology", "health", "other"] as const;
@@ -60,6 +61,7 @@ export default function IssuesPage() {
         locale,
         createdAt: serverTimestamp(),
       });
+      confetti({ particleCount: 120, spread: 70, colors: ["#2EC4B6","#9B6B9B","#EDE0F5","#f97316"], origin: { y: 0.6 } });
       setSuccess(true);
     } catch {
       setError(true);
@@ -97,6 +99,7 @@ export default function IssuesPage() {
       />
     <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
       <div className="max-w-2xl mx-auto">
+        {(() => { const B = require("@/components/Breadcrumbs").default; return <B crumbs={[{ label: ar ? "الإشكاليات" : "Issues & Ideas" }]} />; })()}
 
         {/* Type selector */}
         <div className="mb-6">
@@ -139,14 +142,12 @@ export default function IssuesPage() {
 
           {/* Description */}
           <Field label={t("fields.description")} error={errors.description}>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder={t("fields.description_placeholder")}
-              rows={5}
-              className={inputClass(errors.description) + " resize-none"}
-            />
+            <div className="relative">
+              <textarea name="description" value={form.description} onChange={handleChange}
+                placeholder={t("fields.description_placeholder")} rows={5} maxLength={600}
+                className={inputClass(errors.description) + " resize-none pb-6"} />
+              <span className="absolute bottom-2 end-3 text-xs text-gray-400">{form.description.length}/600</span>
+            </div>
           </Field>
 
           {/* Affected group */}
@@ -162,14 +163,12 @@ export default function IssuesPage() {
 
           {/* Solution (optional) */}
           <Field label={t("fields.solution")}>
-            <textarea
-              name="solution"
-              value={form.solution}
-              onChange={handleChange}
-              placeholder={t("fields.solution_placeholder")}
-              rows={3}
-              className={inputClass(false) + " resize-none"}
-            />
+            <div className="relative">
+              <textarea name="solution" value={form.solution} onChange={handleChange}
+                placeholder={t("fields.solution_placeholder")} rows={3} maxLength={400}
+                className={inputClass(false) + " resize-none pb-6"} />
+              <span className="absolute bottom-2 end-3 text-xs text-gray-400">{form.solution.length}/400</span>
+            </div>
           </Field>
 
           {error && <p className="text-red-500 text-sm">{t("error")}</p>}

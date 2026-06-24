@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
   const t = useTranslations("nav");
@@ -14,6 +15,7 @@ export default function Navbar() {
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -21,8 +23,22 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+      setDark(true);
+    }
+  }, []);
+
+  function toggleTheme() {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  }
 
   const links = [
     { href: "/", label: t("home") },
@@ -49,8 +65,8 @@ export default function Navbar() {
     <>
       <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-md shadow-sm border-b border-lilac-dark/50"
-          : "bg-white border-b border-transparent"
+          ? "bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-lilac-dark/50 dark:border-gray-700/50"
+          : "bg-white dark:bg-gray-900 border-b border-transparent"
       }`}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
@@ -66,8 +82,8 @@ export default function Navbar() {
                   href={`/${locale}${link.href === "/" ? "" : link.href}`}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive(link.href)
-                      ? "bg-lilac text-mauve"
-                      : "text-gray-500 hover:text-mauve hover:bg-lilac/50"
+                      ? "bg-lilac text-mauve dark:bg-mauve/20 dark:text-lilac"
+                      : "text-gray-500 dark:text-gray-400 hover:text-mauve hover:bg-lilac/50 dark:hover:bg-mauve/10 dark:hover:text-lilac"
                   }`}
                 >
                   {link.label}
@@ -76,18 +92,30 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <div className="flex items-center gap-3">
-            {/* Language toggle */}
+          <div className="flex items-center gap-2">
+            {/* Dark mode toggle */}
             <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full text-mauve hover:bg-lilac dark:hover:bg-mauve/20 transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            {/* Language toggle */}
+            <motion.button
               onClick={switchLocale}
+              whileTap={{ scale: 0.85, rotate: locale === "ar" ? -12 : 12 }}
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className="text-sm font-semibold px-4 py-1.5 rounded-full border-2 border-mauve text-mauve hover:bg-mauve hover:text-white transition-colors"
             >
               {locale === "ar" ? "EN" : "عربي"}
-            </button>
+            </motion.button>
 
             {/* Hamburger */}
             <button
-              className="md:hidden p-1.5 rounded-lg text-mauve hover:bg-lilac transition-colors"
+              className="md:hidden p-1.5 rounded-lg text-mauve hover:bg-lilac dark:hover:bg-mauve/20 transition-colors"
               onClick={() => setMobileOpen((v) => !v)}
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -97,15 +125,15 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-lilac-dark/50 bg-white px-6 py-4 space-y-1">
+          <div className="md:hidden border-t border-lilac-dark/50 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-4 space-y-1">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={`/${locale}${link.href === "/" ? "" : link.href}`}
                 className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isActive(link.href)
-                    ? "bg-lilac text-mauve"
-                    : "text-gray-500 hover:bg-lilac/50 hover:text-mauve"
+                    ? "bg-lilac text-mauve dark:bg-mauve/20 dark:text-lilac"
+                    : "text-gray-500 dark:text-gray-400 hover:bg-lilac/50 hover:text-mauve dark:hover:bg-mauve/10 dark:hover:text-lilac"
                 }`}
               >
                 {link.label}

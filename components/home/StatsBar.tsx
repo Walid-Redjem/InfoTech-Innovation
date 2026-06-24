@@ -6,21 +6,27 @@ import { db } from "@/lib/firebase";
 import { motion, useInView } from "framer-motion";
 import { UserCheck, Rocket, Globe } from "lucide-react";
 
-function useCountUp(target: number, inView: boolean) {
-  const [count, setCount] = useState(0);
+function useScramble(target: number, inView: boolean) {
+  const [display, setDisplay] = useState("0");
   useEffect(() => {
-    if (!inView || target === 0) { setCount(target); return; }
-    let start = 0;
-    const duration = 1500;
-    const step = Math.ceil(target / (duration / 16));
+    if (!inView) return;
+    if (target === 0) { setDisplay("0"); return; }
+    const digits = String(target).length;
+    let frame = 0;
+    const totalFrames = 22;
     const timer = setInterval(() => {
-      start += step;
-      if (start >= target) { setCount(target); clearInterval(timer); }
-      else setCount(start);
-    }, 16);
+      frame++;
+      if (frame >= totalFrames) {
+        setDisplay(String(target));
+        clearInterval(timer);
+      } else {
+        const rand = Math.floor(Math.random() * Math.pow(10, digits));
+        setDisplay(String(rand).padStart(digits, "0").slice(0, digits));
+      }
+    }, 55);
     return () => clearInterval(timer);
   }, [target, inView]);
-  return count;
+  return display;
 }
 
 const icons = [UserCheck, Rocket, Globe];
@@ -48,9 +54,9 @@ export default function StatsBar() {
   const values = [stats.participants, stats.projects, stats.partners];
   const labels = [t("participants"), t("projects"), t("partners")];
 
-  const p = useCountUp(values[0], inView);
-  const pr = useCountUp(values[1], inView);
-  const pa = useCountUp(values[2], inView);
+  const p = useScramble(values[0], inView);
+  const pr = useScramble(values[1], inView);
+  const pa = useScramble(values[2], inView);
   const counts = [p, pr, pa];
 
   return (
@@ -70,9 +76,9 @@ export default function StatsBar() {
               <div className="w-8 h-8 md:w-12 md:h-12 bg-mauve/10 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-2 md:mb-4">
                 <Icon className="w-4 h-4 md:w-6 md:h-6 text-mauve" />
               </div>
-              <p className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text"
+              <p className="text-3xl md:text-5xl font-bold font-mono"
                 style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                {count > 0 ? `${count}+` : "0"}
+                {count !== "0" ? `${count}+` : "0"}
               </p>
               <p className="text-gray-500 mt-1 text-xs md:text-sm font-medium uppercase tracking-wide">{labels[i]}</p>
             </motion.div>
