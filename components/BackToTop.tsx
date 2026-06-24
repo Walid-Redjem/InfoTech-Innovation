@@ -23,7 +23,7 @@ export default function BackToTop() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-36 md:bottom-24 end-6 z-40 w-11 h-11 rounded-full flex items-center justify-center shadow-lg shadow-mauve/30"
+          className="fixed bottom-24 end-6 z-40 w-11 h-11 rounded-full flex items-center justify-center shadow-lg shadow-mauve/30"
           style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)" }}
           aria-label="Back to top"
         >

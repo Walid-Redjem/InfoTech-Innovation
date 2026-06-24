@@ -14,7 +14,6 @@ import { ToastProvider } from "@/components/Toast";
 import CursorSpotlight from "@/components/CursorSpotlight";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
-import MobileBottomNav from "@/components/MobileBottomNav";
 import FloatingSectionDots from "@/components/FloatingSectionDots";
 
 export default async function LocaleLayout({
@@ -47,7 +46,6 @@ export default async function LocaleLayout({
         <Footer />
         <WhatsAppButton />
         <BackToTop />
-        <MobileBottomNav />
         <PWAInstallBanner />
       </ToastProvider>
     </NextIntlClientProvider>
