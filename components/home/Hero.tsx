@@ -66,32 +66,17 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden min-h-[92vh] flex items-center py-16 md:py-20 px-5 md:px-6">
-
-      {/* Video background — drop your video file at /public/hero.mp4 */}
-      <video
-        autoPlay loop muted playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ zIndex: 0 }}
-      >
-        <source src="/hero.mp4" type="video/mp4" />
-      </video>
-
-      {/* Fallback dark gradient (shows when no video) */}
-      <div className="absolute inset-0 z-[1]"
-        style={{ background: "linear-gradient(135deg, #1a0533 0%, #0d1a2e 50%, #0a2a2a 100%)" }} />
-
-      {/* Dark overlay on top of video for text readability */}
-      <div className="absolute inset-0 z-[2] bg-black/55" />
+    <section className="relative overflow-hidden min-h-[92vh] flex items-center py-16 md:py-20 px-5 md:px-6"
+      style={{ background: "linear-gradient(135deg, #EDE0F5 0%, #f8f4fc 50%, #ffffff 100%)" }}>
 
       {/* Animated gradient overlay */}
       <motion.div
-        className="absolute inset-0 opacity-30 z-[3]"
+        className="absolute inset-0 opacity-40"
         animate={{ background: [
-          "radial-gradient(ellipse at 20% 50%, #8B2FC944 0%, transparent 60%)",
-          "radial-gradient(ellipse at 80% 20%, #00BFFF33 0%, transparent 60%)",
-          "radial-gradient(ellipse at 50% 80%, #8B2FC944 0%, transparent 60%)",
-          "radial-gradient(ellipse at 20% 50%, #8B2FC944 0%, transparent 60%)",
+          "radial-gradient(ellipse at 20% 50%, #9B6B9B22 0%, transparent 60%)",
+          "radial-gradient(ellipse at 80% 20%, #2EC4B622 0%, transparent 60%)",
+          "radial-gradient(ellipse at 50% 80%, #9B6B9B22 0%, transparent 60%)",
+          "radial-gradient(ellipse at 20% 50%, #9B6B9B22 0%, transparent 60%)",
         ]}}
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
       />
@@ -108,12 +93,12 @@ export default function Hero() {
       />
 
       {/* Dot grid — slow parallax */}
-      <motion.div className="absolute inset-0 opacity-10 z-[4]" style={{ y: bgY,
-        backgroundImage: "radial-gradient(circle, #ffffff 1.5px, transparent 1.5px)",
+      <motion.div className="absolute inset-0 opacity-25" style={{ y: bgY,
+        backgroundImage: "radial-gradient(circle, #D9C5E8 1.5px, transparent 1.5px)",
         backgroundSize: "28px 28px" }} />
 
       {/* Floating blobs — fast parallax */}
-      <motion.div className="absolute inset-0 pointer-events-none z-[4]" style={{ y: blobY }}>
+      <motion.div className="absolute inset-0 pointer-events-none" style={{ y: blobY }}>
         {floatingShapes.map((shape, i) => (
           <motion.div key={i}
             className={`absolute rounded-full blur-3xl ${shape.color}`}
@@ -136,14 +121,14 @@ export default function Hero() {
         ))}
       </motion.div>
 
-      <motion.div className="relative max-w-5xl mx-auto text-center w-full z-[10]" style={{ y: contentY }}>
-        <div className="px-6 py-10 md:px-14 md:py-14">
+      <motion.div className="relative max-w-5xl mx-auto text-center w-full" style={{ y: contentY }}>
+        <div className="bg-white/15 backdrop-blur-md border border-white/30 rounded-3xl px-6 py-10 md:px-14 md:py-14 shadow-2xl shadow-mauve/5">
 
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 text-sm font-medium text-white shadow-sm mb-8"
+          className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-lilac-dark rounded-full px-4 py-1.5 text-sm font-medium text-mauve shadow-sm mb-8"
         >
           <Sparkles className="w-4 h-4 text-turquoise" />
           {locale === "ar" ? "منصة ابتكار مجتمعي" : "Community Innovation Platform"}
@@ -165,7 +150,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-base md:text-2xl font-semibold text-white/80 mb-4 h-8 md:h-10 flex items-center justify-center gap-2 flex-wrap"
+          className="text-base md:text-2xl font-semibold text-gray-600 mb-4 h-8 md:h-10 flex items-center justify-center gap-2 flex-wrap"
         >
           <span>{locale === "ar" ? "من أجل" : "Building a better"}</span>
           <AnimatePresence mode="wait">
@@ -186,7 +171,7 @@ export default function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35 }}
-          className="text-base md:text-lg text-white/60 mb-12 max-w-xl mx-auto leading-relaxed"
+          className="text-base md:text-lg text-gray-400 mb-12 max-w-xl mx-auto leading-relaxed"
         >
           {t("subtitle")}
         </motion.p>
@@ -227,7 +212,7 @@ export default function Hero() {
           transition={{ delay: 1.4 }}
           className="mt-16 flex flex-col items-center gap-1"
         >
-          <span className="text-xs text-white/40 tracking-widest uppercase">
+          <span className="text-xs text-gray-400 tracking-widest uppercase">
             {locale === "ar" ? "اكتشف" : "Scroll"}
           </span>
           <motion.div
