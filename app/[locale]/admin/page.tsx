@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/formatDate";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter, useParams, usePathname, useSearchParams } from "next/navigation";
+import { Tooltip } from "@/components/Tooltip";
 import {
   Users, AlertCircle, ClipboardList, PlusCircle,
   Download, LogOut, Trash2, UserCheck, Rocket, Globe, BarChart3,
@@ -471,12 +472,16 @@ export default function AdminDashboard() {
                   exportLabel={ar ? "تصدير CSV" : "Export CSV"}
                   extraActions={
                     <div className="flex gap-2">
-                      <button onClick={copyLink} className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve transition-colors bg-white shadow-sm">
-                        <Copy className="w-3.5 h-3.5" />{copiedLink ? (ar ? "تم النسخ!" : "Copied!") : (ar ? "نسخ الرابط" : "Copy link")}
-                      </button>
-                      <button onClick={handlePrint} className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve transition-colors bg-white shadow-sm">
-                        <Printer className="w-3.5 h-3.5" />{ar ? "طباعة" : "Print"}
-                      </button>
+                      <Tooltip label={ar ? "نسخ رابط الصفحة" : "Copy page URL"}>
+                        <button onClick={copyLink} className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve transition-colors bg-white shadow-sm">
+                          <Copy className="w-3.5 h-3.5" />{copiedLink ? (ar ? "تم النسخ!" : "Copied!") : (ar ? "نسخ الرابط" : "Copy link")}
+                        </button>
+                      </Tooltip>
+                      <Tooltip label={ar ? "طباعة قائمة التسجيلات" : "Print registrations list"}>
+                        <button onClick={handlePrint} className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve transition-colors bg-white shadow-sm">
+                          <Printer className="w-3.5 h-3.5" />{ar ? "طباعة" : "Print"}
+                        </button>
+                      </Tooltip>
                     </div>
                   }
                   filter={

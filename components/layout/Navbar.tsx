@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const t = useTranslations("nav");
@@ -77,17 +77,30 @@ export default function Navbar() {
           {/* Desktop links */}
           <ul className="hidden md:flex items-center gap-1">
             {links.map((link) => (
-              <li key={link.href}>
+              <li key={link.href} className="relative">
                 <Link
                   href={`/${locale}${link.href === "/" ? "" : link.href}`}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors block ${
                     isActive(link.href)
-                      ? "bg-lilac text-mauve dark:bg-mauve/20 dark:text-lilac"
+                      ? "text-mauve dark:text-lilac"
                       : "text-gray-500 dark:text-gray-400 hover:text-mauve hover:bg-lilac/50 dark:hover:bg-mauve/10 dark:hover:text-lilac"
                   }`}
                 >
                   {link.label}
                 </Link>
+                <AnimatePresence>
+                  {isActive(link.href) && (
+                    <motion.div
+                      layoutId="nav-underline"
+                      className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full"
+                      style={{ background: "linear-gradient(90deg, #8B2FC9, #00BFFF)" }}
+                      initial={{ opacity: 0, scaleX: 0 }}
+                      animate={{ opacity: 1, scaleX: 1 }}
+                      exit={{ opacity: 0, scaleX: 0 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </AnimatePresence>
               </li>
             ))}
           </ul>

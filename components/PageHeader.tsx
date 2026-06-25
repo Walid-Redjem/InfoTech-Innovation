@@ -8,6 +8,9 @@ interface Props {
 }
 
 export default function PageHeader({ badge, title, subtitle }: Props) {
+  const words = title.split(" ");
+  const subWords = subtitle.split(" ");
+
   return (
     <section className="relative overflow-hidden py-14 md:py-20 px-5 md:px-6"
       style={{ background: "linear-gradient(135deg, #EDE0F5 0%, #f8f4fc 60%, #ffffff 100%)" }}>
@@ -24,19 +27,45 @@ export default function PageHeader({ badge, title, subtitle }: Props) {
         transition={{ duration: 8, repeat: Infinity }}
       />
       <div className="relative max-w-3xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-lilac-dark rounded-full px-4 py-1.5 text-sm font-semibold text-mauve shadow-sm mb-6">
           {badge}
         </motion.div>
-        <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-3xl md:text-5xl font-bold mb-4 leading-tight"
+
+        {/* Title — word by word */}
+        <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight flex flex-wrap justify-center gap-x-3 gap-y-1"
           style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-          {title}
-        </motion.h1>
-        <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-gray-500 text-lg leading-relaxed max-w-xl mx-auto">
-          {subtitle}
-        </motion.p>
+          {words.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 28, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 0.55, delay: 0.1 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-block"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h1>
+
+        {/* Subtitle — word by word, slower */}
+        <p className="text-gray-500 text-lg leading-relaxed max-w-xl mx-auto flex flex-wrap justify-center gap-x-1.5">
+          {subWords.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 + i * 0.04, ease: "easeOut" }}
+              className="inline-block"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </p>
       </div>
     </section>
   );
