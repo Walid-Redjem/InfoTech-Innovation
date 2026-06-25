@@ -50,8 +50,11 @@ function emailTemplate(code: string, locale: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, locale } = await req.json();
-    if (!email) return NextResponse.json({ error: "Email required" }, { status: 400 });
+    const body = await req.json();
+    const { email, locale } = body;
+    if (!email || typeof email !== "string") return NextResponse.json({ error: "Email required" }, { status: 400 });
+    if (email.length > 254) return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    if (!email.toLowerCase().endsWith("@gmail.com")) return NextResponse.json({ error: "Gmail required" }, { status: 400 });
 
     // Rate limit: max 3 OTP requests per email per 10 minutes
     if (!checkRateLimit(email.toLowerCase())) {

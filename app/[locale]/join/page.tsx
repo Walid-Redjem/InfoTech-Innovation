@@ -444,10 +444,10 @@ export default function JoinPage() {
 
             {/* ── YOUTH ── */}
             {selected === "youth" && <>
-              <FloatingInput name="name" label={t("fields.name")} value={form.name || ""} onChange={handleChange} error={errors.name} required />
+              <FloatingInput name="name" label={t("fields.name")} value={form.name || ""} onChange={handleChange} error={errors.name} required maxLength={100} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required />
-                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required />
+                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required maxLength={254} />
+                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required maxLength={20} />
               </div>
               <FloatingInput name="age" label={t("fields.age")} type="number" min="8" max="35" value={form.age || ""} onChange={handleChange} error={errors.age} required />
               <Field label={t("fields.interests")}>
@@ -529,10 +529,10 @@ export default function JoinPage() {
 
             {/* ── TEACHER ── */}
             {selected === "teacher" && <>
-              <FloatingInput name="name" label={t("fields.name")} value={form.name || ""} onChange={handleChange} error={errors.name} required />
+              <FloatingInput name="name" label={t("fields.name")} value={form.name || ""} onChange={handleChange} error={errors.name} required maxLength={100} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required />
-                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required />
+                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required maxLength={254} />
+                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required maxLength={20} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FloatingInput name="institution_name" label={t("fields.institution_name")} value={form.institution_name || ""} onChange={handleChange} error={errors.institution_name} required />
@@ -575,8 +575,8 @@ export default function JoinPage() {
               <FloatingInput name="institution_name" label={t("fields.institution_name")} value={form.institution_name || ""} onChange={handleChange} error={errors.institution_name} required />
               <FloatingInput name="contact_person" label={t("fields.contact_person")} value={form.contact_person || ""} onChange={handleChange} error={errors.contact_person} required />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required />
-                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required />
+                <FloatingInput name="email" label={t("fields.email")} type="email" value={form.email || ""} onChange={handleChange} error={errors.email} errorMessage={emailErrorMsg} required maxLength={254} />
+                <FloatingInput name="phone" label={t("fields.phone")} type="tel" value={form.phone || ""} onChange={handleChange} error={errors.phone} required maxLength={20} />
               </div>
               <Field label={t("fields.partnership")} error={errors.partnership}>
                 <select name="partnership" value={form.partnership || ""} onChange={handleChange} className={inputClass(errors.partnership)}>

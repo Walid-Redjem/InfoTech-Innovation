@@ -13,16 +13,17 @@ interface Props {
   required?: boolean;
   min?: string;
   max?: string;
+  maxLength?: number;
 }
 
-export default function FloatingInput({ name, label, type = "text", value, onChange, error, errorMessage, required, min, max }: Props) {
+export default function FloatingInput({ name, label, type = "text", value, onChange, error, errorMessage, required, min, max, maxLength }: Props) {
   const isValid = !error && value.trim().length > 0;
 
   return (
     <div className="relative">
       <input
         id={name} name={name} type={type} value={value} onChange={onChange}
-        required={required} min={min} max={max}
+        required={required} min={min} max={max} maxLength={maxLength}
         placeholder=" "
         className={`peer w-full px-4 pt-6 pb-2 rounded-xl border text-sm outline-none transition-all bg-white
           ${error

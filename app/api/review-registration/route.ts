@@ -94,13 +94,25 @@ function rejectionEmail(name: string, reason: string, locale: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Verify request comes from our domain (Referer check) + secret
+    const referer = req.headers.get("referer") || "";
     const secret = req.headers.get("x-admin-secret");
-    if (secret !== process.env.ADMIN_API_SECRET) {
+    const isFromOurSite = referer.includes("vercel.app") || referer.includes("localhost") || referer.includes(process.env.NEXT_PUBLIC_SITE_URL || "");
+    if (!isFromOurSite || secret !== process.env.ADMIN_API_SECRET) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
     const { registrationId, action, email, name, locale, reason } = await req.json();
     if (!registrationId || !action || !email) {
       return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
+    }
+    if (typeof registrationId !== "string" || registrationId.length > 128) {
+      return NextResponse.json({ success: false, error: "Invalid ID" }, { status: 400 });
+    }
+    if (!["approve", "reject"].includes(action)) {
+      return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
+    }
+    if (reason && (typeof reason !== "string" || reason.length > 1000)) {
+      return NextResponse.json({ success: false, error: "Reason too long" }, { status: 400 });
     }
 
     const db = getDb();
