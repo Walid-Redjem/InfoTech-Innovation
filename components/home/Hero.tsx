@@ -153,18 +153,20 @@ export default function Hero() {
           className="text-base md:text-2xl font-semibold text-gray-600 mb-4 h-8 md:h-10 flex items-center justify-center gap-2 flex-wrap"
         >
           <span>{locale === "ar" ? "من أجل" : "Building a better"}</span>
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={wordIndex}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35 }}
-              className="text-turquoise font-bold"
-            >
-              {words[wordIndex]}
-            </motion.span>
-          </AnimatePresence>
+          <span className="overflow-hidden inline-flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={wordIndex}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3 }}
+                className="text-turquoise font-bold inline-block"
+              >
+                {words[wordIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </span>
         </motion.div>
 
         {/* Subtitle */}
