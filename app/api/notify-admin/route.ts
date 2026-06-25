@@ -56,6 +56,10 @@ function adminEmailTemplate(name: string, email: string, phone: string, category
 
 export async function POST(req: NextRequest) {
   try {
+    const secret = req.headers.get("x-admin-secret");
+    if (secret !== process.env.ADMIN_API_SECRET) {
+      return NextResponse.json({ ok: false }, { status: 401 });
+    }
     const { name, email, phone, category } = await req.json();
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) return NextResponse.json({ ok: false });

@@ -263,7 +263,7 @@ export default function JoinPage() {
       // Notify admin (fire and forget — don't block success screen)
       fetch("/api/notify-admin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
         body: JSON.stringify({
           name: (pendingData as Record<string,unknown>).name || (pendingData as Record<string,unknown>).institution_name,
           email: (pendingData as Record<string,unknown>).email,

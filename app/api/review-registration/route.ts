@@ -94,6 +94,10 @@ function rejectionEmail(name: string, reason: string, locale: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    const secret = req.headers.get("x-admin-secret");
+    if (secret !== process.env.ADMIN_API_SECRET) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     const { registrationId, action, email, name, locale, reason } = await req.json();
     if (!registrationId || !action || !email) {
       return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });

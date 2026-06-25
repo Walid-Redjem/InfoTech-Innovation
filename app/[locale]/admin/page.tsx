@@ -173,7 +173,7 @@ export default function AdminDashboard() {
     try {
       await fetch("/api/review-registration", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
         body: JSON.stringify({
           registrationId: String(selectedReg.id),
           action,
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
       if (notifyUsers) {
         fetch("/api/notify-survey", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
           body: JSON.stringify({ surveyTitle, surveyDesc }),
         });
       }

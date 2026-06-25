@@ -50,6 +50,10 @@ function surveyEmailTemplate(name: string, surveyTitle: string, surveyDesc: stri
 
 export async function POST(req: NextRequest) {
   try {
+    const secret = req.headers.get("x-admin-secret");
+    if (secret !== process.env.ADMIN_API_SECRET) {
+      return NextResponse.json({ sent: 0, error: "Unauthorized" }, { status: 401 });
+    }
     const { surveyTitle, surveyDesc } = await req.json();
 
     // Get all registered users
