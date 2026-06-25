@@ -37,8 +37,7 @@ export default function PageHeader({ badge, title, subtitle }: Props) {
         </motion.div>
 
         {/* Title — word by word */}
-        <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight flex flex-wrap justify-center gap-x-3 gap-y-1"
-          style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight flex flex-wrap justify-center gap-x-3 gap-y-1">
           {words.map((word, i) => (
             <motion.span
               key={i}
@@ -46,6 +45,7 @@ export default function PageHeader({ badge, title, subtitle }: Props) {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.55, delay: 0.1 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
               className="inline-block"
+              style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
             >
               {word}
             </motion.span>
