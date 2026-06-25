@@ -7,6 +7,7 @@ import { CheckCircle2, BookOpen, Leaf, Users, Cpu, Heart, MoreHorizontal } from 
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const typeKeys = ["education", "environment", "youth", "technology", "health", "other"] as const;
 type IssueType = typeof typeKeys[number];
@@ -99,7 +100,7 @@ export default function IssuesPage() {
       />
     <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
       <div className="max-w-2xl mx-auto">
-        {(() => { const B = require("@/components/Breadcrumbs").default; return <B crumbs={[{ label: ar ? "الإشكاليات" : "Issues & Ideas" }]} />; })()}
+        <Breadcrumbs crumbs={[{ label: ar ? "الإشكاليات" : "Issues & Ideas" }]} />
 
         {/* Type selector */}
         <div className="mb-6">

@@ -10,6 +10,7 @@ import PageHeader from "@/components/PageHeader";
 import FileUpload from "@/components/forms/FileUpload";
 import FloatingInput from "@/components/forms/FloatingInput";
 import { useToast } from "@/components/Toast";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 
 type Profile = "youth" | "teacher" | "institution";
@@ -377,7 +378,7 @@ export default function JoinPage() {
       <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
         <div className="max-w-2xl mx-auto">
           {/* Breadcrumbs */}
-          {(() => { const B = require("@/components/Breadcrumbs").default; return <B crumbs={[{ label: ar ? "انضم إلينا" : "Join Us" }]} />; })()}
+          <Breadcrumbs crumbs={[{ label: ar ? "انضم إلينا" : "Join Us" }]} />
 
           {/* Social proof */}
           {memberCount !== null && memberCount > 0 && (
