@@ -973,14 +973,15 @@ export default function AdminDashboard() {
 
                           <span className="text-xs text-gray-400 font-medium">{ar ? "أو" : "or"}</span>
 
-                          {/* Filter by month */}
+                          {/* Filter by month name */}
                           <div className="relative">
                             <CalendarDays className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                             <input
-                              type="month"
+                              type="text"
                               value={surveyDateFilter}
                               onChange={e => { setSurveyDateFilter(e.target.value); setSurveySearch(""); }}
-                              className="ps-9 pe-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600"
+                              placeholder={ar ? "مثال: يونيو" : "e.g. Jun"}
+                              className="ps-9 pe-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 w-36"
                             />
                           </div>
 
@@ -997,7 +998,7 @@ export default function AdminDashboard() {
                           <p className="text-xs text-mauve font-medium">
                             {surveySearch
                               ? `${ar ? "نتائج البحث عن" : "Results for"} "${surveySearch}"`
-                              : `${ar ? "الاستبيانات في" : "Surveys from"} ${new Date(surveyDateFilter + "-01").toLocaleDateString(ar ? "ar-DZ" : "en-GB", { month: "long", year: "numeric" })}`
+                              : `${ar ? "الاستبيانات في" : "Surveys from"} "${surveyDateFilter}"`
                             }
                           </p>
                         )}
@@ -1007,7 +1008,7 @@ export default function AdminDashboard() {
                         const filtered = surveys.filter(s => {
                           const matchName = !surveySearch || String(s.title).toLowerCase().includes(surveySearch.toLowerCase());
                           const ts = (s as unknown as Record<string,unknown>).createdAt as Timestamp | undefined;
-                          const matchDate = !surveyDateFilter || (ts && ts.toDate().toISOString().slice(0, 7) === surveyDateFilter);
+                          const matchDate = !surveyDateFilter || (ts && ts.toDate().toLocaleDateString("en-GB", { month: "long" }).toLowerCase().startsWith(surveyDateFilter.toLowerCase()));
                           return matchName && matchDate;
                         });
                         return surveys.length === 0 ? (
@@ -1028,7 +1029,7 @@ export default function AdminDashboard() {
                             const qCount = (s.questions as unknown[])?.length || 0;
                             const respCount = allResponses.filter(r => String(r.surveyId) === String(s.id)).length;
                             const createdTs = (s as unknown as Record<string,unknown>).createdAt as Timestamp | undefined;
-                            const publishedDate = createdTs ? createdTs.toDate().toLocaleDateString(ar ? "ar-DZ" : "en-GB", { month: "long", year: "numeric" }) : null;
+                            const publishedDate = createdTs ? createdTs.toDate().toLocaleDateString(ar ? "ar-DZ" : "en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null;
                             return (
                               <motion.div key={String(s.id)}
                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
