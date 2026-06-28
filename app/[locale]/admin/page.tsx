@@ -689,6 +689,26 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
+                  {allResponses.length > 0 && (
+                    <div className="flex items-center gap-3 mb-6">
+                      <select
+                        value={selectedSurvey}
+                        onChange={e => setSelectedSurvey(e.target.value)}
+                        className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 min-w-[220px]"
+                      >
+                        <option value="">{ar ? "كل الاستبيانات" : "All surveys"}</option>
+                        {surveys.filter(s => allResponses.some(r => String(r.surveyId) === String(s.id))).map(s => (
+                          <option key={String(s.id)} value={String(s.id)}>{String(s.title)}</option>
+                        ))}
+                      </select>
+                      {selectedSurvey && (
+                        <button onClick={() => setSelectedSurvey("")} className="text-xs text-gray-400 hover:text-mauve transition-colors flex items-center gap-1">
+                          <X className="w-3 h-3" />{ar ? "مسح" : "Clear"}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {allResponses.length === 0 ? (
                     <div className="text-center py-24 text-gray-400">
                       <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -697,7 +717,7 @@ export default function AdminDashboard() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {surveys.map(survey => {
+                      {surveys.filter(s => !selectedSurvey || String(s.id) === selectedSurvey).map(survey => {
                         const surveyResps = allResponses.filter(r => String(r.surveyId) === String(survey.id));
                         if (surveyResps.length === 0) return null;
                         return (
