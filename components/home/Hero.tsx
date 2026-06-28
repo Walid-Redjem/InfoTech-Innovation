@@ -74,16 +74,6 @@ export default function Hero() {
         background: "radial-gradient(ellipse at 35% 40%, #9B6B9B22 0%, transparent 60%)"
       }} />
 
-      {/* Scanning beam */}
-      <motion.div
-        className="absolute left-0 right-0 h-[2px] pointer-events-none z-[10]"
-        style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 20%, rgba(46,196,182,0.95) 50%, rgba(255,255,255,0.4) 80%, transparent 100%)",
-          boxShadow: "0 0 14px rgba(46,196,182,0.9), 0 0 40px rgba(46,196,182,0.4)",
-        }}
-        animate={{ y: ["-10px", "95vh"] }}
-        transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 6, ease: "linear" }}
-      />
 
       {/* Dot grid — slow parallax */}
       <motion.div className="absolute inset-0 opacity-25" style={{ y: bgY,
