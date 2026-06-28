@@ -1261,56 +1261,82 @@ export default function AdminDashboard() {
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedResponse(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden z-10">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedResponse(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[88vh] flex flex-col overflow-hidden z-10">
 
-              {/* Header */}
-              <div className="px-6 py-5 border-b border-gray-100">
-                <div className="flex items-start justify-between gap-3">
+              {/* Gradient header */}
+              <div className="relative px-7 pt-7 pb-6 overflow-hidden"
+                style={{ background: "linear-gradient(135deg, #9B6B9B 0%, #6b3fa0 60%, #2EC4B6 100%)" }}>
+                {/* Decorative circles */}
+                <div className="absolute top-[-30px] right-[-30px] w-32 h-32 rounded-full bg-white/10" />
+                <div className="absolute bottom-[-20px] left-[-20px] w-24 h-24 rounded-full bg-white/5" />
+
+                <div className="relative z-10 flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="font-bold text-gray-800 text-lg leading-snug">{surveyTitle}</h2>
-                    <div className="flex items-center gap-3 mt-1.5">
-                      <span className="text-xs text-gray-400">{responseDate}</span>
-                      <span className="w-1 h-1 rounded-full bg-gray-300" />
-                      <span className="text-xs text-gray-400">{entries.length} {ar ? "إجابة" : "answers"}</span>
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-white/60 bg-white/10 px-2.5 py-1 rounded-full mb-3">
+                      {ar ? "رد استبيان" : "Survey Response"}
+                    </span>
+                    <h2 className="font-bold text-white text-xl leading-snug mb-2">{surveyTitle}</h2>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-white/60">{responseDate}</span>
+                      <span className="w-1 h-1 rounded-full bg-white/30" />
+                      <span className="text-xs text-white/60 font-medium">{entries.length} {ar ? "إجابة" : "answers"}</span>
                     </div>
                   </div>
-                  <button onClick={() => setSelectedResponse(null)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shrink-0 mt-0.5">
-                    <X className="w-4 h-4 text-gray-500" />
+                  <button onClick={() => setSelectedResponse(null)}
+                    className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors shrink-0 mt-0.5">
+                    <X className="w-4 h-4 text-white" />
                   </button>
                 </div>
               </div>
 
               {/* Answers */}
-              <div className="overflow-y-auto px-6 py-5 space-y-3 flex-1">
+              <div className="overflow-y-auto px-6 py-5 space-y-3 flex-1 bg-gray-50/50">
                 {entries.map(([qId, ans], i) => {
                   const questionText = questions?.find(q => q.id === qId)?.text || qId;
+                  const isRating = typeof ans === "number";
                   return (
-                    <div key={qId} className="rounded-2xl border border-lilac-dark/30 overflow-hidden">
-                      <div className="bg-lilac/40 px-4 py-2.5 flex items-center gap-2.5">
-                        <span className="w-5 h-5 rounded-full bg-mauve text-white text-[10px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
-                        <p className="text-sm font-semibold text-gray-700">{questionText}</p>
+                    <div key={qId} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      {/* Question row */}
+                      <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-50">
+                        <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 text-white"
+                          style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)" }}>
+                          {i + 1}
+                        </span>
+                        <p className="text-sm font-semibold text-gray-700 leading-snug">{questionText}</p>
                       </div>
-                      <div className="px-4 py-3 bg-white">
-                        <p className="text-sm text-gray-600">{String(ans)}</p>
+                      {/* Answer row */}
+                      <div className="px-5 py-3">
+                        {isRating ? (
+                          <div className="flex items-center gap-1.5">
+                            {[1,2,3,4,5].map(s => (
+                              <Star key={s} className={`w-5 h-5 ${s <= (ans as number) ? "fill-turquoise text-turquoise" : "text-gray-200 fill-gray-200"}`} />
+                            ))}
+                            <span className="text-xs text-gray-400 ms-2">{ans}/5</span>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-600 leading-relaxed">{String(ans)}</p>
+                        )}
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              {/* Footer with download actions */}
-              <div className="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+              {/* Footer */}
+              <div className="px-6 py-4 bg-white border-t border-gray-100 flex items-center gap-3">
                 <button onClick={downloadPDF}
-                  className="flex-1 flex items-center justify-center gap-2 bg-mauve text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-mauve-dark transition-colors shadow-sm shadow-mauve/20">
+                  className="flex-1 flex items-center justify-center gap-2 text-white py-2.5 rounded-xl font-semibold text-sm transition-opacity hover:opacity-90 shadow-sm"
+                  style={{ background: "linear-gradient(135deg, #9B6B9B, #6b3fa0)" }}>
                   <Printer className="w-4 h-4" />
                   {ar ? "تحميل PDF" : "Download PDF"}
                 </button>
                 <button onClick={downloadCSV}
-                  className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl font-semibold text-sm hover:border-mauve hover:text-mauve transition-colors">
+                  className="flex-1 flex items-center justify-center gap-2 bg-gray-50 border border-gray-200 text-gray-600 py-2.5 rounded-xl font-semibold text-sm hover:border-mauve hover:text-mauve transition-colors">
                   <Download className="w-4 h-4" />
-                  {ar ? "تحميل CSV" : "Download CSV"}
+                  {ar ? "تصدير CSV" : "Export CSV"}
                 </button>
               </div>
             </motion.div>
