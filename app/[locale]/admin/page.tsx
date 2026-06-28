@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import { collection, getDocs, addDoc, updateDoc, doc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, setDoc, getDoc, doc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { exportCSV } from "@/lib/exportCSV";
@@ -15,10 +15,10 @@ import {
   ChevronRight, Menu, X, Search, CheckCircle2, Clock,
   FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink,
   Printer, Copy, ChevronsUpDown, ChevronUp, ChevronDown,
-  CalendarDays, Pencil, ImageIcon, MapPin
+  CalendarDays, Pencil, ImageIcon, MapPin, Settings
 } from "lucide-react";
 
-type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities";
+type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities" | "settings";
 
 interface Question {
   id: string; text: string; type: "text" | "choice" | "rating";
@@ -55,6 +55,7 @@ export default function AdminDashboard() {
     { key: "analytics",     label: ar ? "الإحصائيات"          : "Analytics",        icon: BarChart3 },
     { key: "activities",    label: ar ? "الأنشطة"             : "Activities",       icon: CalendarDays },
     { key: "create",        label: ar ? "إنشاء استبيان"       : "Create Survey",    icon: PlusCircle },
+    { key: "settings",      label: ar ? "الإعدادات"           : "Settings",         icon: Settings },
   ];
 
   const [tab, setTab] = useState<Tab>((searchParams.get("tab") as Tab) || "registrations");
@@ -121,6 +122,9 @@ export default function AdminDashboard() {
 
   const [overviewStats, setOverviewStats] = useState({ registrations: 0, issues: 0, surveys: 0, responses: 0 });
   const [loading, setLoading] = useState(true);
+  const [siteStats, setSiteStats] = useState({ participants: 1800, projects: 60, partners: 10 });
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   // Create survey state
   const [surveyTitle, setSurveyTitle]     = useState("");
@@ -133,7 +137,12 @@ export default function AdminDashboard() {
   const [createSuccess, setCreateSuccess] = useState(false);
   const [notifyUsers, setNotifyUsers]     = useState(false);
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    fetchAll();
+    getDoc(doc(db, "settings", "stats"))
+      .then(snap => { if (snap.exists()) setSiteStats(snap.data() as { participants: number; projects: number; partners: number }); })
+      .catch(() => {});
+  }, []);
 
   async function fetchAll() {
     setLoading(true);
@@ -160,6 +169,17 @@ export default function AdminDashboard() {
   async function fetchResponses(surveyId: string) {
     const snap = await getDocs(collection(db, "surveyResponses"));
     setResponses(snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => (r as Record<string,unknown>).surveyId === surveyId));
+  }
+
+  async function handleSaveSettings() {
+    setSavingSettings(true);
+    try {
+      await setDoc(doc(db, "settings", "stats"), siteStats);
+      setSettingsSaved(true);
+      setTimeout(() => setSettingsSaved(false), 3000);
+    } finally {
+      setSavingSettings(false);
+    }
   }
 
   async function handleLogout() {
@@ -1195,6 +1215,52 @@ export default function AdminDashboard() {
                         ))}
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* ── SETTINGS ── */}
+              {tab === "settings" && (
+                <div className="max-w-lg">
+                  <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "إعدادات الموقع" : "Site Settings"}</h2>
+                  <p className="text-sm text-gray-400 mb-6">{ar ? "تحديث الأرقام الظاهرة في الصفحة الرئيسية" : "Update the numbers displayed on the homepage"}</p>
+
+                  {settingsSaved && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                      className="bg-turquoise/10 border border-turquoise/30 text-turquoise-dark rounded-xl px-4 py-3 text-sm mb-6 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" /> {ar ? "تم الحفظ بنجاح!" : "Saved successfully!"}
+                    </motion.div>
+                  )}
+
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
+                    <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide flex items-center gap-2">
+                      <UserCheck className="w-4 h-4 text-mauve" />
+                      {ar ? "إحصائيات الصفحة الرئيسية" : "Homepage Stats"}
+                    </h3>
+                    {[
+                      { key: "participants" as const, label: ar ? "المشاركون" : "Participants", icon: UserCheck },
+                      { key: "projects"     as const, label: ar ? "المشاريع"   : "Projects",     icon: Rocket },
+                      { key: "partners"     as const, label: ar ? "الشركاء"    : "Partners",     icon: Globe },
+                    ].map(({ key, label, icon: Icon }) => (
+                      <div key={key}>
+                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1.5 mb-1.5">
+                          <Icon className="w-3.5 h-3.5 text-mauve" /> {label}
+                        </label>
+                        <input
+                          type="number" min={0}
+                          value={siteStats[key]}
+                          onChange={e => setSiteStats(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-mauve/30 focus:border-mauve"
+                        />
+                      </div>
+                    ))}
+                    <motion.button
+                      whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      onClick={handleSaveSettings}
+                      disabled={savingSettings}
+                      className="w-full bg-gradient-to-r from-mauve to-turquoise text-white py-3 rounded-xl font-semibold shadow-lg shadow-mauve/20 hover:opacity-90 transition-opacity disabled:opacity-60">
+                      {savingSettings ? (ar ? "جارٍ الحفظ..." : "Saving...") : (ar ? "حفظ التغييرات" : "Save Changes")}
+                    </motion.button>
                   </div>
                 </div>
               )}

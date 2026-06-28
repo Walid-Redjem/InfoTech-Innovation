@@ -58,6 +58,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Settings (stats numbers editable by admin)
+    // - Anyone can read (StatsBar on homepage)
+    // - Only admin can write
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Block everything else
     match /{document=**} {
       allow read, write: if false;
