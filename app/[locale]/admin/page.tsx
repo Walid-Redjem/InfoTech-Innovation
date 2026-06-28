@@ -195,6 +195,11 @@ export default function AdminDashboard() {
     }
   }
 
+  async function toggleSurveyActive(surveyId: string, currentActive: boolean) {
+    await updateDoc(doc(db, "surveys", surveyId), { active: !currentActive });
+    setSurveys(prev => prev.map(s => String(s.id) === surveyId ? { ...s, active: !currentActive } : s));
+  }
+
   function addQuestion() {
     setQuestions(prev => [...prev, { id: `q${prev.length + 1}`, text: "", type: "text", options: "", required: true }]);
   }
@@ -834,7 +839,8 @@ export default function AdminDashboard() {
 
               {/* ── CREATE SURVEY ── */}
               {tab === "create" && (
-                <div className="max-w-2xl">
+                <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 items-start">
+                <div className="max-w-2xl xl:max-w-none">
                   <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "إنشاء استبيان جديد" : "Create New Survey"}</h2>
                   <p className="text-sm text-gray-400 mb-6">{ar ? "أنشئ استبياناً وانشره فوراً على المنصة" : "Build a survey and publish it instantly to the platform"}</p>
 
@@ -915,6 +921,53 @@ export default function AdminDashboard() {
                       {creating ? (ar ? "جارٍ النشر..." : "Publishing...") : (ar ? "نشر الاستبيان" : "Publish Survey")}
                     </motion.button>
                   </form>
+                </div>
+
+                {/* ── RIGHT: Surveys list ── */}
+                <div className="xl:sticky xl:top-6">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                      <h3 className="font-bold text-gray-800 text-sm">{ar ? "الاستبيانات المنشورة" : "Published Surveys"}</h3>
+                      <span className="text-xs font-bold bg-lilac text-mauve px-2 py-0.5 rounded-full">{surveys.length}</span>
+                    </div>
+
+                    {surveys.length === 0 ? (
+                      <div className="text-center py-10 text-gray-400">
+                        <ClipboardList className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                        <p className="text-xs">{ar ? "لا توجد استبيانات بعد" : "No surveys yet"}</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-gray-50">
+                        {surveys.map((s, i) => {
+                          const isActive = s.active !== false;
+                          return (
+                            <motion.div key={String(s.id)}
+                              initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                              className={`flex items-start gap-3 px-5 py-4 transition-colors ${isActive ? "" : "opacity-50"}`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-semibold truncate ${isActive ? "text-gray-800" : "text-gray-400 line-through"}`}>
+                                  {String(s.title)}
+                                </p>
+                                <p className="text-xs text-gray-400 mt-0.5">
+                                  {(s.questions as unknown[])?.length || 0} {ar ? "سؤال" : "questions"}
+                                </p>
+                              </div>
+                              {/* Toggle */}
+                              <button
+                                onClick={() => toggleSurveyActive(String(s.id), isActive)}
+                                title={isActive ? (ar ? "تعطيل" : "Disable") : (ar ? "تفعيل" : "Enable")}
+                                className={`relative w-10 h-5 rounded-full transition-colors shrink-0 mt-0.5 ${isActive ? "bg-turquoise" : "bg-gray-200"}`}
+                              >
+                                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${isActive ? "left-5" : "left-0.5"}`} />
+                              </button>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
                 </div>
               )}
 

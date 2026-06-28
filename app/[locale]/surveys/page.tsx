@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { collection, getDocs, addDoc, query, where, serverTimestamp, Timestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { ClipboardList, CheckCircle2, Star, ArrowLeft, ArrowRight, Clock, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +24,7 @@ interface Survey {
   description: string;
   context: string;
   questions: Question[];
+  active?: boolean;
 }
 
 type View = "list" | "form" | "success";
@@ -59,12 +60,12 @@ export default function SurveysPage() {
   const [hoveredStar, setHoveredStar] = useState(0);
 
   useEffect(() => {
-    getDocs(query(collection(db, "surveys"), where("active", "==", true)))
+    getDocs(collection(db, "surveys"))
       .then(snap => {
         const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as Survey));
         list.sort((a, b) => {
-          const aTs = (a as Record<string, unknown>).createdAt as Timestamp | undefined;
-          const bTs = (b as Record<string, unknown>).createdAt as Timestamp | undefined;
+          const aTs = (a as unknown as Record<string, unknown>).createdAt as Timestamp | undefined;
+          const bTs = (b as unknown as Record<string, unknown>).createdAt as Timestamp | undefined;
           return (bTs?.seconds ?? 0) - (aTs?.seconds ?? 0);
         });
         setSurveys(list);
@@ -357,15 +358,16 @@ export default function SurveysPage() {
                 const gradient = contextGradients[survey.context] || contextGradients.general;
                 const qCount = survey.questions?.length || 0;
                 const mins = Math.max(1, Math.ceil(qCount * 0.5));
+                const isActive = survey.active !== false;
                 return (
                   <motion.div
                     key={survey.id}
                     initial={{ opacity: 0, y: 28 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.09, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ y: -6, scale: 1.01 }}
-                    onClick={() => openSurvey(survey)}
-                    className="relative rounded-3xl overflow-hidden cursor-pointer group flex flex-col transition-all duration-300"
+                    whileHover={isActive ? { y: -6, scale: 1.01 } : {}}
+                    onClick={() => isActive && openSurvey(survey)}
+                    className={`relative rounded-3xl overflow-hidden flex flex-col transition-all duration-300 ${isActive ? "cursor-pointer group" : "cursor-not-allowed opacity-50 grayscale"}`}
                     style={{
                       background: "rgba(255,255,255,0.6)",
                       backdropFilter: "blur(20px)",
@@ -417,13 +419,14 @@ export default function SurveysPage() {
 
                       {/* Gradient CTA */}
                       <button
-                        onClick={e => { e.stopPropagation(); openSurvey(survey); }}
-                        className="mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-all duration-300 relative z-10"
-                        style={{ background: gradient, boxShadow: "0 2px 12px rgba(155,107,155,0.25)" }}
-                        onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 20px rgba(155,107,155,0.5)")}
-                        onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 12px rgba(155,107,155,0.25)")}
+                        onClick={e => { e.stopPropagation(); if (isActive) openSurvey(survey); }}
+                        disabled={!isActive}
+                        className="mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-all duration-300 relative z-10 disabled:cursor-not-allowed"
+                        style={{ background: isActive ? gradient : "#d1d5db", boxShadow: isActive ? "0 2px 12px rgba(155,107,155,0.25)" : "none" }}
+                        onMouseEnter={e => { if (isActive) e.currentTarget.style.boxShadow = "0 4px 20px rgba(155,107,155,0.5)"; }}
+                        onMouseLeave={e => { if (isActive) e.currentTarget.style.boxShadow = "0 2px 12px rgba(155,107,155,0.25)"; }}
                       >
-                        {t("start")}
+                        {isActive ? t("start") : (ar ? "غير متاح" : "Unavailable")}
                       </button>
                     </div>
                   </motion.div>
