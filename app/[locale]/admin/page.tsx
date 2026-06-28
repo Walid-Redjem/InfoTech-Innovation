@@ -54,10 +54,11 @@ export default function AdminDashboard() {
     { key: "responses",     label: ar ? "ردود الاستبيانات"    : "Survey Responses", icon: ClipboardList },
     { key: "analytics",     label: ar ? "الإحصائيات"          : "Analytics",        icon: BarChart3 },
     { key: "activities",    label: ar ? "الأنشطة"             : "Activities",       icon: CalendarDays },
-    { key: "create",        label: ar ? "إنشاء استبيان"       : "Create Survey",    icon: PlusCircle },
+    { key: "create",        label: ar ? "الاستبيانات"         : "Surveys",          icon: ClipboardList },
   ];
 
   const [tab, setTab] = useState<Tab>((searchParams.get("tab") as Tab) || "registrations");
+  const [surveySubTab, setSurveySubTab] = useState<"create" | "view">("create");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Registration modal
@@ -837,10 +838,21 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* ── CREATE SURVEY ── */}
+              {/* ── SURVEYS (create + view) ── */}
               {tab === "create" && (
-                <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 items-start">
-                <div className="max-w-2xl xl:max-w-none">
+                <div>
+                  {/* Sub-tab bar */}
+                  <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit mb-8">
+                    {([["create", ar ? "إنشاء استبيان" : "Create Survey", PlusCircle], ["view", ar ? "عرض الاستبيانات" : "View Surveys", ClipboardList]] as const).map(([key, label, Icon]) => (
+                      <button key={key} onClick={() => setSurveySubTab(key)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${surveySubTab === key ? "bg-white shadow-sm text-mauve" : "text-gray-500 hover:text-gray-700"}`}>
+                        <Icon className="w-4 h-4" />{label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Create sub-tab */}
+                  {surveySubTab === "create" && <div className="max-w-2xl">
                   <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "إنشاء استبيان جديد" : "Create New Survey"}</h2>
                   <p className="text-sm text-gray-400 mb-6">{ar ? "أنشئ استبياناً وانشره فوراً على المنصة" : "Build a survey and publish it instantly to the platform"}</p>
 
@@ -921,53 +933,54 @@ export default function AdminDashboard() {
                       {creating ? (ar ? "جارٍ النشر..." : "Publishing...") : (ar ? "نشر الاستبيان" : "Publish Survey")}
                     </motion.button>
                   </form>
-                </div>
+                  </div>}
 
-                {/* ── RIGHT: Surveys list ── */}
-                <div className="xl:sticky xl:top-6">
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                      <h3 className="font-bold text-gray-800 text-sm">{ar ? "الاستبيانات المنشورة" : "Published Surveys"}</h3>
-                      <span className="text-xs font-bold bg-lilac text-mauve px-2 py-0.5 rounded-full">{surveys.length}</span>
-                    </div>
+                  {/* View sub-tab */}
+                  {surveySubTab === "view" && (
+                    <div className="max-w-2xl">
+                      <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "الاستبيانات" : "All Surveys"}</h2>
+                      <p className="text-sm text-gray-400 mb-6">{ar ? "إدارة الاستبيانات وتفعيلها أو تعطيلها" : "Manage surveys — enable or disable them"}</p>
 
-                    {surveys.length === 0 ? (
-                      <div className="text-center py-10 text-gray-400">
-                        <ClipboardList className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                        <p className="text-xs">{ar ? "لا توجد استبيانات بعد" : "No surveys yet"}</p>
-                      </div>
-                    ) : (
-                      <div className="divide-y divide-gray-50">
-                        {surveys.map((s, i) => {
-                          const isActive = s.active !== false;
-                          return (
-                            <motion.div key={String(s.id)}
-                              initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-                              className={`flex items-start gap-3 px-5 py-4 transition-colors ${isActive ? "" : "opacity-50"}`}
-                            >
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-semibold truncate ${isActive ? "text-gray-800" : "text-gray-400 line-through"}`}>
-                                  {String(s.title)}
-                                </p>
-                                <p className="text-xs text-gray-400 mt-0.5">
-                                  {(s.questions as unknown[])?.length || 0} {ar ? "سؤال" : "questions"}
-                                </p>
-                              </div>
-                              {/* Toggle */}
-                              <button
-                                onClick={() => toggleSurveyActive(String(s.id), isActive)}
-                                title={isActive ? (ar ? "تعطيل" : "Disable") : (ar ? "تفعيل" : "Enable")}
-                                className={`relative w-10 h-5 rounded-full transition-colors shrink-0 mt-0.5 ${isActive ? "bg-turquoise" : "bg-gray-200"}`}
+                      {surveys.length === 0 ? (
+                        <div className="text-center py-16 text-gray-400">
+                          <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                          <p className="text-sm">{ar ? "لا توجد استبيانات بعد" : "No surveys yet"}</p>
+                        </div>
+                      ) : (
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                          <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{ar ? "الاستبيان" : "Survey"}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{ar ? "الحالة" : "Status"}</span>
+                          </div>
+                          {surveys.map((s, i) => {
+                            const isActive = (s as Record<string,unknown>).active !== false;
+                            return (
+                              <motion.div key={String(s.id)}
+                                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                                className="flex items-center gap-4 px-5 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors"
                               >
-                                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${isActive ? "left-5" : "left-0.5"}`} />
-                              </button>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-semibold ${isActive ? "text-gray-800" : "text-gray-400"}`}>{String(s.title)}</p>
+                                  <div className="flex items-center gap-3 mt-0.5">
+                                    <span className="text-xs text-gray-400">{(s.questions as unknown[])?.length || 0} {ar ? "سؤال" : "questions"}</span>
+                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isActive ? "bg-turquoise/10 text-turquoise-dark" : "bg-gray-100 text-gray-400"}`}>
+                                      {isActive ? (ar ? "نشط" : "Active") : (ar ? "معطّل" : "Disabled")}
+                                    </span>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => toggleSurveyActive(String(s.id), isActive)}
+                                  className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${isActive ? "bg-turquoise" : "bg-gray-200"}`}
+                                >
+                                  <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${isActive ? "left-6" : "left-1"}`} />
+                                </button>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
