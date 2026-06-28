@@ -77,9 +77,6 @@ export default function Footer() {
           © {new Date().getFullYear()} InfoTech Innovation.{" "}
           {locale === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}
         </p>
-        <Link href={`/${locale}/terms`} className="text-white/40 hover:text-white/70 text-xs transition-colors underline underline-offset-2">
-          {tf("terms")}
-        </Link>
       </div>
     </footer>
   );
