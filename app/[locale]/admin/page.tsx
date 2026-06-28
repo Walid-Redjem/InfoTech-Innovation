@@ -673,55 +673,83 @@ export default function AdminDashboard() {
               {/* ── RESPONSES ── */}
               {tab === "responses" && (
                 <div>
-                  <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
-                    <h2 className="text-xl font-bold text-gray-800">{ar ? "ردود الاستبيانات" : "Survey Responses"}</h2>
-                    {responses.length > 0 && (
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">{ar ? "ردود الاستبيانات" : "Survey Responses"}</h2>
+                      <p className="text-sm text-gray-400 mt-0.5">{allResponses.length} {ar ? "رد إجمالي" : "total responses"}</p>
+                    </div>
+                    {allResponses.length > 0 && (
                       <button onClick={() => {
-                        const rows = responses.map(r => ({ ...((r.answers as Record<string,unknown>) || {}), date: formatDate(r.createdAt) }));
-                        exportCSV(rows, `responses-${selectedSurvey}`);
+                        const rows = allResponses.map(r => ({ survey: String(r.surveyTitle || ""), ...((r.answers as Record<string,unknown>) || {}), date: formatDate(r.createdAt) }));
+                        exportCSV(rows, "all-responses");
                       }} className="flex items-center gap-2 text-sm bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-mauve hover:text-mauve transition-colors text-gray-500 shadow-sm">
-                        <Download className="w-4 h-4" /> {ar ? "تصدير CSV" : "Export CSV"}
+                        <Download className="w-4 h-4" /> {ar ? "تصدير الكل CSV" : "Export All CSV"}
                       </button>
                     )}
                   </div>
-                  <p className="text-sm text-gray-400 mb-6">{ar ? "اختر استبياناً لعرض ردوده" : "Select a survey to view its responses"}</p>
-                  <Select value={selectedSurvey} onChange={v => { setSelectedSurvey(v); if (v) fetchResponses(v); }}
-                    options={[{ value: "", label: ar ? "اختر استبياناً..." : "Select a survey..." }, ...surveys.map(s => ({ value: String(s.id), label: String(s.title) }))]}
-                    className="max-w-sm mb-6"
-                  />
-                  {selectedSurvey && responses.length === 0 && (
-                    <div className="text-center py-16 text-gray-400">
-                      <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                      <p className="text-sm">{ar ? "لا توجد ردود بعد لهذا الاستبيان." : "No responses yet for this survey."}</p>
+
+                  {allResponses.length === 0 ? (
+                    <div className="text-center py-24 text-gray-400">
+                      <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                      <p className="text-sm font-medium">{ar ? "لا توجد ردود بعد" : "No responses yet"}</p>
+                      <p className="text-xs mt-1 text-gray-300">{ar ? "ستظهر الردود هنا حين يجيب المستخدمون على الاستبيانات" : "Responses will appear here when users answer surveys"}</p>
                     </div>
-                  )}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    {responses.map((resp, i) => {
-                      const answerCount = resp.answers && typeof resp.answers === "object" ? Object.keys(resp.answers as object).length : 0;
-                      return (
-                        <motion.button
-                          key={String(resp.id)}
-                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                          onClick={() => setSelectedResponse(resp)}
-                          className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start hover:bg-lilac/20 transition-colors border-b border-gray-50 last:border-0"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="w-8 h-8 rounded-full bg-lilac flex items-center justify-center text-xs font-bold text-mauve shrink-0">
-                              {i + 1}
-                            </span>
-                            <div>
-                              <p className="text-sm font-semibold text-gray-700">{ar ? `رد #${i + 1}` : `Response #${i + 1}`}</p>
-                              <p className="text-xs text-gray-400">{answerCount} {ar ? "إجابة" : "answers"}</p>
+                  ) : (
+                    <div className="space-y-6">
+                      {surveys.map(survey => {
+                        const surveyResps = allResponses.filter(r => String(r.surveyId) === String(survey.id));
+                        if (surveyResps.length === 0) return null;
+                        return (
+                          <div key={String(survey.id)}>
+                            {/* Survey group header */}
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-mauve" />
+                                <h3 className="font-bold text-gray-700">{String(survey.title)}</h3>
+                                <span className="text-xs bg-lilac text-mauve font-bold px-2 py-0.5 rounded-full">
+                                  {surveyResps.length} {ar ? "رد" : "responses"}
+                                </span>
+                              </div>
+                              <button onClick={() => {
+                                const rows = surveyResps.map(r => ({ ...((r.answers as Record<string,unknown>) || {}), date: formatDate(r.createdAt) }));
+                                exportCSV(rows, `responses-${String(survey.title)}`);
+                              }} className="text-xs flex items-center gap-1 text-gray-400 hover:text-mauve transition-colors">
+                                <Download className="w-3 h-3" /> CSV
+                              </button>
+                            </div>
+
+                            {/* Responses list */}
+                            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                              {surveyResps.map((resp, i) => {
+                                const answerCount = resp.answers && typeof resp.answers === "object" ? Object.keys(resp.answers as object).length : 0;
+                                return (
+                                  <motion.button
+                                    key={String(resp.id)}
+                                    initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}
+                                    onClick={() => setSelectedResponse(resp)}
+                                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start hover:bg-lilac/20 transition-colors border-b border-gray-50 last:border-0"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <span className="w-8 h-8 rounded-full bg-lilac flex items-center justify-center text-xs font-bold text-mauve shrink-0">{i + 1}</span>
+                                      <div>
+                                        <p className="text-sm font-semibold text-gray-700">{ar ? `رد #${i + 1}` : `Response #${i + 1}`}</p>
+                                        <p className="text-xs text-gray-400">{answerCount} {ar ? "إجابة" : "answers"}</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 shrink-0">
+                                      <span className="text-xs text-gray-400">{formatDate(resp.createdAt)}</span>
+                                      <ChevronRight className="w-4 h-4 text-gray-300" />
+                                    </div>
+                                  </motion.button>
+                                );
+                              })}
                             </div>
                           </div>
-                          <div className="flex items-center gap-3 shrink-0">
-                            <span className="text-xs text-gray-400">{formatDate(resp.createdAt)}</span>
-                            <ChevronRight className="w-4 h-4 text-gray-300" />
-                          </div>
-                        </motion.button>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
