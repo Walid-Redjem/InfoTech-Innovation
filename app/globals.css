@@ -168,6 +168,7 @@ body {
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 /* ── Admin Dark Mode ── */
+
 /* Base palette: rich near-black with subtle purple undertone */
 .admin-dark {
   background: #09090f !important;
@@ -269,3 +270,83 @@ body {
 .admin-dark ::-webkit-scrollbar-track { background: #09090f; }
 .admin-dark ::-webkit-scrollbar-thumb { background: rgba(155,107,155,0.3); border-radius: 3px; }
 .admin-dark ::-webkit-scrollbar-thumb:hover { background: rgba(155,107,155,0.5); }
+
+/* Badge colors (colorMap) */
+.admin-dark .bg-purple-100  { background: rgba(155,107,155,0.18) !important; }
+.admin-dark .text-purple-700 { color: #c084fc !important; }
+.admin-dark .bg-teal-100    { background: rgba(46,196,182,0.15) !important; }
+.admin-dark .text-teal-700  { color: #2EC4B6 !important; }
+.admin-dark .bg-indigo-100  { background: rgba(99,102,241,0.15) !important; }
+.admin-dark .text-indigo-700 { color: #818cf8 !important; }
+.admin-dark .bg-blue-100    { background: rgba(59,130,246,0.15) !important; }
+.admin-dark .text-blue-700  { color: #60a5fa !important; }
+.admin-dark .bg-green-100   { background: rgba(34,197,94,0.13) !important; }
+.admin-dark .text-green-700 { color: #4ade80 !important; }
+.admin-dark .text-green-500 { color: #4ade80 !important; }
+.admin-dark .bg-cyan-100    { background: rgba(6,182,212,0.13) !important; }
+.admin-dark .text-cyan-700  { color: #22d3ee !important; }
+.admin-dark .bg-red-100     { background: rgba(239,68,68,0.13) !important; }
+.admin-dark .text-red-700   { color: #f87171 !important; }
+.admin-dark .text-amber-500 { color: #fbbf24 !important; }
+.admin-dark .text-turquoise-dark { color: #2EC4B6 !important; }
+
+/* bg-gray-50/50 used in modal body */
+.admin-dark .bg-gray-50\/50 { background: #111118 !important; }
+
+/* hover:bg-lilac/30 in DataTable */
+.admin-dark .hover\:bg-lilac\/30:hover { background: rgba(155,107,155,0.14) !important; }
+
+/* Modals — keep dark bg and white text */
+.admin-dark .fixed .bg-white { background: #17171f !important; }
+.admin-dark .fixed .bg-gray-50\/50 { background: #111118 !important; }
+.admin-dark .fixed .text-gray-800,
+.admin-dark .fixed .text-gray-700 { color: #f4f4f5 !important; }
+.admin-dark .fixed .text-gray-600 { color: #d4d4d8 !important; }
+.admin-dark .fixed .text-gray-500 { color: #71717a !important; }
+.admin-dark .fixed .text-gray-400 { color: #52525b !important; }
+.admin-dark .fixed .border-gray-100,
+.admin-dark .fixed .border-gray-50 { border-color: rgba(155,107,155,0.1) !important; }
+.admin-dark .fixed .bg-gray-100 { background: #1e1e28 !important; }
+.admin-dark .fixed .hover\:bg-gray-200:hover { background: #2a2a38 !important; }
+
+/* Registration modal specific */
+.admin-dark .fixed .bg-lilac { background: rgba(155,107,155,0.15) !important; }
+.admin-dark .fixed .bg-lilac\/30 { background: rgba(155,107,155,0.12) !important; }
+
+/* Activity form */
+.admin-dark .bg-white.rounded-2xl input,
+.admin-dark .bg-white.rounded-2xl select,
+.admin-dark .bg-white.rounded-2xl textarea { background: #1e1e28 !important; }
+
+/* Pagination & misc buttons in white containers */
+.admin-dark .bg-white.border { border-color: rgba(155,107,155,0.12) !important; }
+.admin-dark button.bg-white { background: #1e1e28 !important; color: #d4d4d8 !important; border-color: rgba(155,107,155,0.15) !important; }
+.admin-dark button.bg-white:hover { background: #2a2a38 !important; }
+
+/* Overview stat cards top number */
+.admin-dark .text-3xl.font-black { color: inherit; }
+
+/* Print area inside modals stays white */
+.admin-dark .fixed [style*="linear-gradient"] { /* gradient headers keep their colors */ }
+
+/* Turquoise/mauve accent fills stay as-is (they look good on dark) */
+.admin-dark .bg-mauve { background: #9B6B9B !important; }
+.admin-dark .bg-turquoise { background: #2EC4B6 !important; }
+.admin-dark .bg-turquoise\/10 { background: rgba(46,196,182,0.12) !important; }
+.admin-dark .bg-turquoise\/5  { background: rgba(46,196,182,0.08) !important; }
+.admin-dark .border-turquoise\/30 { border-color: rgba(46,196,182,0.3) !important; }
+.admin-dark .text-turquoise-dark { color: #2EC4B6 !important; }
+
+/* Sidebar bottom card */
+.admin-dark aside .bg-gradient-to-br.from-lilac.to-white {
+  background: linear-gradient(135deg, rgba(155,107,155,0.15), rgba(46,196,182,0.06)) !important;
+  border: 1px solid rgba(155,107,155,0.12);
+}
+
+/* Loading spinner */
+.admin-dark .border-lilac-dark { border-color: rgba(155,107,155,0.2) !important; }
+
+/* Sticky tabs bar */
+.admin-dark .bg-gray-100.rounded-xl { background: #1e1e28 !important; }
+.admin-dark .bg-white.shadow-sm.rounded-lg,
+.admin-dark .bg-white.shadow-sm.text-mauve { background: #2a2a38 !important; }
