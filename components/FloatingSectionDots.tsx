@@ -5,17 +5,23 @@ const SECTIONS = ["hero","stats","marquee","about","services"];
 
 export default function FloatingSectionDots() {
   const [active, setActive] = useState(0);
-  const [pct, setPct] = useState(0);
 
   useEffect(() => {
+    let raf: number;
     const onScroll = () => {
-      const scrollPct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      setPct(Math.min(1, Math.max(0, scrollPct)));
-      const idx = Math.floor(scrollPct * SECTIONS.length);
-      setActive(Math.min(idx, SECTIONS.length - 1));
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        if (scrollable <= 0) return;
+        const pct = window.scrollY / scrollable;
+        setActive(Math.min(Math.floor(pct * SECTIONS.length), SECTIONS.length - 1));
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (

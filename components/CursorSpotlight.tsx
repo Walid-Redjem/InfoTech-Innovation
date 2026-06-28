@@ -8,8 +8,7 @@ export default function CursorSpotlight() {
     const el = ref.current;
     if (!el) return;
     const move = (e: MouseEvent) => {
-      el.style.left = `${e.clientX}px`;
-      el.style.top = `${e.clientY}px`;
+      el.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
       el.style.opacity = "1";
     };
     const leave = () => { if (el) el.style.opacity = "0"; };
@@ -24,13 +23,12 @@ export default function CursorSpotlight() {
   return (
     <div
       ref={ref}
-      className="pointer-events-none fixed z-[1] hidden md:block opacity-0 transition-opacity duration-300"
+      className="pointer-events-none fixed top-0 left-0 z-[1] hidden md:block opacity-0 transition-opacity duration-300"
       style={{
         width: 480,
         height: 480,
-        transform: "translate(-50%, -50%)",
         background: "radial-gradient(circle, rgba(155,107,155,0.07) 0%, rgba(46,196,182,0.04) 40%, transparent 70%)",
-        willChange: "left, top",
+        willChange: "transform",
       }}
     />
   );

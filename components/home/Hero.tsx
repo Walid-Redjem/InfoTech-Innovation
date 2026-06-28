@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const wordsEn = ["Community", "Future", "Education", "Society", "Tomorrow"];
 const wordsAr = ["المجتمع", "المستقبل", "التعليم", "الجيل القادم", "غدٍ أفضل"];
 
-const particles = Array.from({ length: 18 }, (_, i) => ({
+const particles = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   x: (i * 17 + 13) % 100,
   y: (i * 23 + 7) % 100,
@@ -69,17 +69,10 @@ export default function Hero() {
     <section className="relative overflow-hidden min-h-[92vh] flex items-center py-16 md:py-20 px-5 md:px-6"
       style={{ background: "linear-gradient(135deg, #EDE0F5 0%, #f8f4fc 50%, #ffffff 100%)" }}>
 
-      {/* Animated gradient overlay */}
-      <motion.div
-        className="absolute inset-0 opacity-40"
-        animate={{ background: [
-          "radial-gradient(ellipse at 20% 50%, #9B6B9B22 0%, transparent 60%)",
-          "radial-gradient(ellipse at 80% 20%, #2EC4B622 0%, transparent 60%)",
-          "radial-gradient(ellipse at 50% 80%, #9B6B9B22 0%, transparent 60%)",
-          "radial-gradient(ellipse at 20% 50%, #9B6B9B22 0%, transparent 60%)",
-        ]}}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-      />
+      {/* Static gradient overlay */}
+      <div className="absolute inset-0 opacity-40" style={{
+        background: "radial-gradient(ellipse at 35% 40%, #9B6B9B22 0%, transparent 60%)"
+      }} />
 
       {/* Scanning beam */}
       <motion.div
@@ -101,7 +94,7 @@ export default function Hero() {
       <motion.div className="absolute inset-0 pointer-events-none" style={{ y: blobY }}>
         {floatingShapes.map((shape, i) => (
           <motion.div key={i}
-            className={`absolute rounded-full blur-3xl ${shape.color}`}
+            className={`absolute rounded-full blur-xl ${shape.color}`}
             style={{ width: shape.size, height: shape.size, left: shape.x, top: shape.y }}
             animate={{ y: [0, -30, 0], x: [0, 15, 0] }}
             transition={{ duration: shape.duration, repeat: Infinity, ease: "easeInOut", delay: i * 1.5 }}
