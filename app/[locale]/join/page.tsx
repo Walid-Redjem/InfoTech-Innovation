@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Users, GraduationCap, Building2, CheckCircle2, Download, Mail, RefreshCw } from "lucide-react";
+import { Users, GraduationCap, Building2, CheckCircle2, Download, Mail, RefreshCw, X } from "lucide-react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";
@@ -39,6 +39,7 @@ export default function JoinPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [shaking, setShaking] = useState(false);
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -597,9 +598,9 @@ export default function JoinPage() {
             {/* Terms notice */}
             <p className="text-xs text-gray-400">
               {ar ? "بالتسجيل، أنت توافق على " : "By registering, you agree to our "}
-              <Link href={`/${locale}/terms`} className="text-mauve underline hover:text-turquoise transition-colors">
+              <button type="button" onClick={() => setShowTerms(true)} className="text-mauve underline hover:text-turquoise transition-colors">
                 {ar ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}
-              </Link>
+              </button>
             </p>
 
             {error && (
@@ -618,9 +619,74 @@ export default function JoinPage() {
           </form>
         </div>
       </div>
+
+      {/* Terms Modal */}
+      {showTerms && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowTerms(false)} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div>
+                <h2 className="font-bold text-gray-800 text-lg">{ar ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}</h2>
+                <p className="text-xs text-gray-400 mt-0.5">{ar ? "آخر تحديث: يونيو 2026" : "Last updated: June 2026"}</p>
+              </div>
+              <button onClick={() => setShowTerms(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+            {/* Scrollable content */}
+            <div className="overflow-y-auto px-6 py-5 space-y-4 flex-1">
+              {(ar ? sectionsAr : sectionsEn).map((section, i) => (
+                <div key={i} className="bg-gradient-to-br from-lilac/30 to-white rounded-2xl p-4 border border-lilac-dark/20">
+                  <h3 className="font-bold text-mauve text-sm mb-2">{section.title}</h3>
+                  <p className="text-gray-600 text-xs leading-relaxed whitespace-pre-line">{section.content}</p>
+                </div>
+              ))}
+            </div>
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-100">
+              <button
+                onClick={() => setShowTerms(false)}
+                className="w-full bg-mauve text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-mauve-dark transition-colors"
+              >
+                {ar ? "فهمت" : "Got it"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
+
+const sectionsEn = [
+  { title: "1. Data We Collect", content: `When you register or use our platform, we may collect the following information:\n• Full name, email address, phone number, and age\n• Documents you upload: birth certificate, resume, diploma, profile photo, or signed parental consent forms\n• Community issues and ideas you submit\n• Survey responses\n• Chatbot interaction data (anonymized)\nAll data is stored securely on Firebase (Google Cloud) and is accessible only to the InfoTech Innovation administration team.` },
+  { title: "2. How We Use Your Data", content: `Your data is used exclusively to:\n• Process your registration and validate your membership\n• Contact you regarding your application status\n• Organize activities and track participation\n• Analyze community needs and improve our services\n• Publish anonymized impact statistics on the platform\nWe do not sell or share your personal data with third parties.` },
+  { title: "3. Parental Consent (Minors Under 17)", content: `For participants under the age of 17, a signed parental consent form is mandatory before registration is validated.\nBy submitting the signed form, the parent or legal guardian:\n• Consents to their child's participation in all club activities\n• Agrees to the use of photos/videos taken during sessions for educational and promotional purposes on the club's official pages\n• Can withdraw consent at any time by submitting a written request` },
+  { title: "4. File Uploads & Storage", content: `Files you upload (birth certificates, resumes, photos, forms) are stored securely on Firebase Storage. These files are:\n• Accessible only to authorized administrators\n• Used solely for registration verification\n• Never shared publicly or with external parties\n• Retained for the duration of your membership and deleted upon written request` },
+  { title: "5. Photos & Media", content: `By registering, you acknowledge that photos or videos taken during sessions may be used for educational or promotional purposes on the club's official social media pages and website.\nIf you do not consent to this, you must notify us in writing before the start of your first session. Your request will be honored and no media featuring you will be published.` },
+  { title: "6. Your Rights", content: `You have the right to:\n• Access the personal data we hold about you\n• Request correction of inaccurate data\n• Request deletion of your data at any time\n• Withdraw from the platform by submitting a written request\nTo exercise any of these rights, contact us at: contact@infotech.dz` },
+  { title: "7. Platform Rules", content: `By using this platform, you agree to:\n• Provide accurate and truthful information\n• Not upload inappropriate, harmful, or misleading content\n• Respect other community members and their submissions\n• Not use this platform for commercial purposes without prior written consent\nViolations may result in immediate removal from the platform.` },
+  { title: "8. Contact", content: `For any questions regarding these terms or your personal data:\n📧 contact@infotech.dz\n📞 0552 24 52 19 / 0775 65 41 04\nInfoTech Innovation` },
+];
+
+const sectionsAr = [
+  { title: "١. البيانات التي نجمعها", content: `عند التسجيل أو استخدام المنصة، قد نجمع المعلومات التالية:\n• الاسم الكامل، البريد الإلكتروني، رقم الهاتف، والعمر\n• الوثائق التي تقوم برفعها: شهادة الميلاد، السيرة الذاتية، الشهادة، الصورة الشخصية، أو استمارة الموافقة الأبوية الموقعة\n• الإشكاليات والأفكار المجتمعية التي تقدمها\n• ردود الاستبيانات\n• بيانات التفاعل مع الشات بوت (مجهولة الهوية)\nتُخزَّن جميع البيانات بشكل آمن على Firebase (Google Cloud) ولا يمكن الوصول إليها إلا من قِبل فريق إدارة InfoTech Innovation.` },
+  { title: "٢. كيف نستخدم بياناتك", content: `تُستخدم بياناتك حصراً من أجل:\n• معالجة تسجيلك والتحقق من عضويتك\n• التواصل معك بشأن حالة طلبك\n• تنظيم الأنشطة وتتبع المشاركة\n• تحليل احتياجات المجتمع وتحسين خدماتنا\n• نشر إحصاءات الأثر المجهولة على المنصة\nنحن لا نبيع بياناتك الشخصية ولا نشاركها مع أطراف ثالثة.` },
+  { title: "٣. الموافقة الأبوية (القاصرون دون 17 سنة)", content: `للمشاركين الذين تقل أعمارهم عن 17 سنة، تُعدّ استمارة الموافقة الأبوية الموقعة إلزامية قبل التحقق من التسجيل.\nبتقديم الاستمارة الموقعة، يوافق الوالد أو الوصي القانوني على:\n• مشاركة طفله في جميع أنشطة النادي\n• استخدام الصور/الفيديوهات الملتقطة خلال الجلسات لأغراض تعليمية أو دعائية على الصفحات الرسمية للنادي\n• يمكن سحب الموافقة في أي وقت بتقديم طلب كتابي` },
+  { title: "٤. رفع الملفات والتخزين", content: `الملفات التي ترفعها (شهادات الميلاد، السير الذاتية، الصور، الاستمارات) تُخزَّن بشكل آمن على Firebase Storage. هذه الملفات:\n• لا يمكن الوصول إليها إلا من قِبل المسؤولين المعتمدين\n• تُستخدم فقط للتحقق من التسجيل\n• لا تُشارك علناً أو مع أطراف خارجية\n• تُحتفظ بها طوال مدة عضويتك وتُحذف عند الطلب الكتابي` },
+  { title: "٥. الصور والوسائط", content: `بالتسجيل، تقر بأن الصور أو الفيديوهات الملتقطة خلال الجلسات قد تُستخدم لأغراض تعليمية أو دعائية على صفحات النادي الرسمية وموقعه الإلكتروني.\nإذا لم توافق على ذلك، يجب إخطارنا كتابياً قبل بداية حصتك الأولى. سيتم احترام طلبك ولن يُنشر أي محتوى وسائط يظهرك فيه.` },
+  { title: "٦. حقوقك", content: `لك الحق في:\n• الاطلاع على البيانات الشخصية التي نحتفظ بها عنك\n• طلب تصحيح البيانات غير الدقيقة\n• طلب حذف بياناتك في أي وقت\n• الانسحاب من المنصة بتقديم طلب كتابي\nلممارسة أي من هذه الحقوق، تواصل معنا على: contact@infotech.dz` },
+  { title: "٧. قواعد المنصة", content: `باستخدام هذه المنصة، توافق على:\n• تقديم معلومات دقيقة وصحيحة\n• عدم رفع محتوى غير لائق أو ضار أو مضلل\n• احترام أعضاء المجتمع الآخرين ومساهماتهم\n• عدم استخدام المنصة لأغراض تجارية دون موافقة كتابية مسبقة\nقد تؤدي المخالفات إلى الإزالة الفورية من المنصة.` },
+  { title: "٨. التواصل", content: `لأي استفسارات تتعلق بهذه الشروط أو بياناتك الشخصية:\n📧 contact@infotech.dz\n📞 0552 24 52 19 / 0775 65 41 04\nInfoTech Innovation` },
+];
 
 function Field({ label, error, children }: { label: string; error?: boolean; children: React.ReactNode }) {
   return (
