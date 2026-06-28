@@ -1218,35 +1218,100 @@ export default function AdminDashboard() {
         const survey = surveys.find(s => String(s.id) === String(selectedResponse.surveyId));
         const answers = (selectedResponse.answers as Record<string, string | number>) || {};
         const questions = (survey as Record<string,unknown>)?.questions as { id: string; text: string; type: string }[] | undefined;
+        const surveyTitle = String(selectedResponse.surveyTitle || (ar ? "استبيان" : "Survey"));
+        const responseDate = formatDate(selectedResponse.createdAt);
+        const entries = Object.entries(answers);
+
+        function downloadPDF() {
+          const rows = entries.map(([qId, ans], i) => {
+            const qText = questions?.find(q => q.id === qId)?.text || qId;
+            return `
+              <div style="margin-bottom:20px;padding:16px;background:#f9f6fc;border-radius:12px;border-left:4px solid #9B6B9B">
+                <p style="font-size:11px;color:#9B6B9B;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px">Question ${i + 1}</p>
+                <p style="font-size:15px;font-weight:600;color:#333;margin:0 0 10px">${qText}</p>
+                <p style="font-size:14px;color:#555;margin:0;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid #ede0f5">${String(ans)}</p>
+              </div>`;
+          }).join("");
+          const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${surveyTitle}</title>
+            <style>body{font-family:Arial,sans-serif;max-width:680px;margin:40px auto;color:#333;padding:0 20px}
+            h1{color:#9B6B9B;font-size:22px;margin-bottom:4px} .meta{color:#999;font-size:13px;margin-bottom:30px}
+            @media print{body{margin:20px}}</style></head>
+            <body>
+              <h1>${surveyTitle}</h1>
+              <p class="meta">Date: ${responseDate} &nbsp;·&nbsp; ${entries.length} answers &nbsp;·&nbsp; InfoTech Innovation</p>
+              <hr style="border:none;border-top:2px solid #ede0f5;margin-bottom:24px"/>
+              ${rows}
+              <p style="margin-top:32px;font-size:11px;color:#bbb;text-align:center">InfoTech Innovation — Survey Response</p>
+            </body></html>`;
+          const w = window.open("", "_blank");
+          if (!w) return;
+          w.document.write(html);
+          w.document.close();
+          w.focus();
+          setTimeout(() => { w.print(); }, 400);
+        }
+
+        function downloadCSV() {
+          const rows = entries.map(([qId, ans]) => {
+            const qText = questions?.find(q => q.id === qId)?.text || qId;
+            return { Question: qText, Answer: String(ans) };
+          });
+          exportCSV(rows, `response-${surveyTitle}-${responseDate}`);
+        }
+
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedResponse(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden z-10">
+              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden z-10">
+
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                <div>
-                  <h2 className="font-bold text-gray-800">{String(selectedResponse.surveyTitle || (ar ? "رد الاستبيان" : "Survey Response"))}</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">{formatDate(selectedResponse.createdAt)}</p>
+              <div className="px-6 py-5 border-b border-gray-100">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="font-bold text-gray-800 text-lg leading-snug">{surveyTitle}</h2>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-xs text-gray-400">{responseDate}</span>
+                      <span className="w-1 h-1 rounded-full bg-gray-300" />
+                      <span className="text-xs text-gray-400">{entries.length} {ar ? "إجابة" : "answers"}</span>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedResponse(null)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shrink-0 mt-0.5">
+                    <X className="w-4 h-4 text-gray-500" />
+                  </button>
                 </div>
-                <button onClick={() => setSelectedResponse(null)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-                  <X className="w-4 h-4 text-gray-500" />
-                </button>
               </div>
+
               {/* Answers */}
-              <div className="overflow-y-auto px-6 py-5 space-y-4 flex-1">
-                {Object.entries(answers).map(([qId, ans], i) => {
+              <div className="overflow-y-auto px-6 py-5 space-y-3 flex-1">
+                {entries.map(([qId, ans], i) => {
                   const questionText = questions?.find(q => q.id === qId)?.text || qId;
                   return (
-                    <div key={qId} className="bg-lilac/30 rounded-2xl p-4">
-                      <p className="text-xs font-bold text-mauve/60 uppercase tracking-wide mb-1">
-                        {ar ? `السؤال ${i + 1}` : `Question ${i + 1}`}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-700 mb-2">{questionText}</p>
-                      <p className="text-sm text-gray-600 bg-white rounded-xl px-3 py-2">{String(ans)}</p>
+                    <div key={qId} className="rounded-2xl border border-lilac-dark/30 overflow-hidden">
+                      <div className="bg-lilac/40 px-4 py-2.5 flex items-center gap-2.5">
+                        <span className="w-5 h-5 rounded-full bg-mauve text-white text-[10px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                        <p className="text-sm font-semibold text-gray-700">{questionText}</p>
+                      </div>
+                      <div className="px-4 py-3 bg-white">
+                        <p className="text-sm text-gray-600">{String(ans)}</p>
+                      </div>
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Footer with download actions */}
+              <div className="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+                <button onClick={downloadPDF}
+                  className="flex-1 flex items-center justify-center gap-2 bg-mauve text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-mauve-dark transition-colors shadow-sm shadow-mauve/20">
+                  <Printer className="w-4 h-4" />
+                  {ar ? "تحميل PDF" : "Download PDF"}
+                </button>
+                <button onClick={downloadCSV}
+                  className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl font-semibold text-sm hover:border-mauve hover:text-mauve transition-colors">
+                  <Download className="w-4 h-4" />
+                  {ar ? "تحميل CSV" : "Download CSV"}
+                </button>
               </div>
             </motion.div>
           </div>
