@@ -15,7 +15,7 @@ import {
   ChevronRight, Menu, X, Search, CheckCircle2, Clock,
   FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink,
   Printer, Copy, ChevronsUpDown, ChevronUp, ChevronDown,
-  CalendarDays, Pencil, ImageIcon, MapPin, Star
+  CalendarDays, Pencil, ImageIcon, MapPin, Star, Moon, Sun
 } from "lucide-react";
 
 type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities";
@@ -59,6 +59,17 @@ export default function AdminDashboard() {
 
   const [tab, setTab] = useState<Tab>((searchParams.get("tab") as Tab) || "registrations");
   const [surveySubTab, setSurveySubTab] = useState<"create" | "view">("create");
+  const [darkAdmin, setDarkAdmin] = useState(false);
+  useEffect(() => {
+    const saved = localStorage.getItem("admin-dark");
+    if (saved === "true") setDarkAdmin(true);
+  }, []);
+  function toggleDarkAdmin() {
+    setDarkAdmin(prev => {
+      localStorage.setItem("admin-dark", String(!prev));
+      return !prev;
+    });
+  }
   const [surveySearch, setSurveySearch] = useState("");
   const [surveyDateFilter, setSurveyDateFilter] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -371,7 +382,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50" dir={ar ? "rtl" : "ltr"}>
+    <div className={`min-h-screen flex flex-col bg-gray-50 ${darkAdmin ? "admin-dark" : ""}`} dir={ar ? "rtl" : "ltr"}>
 
       {/* ── TOP HEADER ── */}
       <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
@@ -387,6 +398,11 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={toggleDarkAdmin}
+            className="p-2 rounded-xl text-gray-500 hover:text-mauve hover:bg-lilac/50 transition-colors"
+            title={darkAdmin ? "Light mode" : "Dark mode"}>
+            {darkAdmin ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
           <button onClick={switchLocale}
             className="text-sm font-semibold px-3 py-1.5 rounded-full border-2 border-mauve text-mauve hover:bg-mauve hover:text-white transition-colors">
             {ar ? "EN" : "عربي"}
