@@ -937,43 +937,78 @@ export default function AdminDashboard() {
 
                   {/* View sub-tab */}
                   {surveySubTab === "view" && (
-                    <div className="max-w-2xl">
-                      <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "الاستبيانات" : "All Surveys"}</h2>
-                      <p className="text-sm text-gray-400 mb-6">{ar ? "إدارة الاستبيانات وتفعيلها أو تعطيلها" : "Manage surveys — enable or disable them"}</p>
+                    <div>
+                      {/* Header row */}
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h2 className="text-xl font-bold text-gray-800">{ar ? "جميع الاستبيانات" : "All Surveys"}</h2>
+                          <p className="text-sm text-gray-400 mt-0.5">{ar ? "فعّل أو عطّل ظهور الاستبيانات للمستخدمين" : "Control which surveys are visible to users"}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-turquoise/10 text-turquoise-dark font-bold px-2.5 py-1 rounded-full">
+                            {surveys.filter(s => (s as Record<string,unknown>).active !== false).length} {ar ? "نشط" : "active"}
+                          </span>
+                          <span className="text-xs bg-gray-100 text-gray-500 font-bold px-2.5 py-1 rounded-full">
+                            {surveys.filter(s => (s as Record<string,unknown>).active === false).length} {ar ? "معطّل" : "disabled"}
+                          </span>
+                        </div>
+                      </div>
 
                       {surveys.length === 0 ? (
-                        <div className="text-center py-16 text-gray-400">
-                          <ClipboardList className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                          <p className="text-sm">{ar ? "لا توجد استبيانات بعد" : "No surveys yet"}</p>
+                        <div className="text-center py-20 text-gray-400">
+                          <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                          <p className="text-sm font-medium">{ar ? "لا توجد استبيانات بعد" : "No surveys yet"}</p>
+                          <p className="text-xs mt-1 text-gray-300">{ar ? "أنشئ استبياناً من التبويب أعلاه" : "Create one from the tab above"}</p>
                         </div>
                       ) : (
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                          <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{ar ? "الاستبيان" : "Survey"}</span>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{ar ? "الحالة" : "Status"}</span>
-                          </div>
+                        <div className="grid gap-4">
                           {surveys.map((s, i) => {
                             const isActive = (s as Record<string,unknown>).active !== false;
+                            const qCount = (s.questions as unknown[])?.length || 0;
+                            const respCount = allResponses.filter(r => String(r.surveyId) === String(s.id)).length;
                             return (
                               <motion.div key={String(s.id)}
-                                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                                className="flex items-center gap-4 px-5 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors"
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                                className={`bg-white rounded-2xl border shadow-sm transition-all ${isActive ? "border-gray-100 hover:shadow-md" : "border-gray-100 opacity-60"}`}
                               >
-                                <div className="flex-1 min-w-0">
-                                  <p className={`text-sm font-semibold ${isActive ? "text-gray-800" : "text-gray-400"}`}>{String(s.title)}</p>
-                                  <div className="flex items-center gap-3 mt-0.5">
-                                    <span className="text-xs text-gray-400">{(s.questions as unknown[])?.length || 0} {ar ? "سؤال" : "questions"}</span>
-                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isActive ? "bg-turquoise/10 text-turquoise-dark" : "bg-gray-100 text-gray-400"}`}>
-                                      {isActive ? (ar ? "نشط" : "Active") : (ar ? "معطّل" : "Disabled")}
-                                    </span>
+                                <div className="flex items-center gap-4 p-5">
+                                  {/* Left accent */}
+                                  <div className={`w-1 self-stretch rounded-full shrink-0 ${isActive ? "bg-turquoise" : "bg-gray-200"}`} />
+
+                                  {/* Info */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <p className={`font-semibold text-sm truncate ${isActive ? "text-gray-800" : "text-gray-400"}`}>
+                                        {String(s.title)}
+                                      </p>
+                                      <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? "bg-turquoise/10 text-turquoise-dark" : "bg-gray-100 text-gray-400"}`}>
+                                        {isActive ? (ar ? "نشط" : "Active") : (ar ? "معطّل" : "Disabled")}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-gray-400 truncate mb-2">{String(s.description || "")}</p>
+                                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                                      <span className="flex items-center gap-1">
+                                        <ClipboardList className="w-3 h-3" />
+                                        {qCount} {ar ? "سؤال" : "questions"}
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <Users className="w-3 h-3" />
+                                        {respCount} {ar ? "رد" : "responses"}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Toggle */}
+                                  <div className="flex flex-col items-center gap-1.5 shrink-0">
+                                    <button
+                                      onClick={() => toggleSurveyActive(String(s.id), isActive)}
+                                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${isActive ? "bg-turquoise shadow-sm shadow-turquoise/30" : "bg-gray-200"}`}
+                                    >
+                                      <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-300 ${isActive ? "left-7" : "left-1"}`} />
+                                    </button>
+                                    <span className="text-[10px] text-gray-400">{isActive ? (ar ? "تعطيل" : "Disable") : (ar ? "تفعيل" : "Enable")}</span>
                                   </div>
                                 </div>
-                                <button
-                                  onClick={() => toggleSurveyActive(String(s.id), isActive)}
-                                  className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${isActive ? "bg-turquoise" : "bg-gray-200"}`}
-                                >
-                                  <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${isActive ? "left-6" : "left-1"}`} />
-                                </button>
                               </motion.div>
                             );
                           })}
