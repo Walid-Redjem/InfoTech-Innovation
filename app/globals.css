@@ -168,38 +168,104 @@ body {
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 /* ── Admin Dark Mode ── */
-.admin-dark { background: #0d1117 !important; color: #e2e8f0; }
-.admin-dark header { background: #161b22 !important; border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 1px 0 rgba(255,255,255,0.04) !important; }
-.admin-dark aside { background: #161b22 !important; border-color: rgba(255,255,255,0.06) !important; }
-.admin-dark .bg-white { background: #1c2333 !important; }
-.admin-dark .bg-gray-50 { background: #161b22 !important; }
-.admin-dark .bg-gray-100 { background: #21262d !important; }
-.admin-dark .bg-lilac\/30, .admin-dark .bg-lilac\/20, .admin-dark .bg-lilac\/50, .admin-dark .bg-lilac { background: rgba(155,107,155,0.12) !important; }
-.admin-dark .bg-purple-50  { background: rgba(155,107,155,0.15) !important; }
-.admin-dark .bg-teal-50    { background: rgba(46,196,182,0.12) !important; }
-.admin-dark .bg-amber-50   { background: rgba(245,158,11,0.12) !important; }
-.admin-dark .bg-green-50   { background: rgba(34,197,94,0.12) !important; }
-.admin-dark .bg-indigo-50  { background: rgba(99,102,241,0.12) !important; }
-.admin-dark .bg-orange-50  { background: rgba(249,115,22,0.12) !important; }
-.admin-dark .bg-red-50     { background: rgba(239,68,68,0.12) !important; }
-.admin-dark .text-gray-800, .admin-dark .text-gray-700 { color: #e2e8f0 !important; }
-.admin-dark .text-gray-600 { color: #cbd5e1 !important; }
-.admin-dark .text-gray-500 { color: #8b949e !important; }
-.admin-dark .text-gray-400 { color: #6e7681 !important; }
-.admin-dark .text-gray-300 { color: #484f58 !important; }
-.admin-dark .border-gray-100, .admin-dark .border-gray-50 { border-color: rgba(255,255,255,0.06) !important; }
-.admin-dark .border-gray-200 { border-color: rgba(255,255,255,0.1) !important; }
+/* Base palette: rich near-black with subtle purple undertone */
+.admin-dark {
+  background: #09090f !important;
+  color: #f4f4f5;
+}
+
+/* Header & sidebar — slightly elevated surface */
+.admin-dark header {
+  background: linear-gradient(180deg, #111118 0%, #0e0e14 100%) !important;
+  border-color: rgba(155,107,155,0.12) !important;
+  box-shadow: 0 1px 0 rgba(155,107,155,0.08), 0 4px 20px rgba(0,0,0,0.4) !important;
+}
+.admin-dark aside {
+  background: #111118 !important;
+  border-color: rgba(155,107,155,0.1) !important;
+}
+.admin-dark aside .bg-gradient-to-br {
+  background: linear-gradient(135deg, rgba(155,107,155,0.15), rgba(46,196,182,0.08)) !important;
+}
+
+/* Cards & surfaces */
+.admin-dark .bg-white {
+  background: #17171f !important;
+  border-color: rgba(155,107,155,0.1) !important;
+}
+.admin-dark .bg-gray-50 { background: #111118 !important; }
+.admin-dark .bg-gray-100 { background: #1e1e28 !important; }
+
+/* Colored bg overrides — keep the hue, darken significantly */
+.admin-dark .bg-lilac,
+.admin-dark .bg-lilac\/30,
+.admin-dark .bg-lilac\/20,
+.admin-dark .bg-lilac\/50    { background: rgba(155,107,155,0.14) !important; }
+.admin-dark .bg-lilac-dark\/30 { border-color: rgba(155,107,155,0.15) !important; }
+.admin-dark .bg-purple-50    { background: rgba(155,107,155,0.13) !important; }
+.admin-dark .bg-teal-50      { background: rgba(46,196,182,0.10) !important; }
+.admin-dark .bg-amber-50     { background: rgba(245,158,11,0.10) !important; }
+.admin-dark .bg-green-50     { background: rgba(34,197,94,0.10) !important; }
+.admin-dark .bg-indigo-50    { background: rgba(99,102,241,0.10) !important; }
+.admin-dark .bg-orange-50    { background: rgba(249,115,22,0.10) !important; }
+.admin-dark .bg-red-50       { background: rgba(239,68,68,0.10) !important; }
+.admin-dark .bg-turquoise\/10 { background: rgba(46,196,182,0.10) !important; }
+.admin-dark .bg-turquoise\/5  { background: rgba(46,196,182,0.07) !important; }
+
+/* Text */
+.admin-dark .text-gray-800,
+.admin-dark .text-gray-700  { color: #f4f4f5 !important; }
+.admin-dark .text-gray-600  { color: #d4d4d8 !important; }
+.admin-dark .text-gray-500  { color: #71717a !important; }
+.admin-dark .text-gray-400  { color: #52525b !important; }
+.admin-dark .text-gray-300  { color: #3f3f46 !important; }
+
+/* Borders */
+.admin-dark .border-gray-50,
+.admin-dark .border-gray-100 { border-color: rgba(155,107,155,0.08) !important; }
+.admin-dark .border-gray-200  { border-color: rgba(155,107,155,0.14) !important; }
+
+/* Inputs & selects */
 .admin-dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 .admin-dark select,
-.admin-dark textarea { background: #21262d !important; color: #e2e8f0 !important; border-color: rgba(255,255,255,0.1) !important; }
-.admin-dark input::placeholder, .admin-dark textarea::placeholder { color: #484f58 !important; }
-.admin-dark table thead { background: #161b22 !important; }
-.admin-dark table th { color: #8b949e !important; border-color: rgba(255,255,255,0.06) !important; }
-.admin-dark table td { border-color: rgba(255,255,255,0.04) !important; color: #e2e8f0; }
-.admin-dark tr:hover td { background: #21262d !important; }
-.admin-dark .divide-gray-50 > * + * { border-color: rgba(255,255,255,0.04) !important; }
-.admin-dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
-.admin-dark .hover\:bg-gray-50:hover { background: #21262d !important; }
-.admin-dark .hover\:bg-lilac\/20:hover { background: rgba(155,107,155,0.12) !important; }
-.admin-dark .hover\:bg-red-50:hover { background: rgba(239,68,68,0.12) !important; }
-.admin-dark .hover\:bg-gray-100:hover { background: #21262d !important; }
+.admin-dark textarea {
+  background: #1e1e28 !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(155,107,155,0.15) !important;
+}
+.admin-dark input::placeholder,
+.admin-dark textarea::placeholder { color: #52525b !important; }
+.admin-dark input:focus,
+.admin-dark select:focus,
+.admin-dark textarea:focus {
+  border-color: rgba(155,107,155,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(155,107,155,0.08) !important;
+}
+
+/* Tables */
+.admin-dark table thead,
+.admin-dark table thead th { background: #111118 !important; color: #71717a !important; }
+.admin-dark table td        { color: #d4d4d8 !important; border-color: rgba(155,107,155,0.06) !important; }
+.admin-dark table th        { border-color: rgba(155,107,155,0.08) !important; }
+.admin-dark tr:hover td     { background: #1e1e28 !important; }
+.admin-dark .divide-gray-50 > * + * { border-color: rgba(155,107,155,0.06) !important; }
+
+/* Shadows — more dramatic in dark */
+.admin-dark .shadow-sm  { box-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(155,107,155,0.08) !important; }
+.admin-dark .shadow-xl  { box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
+
+/* Hover states */
+.admin-dark .hover\:bg-gray-50:hover,
+.admin-dark .hover\:bg-gray-100:hover   { background: #1e1e28 !important; }
+.admin-dark .hover\:bg-lilac\/20:hover  { background: rgba(155,107,155,0.12) !important; }
+.admin-dark .hover\:bg-lilac\/50:hover  { background: rgba(155,107,155,0.18) !important; }
+.admin-dark .hover\:bg-red-50:hover     { background: rgba(239,68,68,0.1) !important; }
+
+/* Sidebar nav active item stays gradient — just slightly more vivid */
+.admin-dark .bg-gradient-to-r.from-mauve { /* keep as is */ }
+
+/* Scrollbar */
+.admin-dark ::-webkit-scrollbar { width: 6px; }
+.admin-dark ::-webkit-scrollbar-track { background: #09090f; }
+.admin-dark ::-webkit-scrollbar-thumb { background: rgba(155,107,155,0.3); border-radius: 3px; }
+.admin-dark ::-webkit-scrollbar-thumb:hover { background: rgba(155,107,155,0.5); }
