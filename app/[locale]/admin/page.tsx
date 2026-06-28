@@ -719,29 +719,40 @@ export default function AdminDashboard() {
                               </button>
                             </div>
 
-                            {/* Responses list */}
-                            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            {/* Responses grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                               {surveyResps.map((resp, i) => {
                                 const answerCount = resp.answers && typeof resp.answers === "object" ? Object.keys(resp.answers as object).length : 0;
+                                const isRead = (resp as Record<string,unknown>).read === true;
                                 return (
-                                  <motion.button
+                                  <motion.div
                                     key={String(resp.id)}
                                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}
-                                    onClick={() => setSelectedResponse(resp)}
-                                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start hover:bg-lilac/20 transition-colors border-b border-gray-50 last:border-0"
+                                    className={`bg-white rounded-2xl border shadow-sm transition-all ${isRead ? "border-turquoise/30 bg-turquoise/5" : "border-gray-100 hover:shadow-md"}`}
                                   >
-                                    <div className="flex items-center gap-3">
-                                      <span className="w-8 h-8 rounded-full bg-lilac flex items-center justify-center text-xs font-bold text-mauve shrink-0">{i + 1}</span>
-                                      <div>
-                                        <p className="text-sm font-semibold text-gray-700">{ar ? `رد #${i + 1}` : `Response #${i + 1}`}</p>
-                                        <p className="text-xs text-gray-400">{answerCount} {ar ? "إجابة" : "answers"}</p>
+                                    <button onClick={() => setSelectedResponse(resp)} className="w-full text-start p-4">
+                                      <div className="flex items-start justify-between gap-2 mb-3">
+                                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${isRead ? "bg-turquoise/20 text-turquoise-dark" : "bg-lilac text-mauve"}`}>{i + 1}</span>
+                                        {isRead && <CheckCircle2 className="w-4 h-4 text-turquoise shrink-0 mt-1" />}
                                       </div>
+                                      <p className="text-sm font-semibold text-gray-700 mb-1">{ar ? `رد #${i + 1}` : `Response #${i + 1}`}</p>
+                                      <p className="text-xs text-gray-400 mb-2">{answerCount} {ar ? "إجابة" : "answers"}</p>
+                                      <p className="text-xs text-gray-300">{formatDate(resp.createdAt)}</p>
+                                    </button>
+                                    {/* Mark as read */}
+                                    <div className="border-t border-gray-50 px-4 py-2.5">
+                                      <button
+                                        onClick={async () => {
+                                          await updateDoc(doc(db, "surveyResponses", String(resp.id)), { read: !isRead });
+                                          setAllResponses(prev => prev.map(r => String(r.id) === String(resp.id) ? { ...r, read: !isRead } : r));
+                                        }}
+                                        className={`flex items-center gap-1.5 text-xs font-semibold transition-colors ${isRead ? "text-turquoise hover:text-gray-400" : "text-gray-400 hover:text-turquoise"}`}
+                                      >
+                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                        {isRead ? (ar ? "تم القراءة ✓" : "Read ✓") : (ar ? "تحديد كمقروء" : "Mark as read")}
+                                      </button>
                                     </div>
-                                    <div className="flex items-center gap-3 shrink-0">
-                                      <span className="text-xs text-gray-400">{formatDate(resp.createdAt)}</span>
-                                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                                    </div>
-                                  </motion.button>
+                                  </motion.div>
                                 );
                               })}
                             </div>
