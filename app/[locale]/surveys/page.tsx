@@ -30,16 +30,16 @@ type View = "list" | "form" | "success";
 
 const contextColors: Record<string, string> = {
   education: "bg-purple-100 text-purple-700",
-  youth:     "bg-turquoise/10 text-turquoise-dark",
+  youth:     "bg-teal-100 text-teal-700",
   activity:  "bg-orange-100 text-orange-700",
-  general:   "bg-gray-100 text-gray-600",
+  general:   "bg-purple-100 text-purple-700",
 };
 
-const contextAccents: Record<string, string> = {
-  education: "from-purple-400 to-mauve",
-  youth:     "from-turquoise to-teal-400",
-  activity:  "from-orange-400 to-amber-400",
-  general:   "from-mauve to-turquoise",
+const contextGradients: Record<string, string> = {
+  education: "linear-gradient(135deg, #a855f7, #9B6B9B)",
+  youth:     "linear-gradient(135deg, #2EC4B6, #0d9488)",
+  activity:  "linear-gradient(135deg, #f97316, #f59e0b)",
+  general:   "linear-gradient(135deg, #9B6B9B, #2EC4B6)",
 };
 
 export default function SurveysPage() {
@@ -372,7 +372,7 @@ export default function SurveysPage() {
           {!loading && surveys.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {surveys.map((survey, i) => {
-                const accent = contextAccents[survey.context] || contextAccents.general;
+                const gradient = contextGradients[survey.context] || contextGradients.general;
                 const qCount = survey.questions?.length || 0;
                 const mins = Math.max(1, Math.ceil(qCount * 0.5));
                 return (
@@ -385,24 +385,24 @@ export default function SurveysPage() {
                     onClick={() => openSurvey(survey)}
                     className="relative rounded-3xl overflow-hidden cursor-pointer group flex flex-col transition-all duration-300"
                     style={{
-                      background: "rgba(255,255,255,0.55)",
+                      background: "rgba(255,255,255,0.6)",
                       backdropFilter: "blur(20px)",
                       WebkitBackdropFilter: "blur(20px)",
-                      border: "1px solid rgba(255,255,255,0.7)",
-                      boxShadow: "0 4px 24px rgba(155,107,155,0.08)",
+                      border: "1px solid rgba(255,255,255,0.8)",
+                      boxShadow: "0 4px 24px rgba(155,107,155,0.1)",
                     }}
                   >
                     {/* Hover glow */}
-                    <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
-                      style={{ boxShadow: "0 8px 40px rgba(155,107,155,0.22), inset 0 0 0 1px rgba(155,107,155,0.2)" }} />
+                    <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                      style={{ boxShadow: "0 8px 40px rgba(155,107,155,0.2), inset 0 0 0 1px rgba(155,107,155,0.15)" }} />
 
                     {/* Gradient top accent line */}
-                    <div className={`h-[3px] w-full bg-gradient-to-r ${accent} flex-shrink-0`} />
+                    <div className="h-[3px] w-full flex-shrink-0" style={{ background: gradient }} />
 
                     <div className="relative p-6 flex flex-col flex-1">
                       {/* Large decorative number */}
                       <span className="absolute top-2 end-4 text-[72px] font-black leading-none select-none pointer-events-none"
-                        style={{ color: "rgba(155,107,155,0.07)" }}>
+                        style={{ color: "rgba(155,107,155,0.06)" }}>
                         {String(i + 1).padStart(2, "0")}
                       </span>
 
@@ -433,13 +433,13 @@ export default function SurveysPage() {
                         </span>
                       </div>
 
-                      {/* Gradient CTA with glow on hover */}
+                      {/* Gradient CTA */}
                       <button
                         onClick={e => { e.stopPropagation(); openSurvey(survey); }}
-                        className={`mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r ${accent} transition-all duration-300 relative z-10`}
-                        style={{ boxShadow: "0 2px 12px rgba(155,107,155,0.2)" }}
-                        onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 20px rgba(155,107,155,0.45)")}
-                        onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 12px rgba(155,107,155,0.2)")}
+                        className="mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-all duration-300 relative z-10"
+                        style={{ background: gradient, boxShadow: "0 2px 12px rgba(155,107,155,0.25)" }}
+                        onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 20px rgba(155,107,155,0.5)")}
+                        onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 12px rgba(155,107,155,0.25)")}
                       >
                         {t("start")}
                       </button>
