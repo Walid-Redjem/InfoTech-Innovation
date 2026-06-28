@@ -854,7 +854,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Create sub-tab */}
-                  {surveySubTab === "create" && <div className="max-w-3xl">
+                  {surveySubTab === "create" && <div>
 
                   {createSuccess && (
                     <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
