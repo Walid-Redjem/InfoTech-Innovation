@@ -328,7 +328,7 @@ export default function SurveysPage() {
     <div>
 
       {/* Rich header */}
-      <div className="relative overflow-hidden py-20 px-6 text-center" style={{ background: "linear-gradient(135deg, #9B6B9B 0%, #6b3fa0 50%, #4a2080 100%)" }}>
+      <div className="relative overflow-hidden py-20 px-6 text-center" style={{ background: "linear-gradient(135deg, #b57abd 0%, #9B6B9B 40%, #7a4fa8 100%)" }}>
         {/* Dot grid */}
         <div className="absolute inset-0 opacity-15"
           style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
