@@ -72,6 +72,7 @@ export default function AdminDashboard() {
   const [responses, setResponses]         = useState<Record<string, unknown>[]>([]);
   const [allResponses, setAllResponses]   = useState<Record<string, unknown>[]>([]);
   const [selectedSurvey, setSelectedSurvey] = useState("");
+  const [selectedResponse, setSelectedResponse] = useState<Record<string,unknown> | null>(null);
   const [activities, setActivities] = useState<Record<string,unknown>[]>([]);
   const [activityForm, setActivityForm] = useState({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" });
   const [editingActivity, setEditingActivity] = useState<string|null>(null);
@@ -686,24 +687,32 @@ export default function AdminDashboard() {
                       <p className="text-sm">{ar ? "لا توجد ردود بعد لهذا الاستبيان." : "No responses yet for this survey."}</p>
                     </div>
                   )}
-                  <div className="space-y-4">
-                    {responses.map((resp, i) => (
-                      <motion.div key={String(resp.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="bg-lilac text-mauve text-xs font-bold px-3 py-1 rounded-full">Response #{i + 1}</span>
-                          <span className="text-xs text-gray-400">{formatDate(resp.createdAt)}</span>
-                        </div>
-                        {resp.answers != null && typeof resp.answers === "object" &&
-                          Object.entries(resp.answers as Record<string, string | number>).map(([qId, ans]) => (
-                            <div key={qId} className="mb-3 pb-3 border-b border-gray-50 last:border-0">
-                              <span className="text-xs font-bold text-gray-400 uppercase tracking-wide block mb-1">{qId}</span>
-                              <p className="text-sm text-gray-700">{String(ans)}</p>
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    {responses.map((resp, i) => {
+                      const answerCount = resp.answers && typeof resp.answers === "object" ? Object.keys(resp.answers as object).length : 0;
+                      return (
+                        <motion.button
+                          key={String(resp.id)}
+                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                          onClick={() => setSelectedResponse(resp)}
+                          className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start hover:bg-lilac/20 transition-colors border-b border-gray-50 last:border-0"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-full bg-lilac flex items-center justify-center text-xs font-bold text-mauve shrink-0">
+                              {i + 1}
+                            </span>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-700">{ar ? `رد #${i + 1}` : `Response #${i + 1}`}</p>
+                              <p className="text-xs text-gray-400">{answerCount} {ar ? "إجابة" : "answers"}</p>
                             </div>
-                          ))
-                        }
-                      </motion.div>
-                    ))}
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="text-xs text-gray-400">{formatDate(resp.createdAt)}</span>
+                            <ChevronRight className="w-4 h-4 text-gray-300" />
+                          </div>
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1203,6 +1212,46 @@ export default function AdminDashboard() {
           </AnimatePresence>
         </main>
       </div>
+
+      {/* Response detail modal */}
+      {selectedResponse && (() => {
+        const survey = surveys.find(s => String(s.id) === String(selectedResponse.surveyId));
+        const answers = (selectedResponse.answers as Record<string, string | number>) || {};
+        const questions = (survey as Record<string,unknown>)?.questions as { id: string; text: string; type: string }[] | undefined;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedResponse(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div>
+                  <h2 className="font-bold text-gray-800">{String(selectedResponse.surveyTitle || (ar ? "رد الاستبيان" : "Survey Response"))}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{formatDate(selectedResponse.createdAt)}</p>
+                </div>
+                <button onClick={() => setSelectedResponse(null)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                  <X className="w-4 h-4 text-gray-500" />
+                </button>
+              </div>
+              {/* Answers */}
+              <div className="overflow-y-auto px-6 py-5 space-y-4 flex-1">
+                {Object.entries(answers).map(([qId, ans], i) => {
+                  const questionText = questions?.find(q => q.id === qId)?.text || qId;
+                  return (
+                    <div key={qId} className="bg-lilac/30 rounded-2xl p-4">
+                      <p className="text-xs font-bold text-mauve/60 uppercase tracking-wide mb-1">
+                        {ar ? `السؤال ${i + 1}` : `Question ${i + 1}`}
+                      </p>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">{questionText}</p>
+                      <p className="text-sm text-gray-600 bg-white rounded-xl px-3 py-2">{String(ans)}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
+        );
+      })()}
 
       {/* Registration detail modal */}
       {selectedReg && (
