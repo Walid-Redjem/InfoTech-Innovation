@@ -756,7 +756,7 @@ export default function AdminDashboard() {
                             </div>
 
                             {/* Responses grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3">
                               {surveyResps.map((resp, i) => {
                                 const answerCount = resp.answers && typeof resp.answers === "object" ? Object.keys(resp.answers as object).length : 0;
                                 const isRead = (resp as Record<string,unknown>).read === true;
@@ -919,10 +919,10 @@ export default function AdminDashboard() {
               {tab === "create" && (
                 <div>
                   {/* Sub-tab bar */}
-                  <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit mb-8">
+                  <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-full sm:w-fit mb-8">
                     {([["create", ar ? "إنشاء استبيان" : "Create Survey", PlusCircle], ["view", ar ? "عرض الاستبيانات" : "View Surveys", ClipboardList]] as const).map(([key, label, Icon]) => (
                       <button key={key} onClick={() => setSurveySubTab(key)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${surveySubTab === key ? "bg-white shadow-sm text-mauve" : "text-gray-500 hover:text-gray-700"}`}>
+                        className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${surveySubTab === key ? "bg-white shadow-sm text-mauve" : "text-gray-500 hover:text-gray-700"}`}>
                         <Icon className="w-4 h-4" />{label}
                       </button>
                     ))}
@@ -1544,10 +1544,10 @@ export default function AdminDashboard() {
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedResponse(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[88vh] flex flex-col overflow-hidden z-10">
+              className="relative bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-xl max-h-[92vh] md:max-h-[88vh] flex flex-col overflow-hidden z-10">
 
               {/* Gradient header */}
-              <div className="relative px-7 pt-7 pb-6 overflow-hidden"
+              <div className="relative px-4 md:px-7 pt-5 md:pt-7 pb-5 md:pb-6 overflow-hidden"
                 style={{ background: "linear-gradient(135deg, #9B6B9B 0%, #6b3fa0 60%, #2EC4B6 100%)" }}>
                 {/* Decorative circles */}
                 <div className="absolute top-[-30px] right-[-30px] w-32 h-32 rounded-full bg-white/10" />

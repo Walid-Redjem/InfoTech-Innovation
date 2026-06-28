@@ -85,8 +85,8 @@ export default function FAQPage() {
       {/* Rich header */}
       <div className="relative overflow-hidden bg-gradient-to-br from-mauve via-[#7A4FA0] to-turquoise-dark py-20 px-6 text-center">
         {/* Background decoration */}
-        <div className="absolute top-[-80px] left-[-80px] w-72 h-72 rounded-full bg-white/5" />
-        <div className="absolute bottom-[-60px] right-[-60px] w-80 h-80 rounded-full bg-white/5" />
+        <div className="absolute top-[-80px] left-[-80px] w-48 h-48 sm:w-72 sm:h-72 rounded-full bg-white/5" />
+        <div className="absolute bottom-[-60px] right-[-60px] w-56 h-56 sm:w-80 sm:h-80 rounded-full bg-white/5" />
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 

@@ -623,17 +623,17 @@ export default function JoinPage() {
 
       {/* Terms Modal */}
       {showTerms && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => { setShowTerms(false); setTermsChecked(false); }} />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2 }}
-            className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.25 }}
+            className="relative bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-2xl max-h-[90vh] sm:max-h-[80vh] flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
               <div>
                 <h2 className="font-bold text-gray-800 text-lg">{ar ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}</h2>
                 <p className="text-xs text-gray-400 mt-0.5">{ar ? "آخر تحديث: يونيو 2026" : "Last updated: June 2026"}</p>
@@ -643,7 +643,7 @@ export default function JoinPage() {
               </button>
             </div>
             {/* Scrollable content */}
-            <div className="overflow-y-auto px-6 py-5 space-y-4 flex-1">
+            <div className="overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-3 sm:space-y-4 flex-1">
               {(ar ? sectionsAr : sectionsEn).map((section, i) => (
                 <div key={i} className="bg-gradient-to-br from-lilac/30 to-white rounded-2xl p-4 border border-lilac-dark/20">
                   <h3 className="font-bold text-mauve text-sm mb-2">{section.title}</h3>
@@ -652,7 +652,7 @@ export default function JoinPage() {
               ))}
             </div>
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-100 space-y-3">
+            <div className="px-4 sm:px-6 py-4 border-t border-gray-100 space-y-3">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"

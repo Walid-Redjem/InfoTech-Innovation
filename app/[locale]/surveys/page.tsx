@@ -255,7 +255,7 @@ export default function SurveysPage() {
 
               {/* Star rating */}
               {currentQ.type === "rating" && (
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3">
                   {[1, 2, 3, 4, 5].map(star => (
                     <motion.button
                       key={star}
@@ -268,7 +268,7 @@ export default function SurveysPage() {
                       className="transition-transform"
                     >
                       <Star
-                        className={`w-12 h-12 transition-colors ${
+                        className={`w-10 h-10 md:w-12 md:h-12 transition-colors ${
                           (hoveredStar || (answers[currentQ.id] as number)) >= star
                             ? "fill-turquoise text-turquoise"
                             : "text-gray-200 fill-gray-200"
@@ -284,7 +284,7 @@ export default function SurveysPage() {
 
         {/* Bottom nav — fixed */}
         <div className="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-md border-t border-gray-100">
-          <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="max-w-2xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3">
             <button
               onClick={goBack}
               disabled={current === 0}
@@ -301,7 +301,7 @@ export default function SurveysPage() {
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={handleSubmit}
                 disabled={submitting || (currentQ.required && !isAnswered)}
-                className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-8 py-2.5 rounded-full font-semibold shadow-lg shadow-mauve/20 hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 md:px-8 py-2.5 rounded-full font-semibold shadow-lg shadow-mauve/20 hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
               >
                 {submitting ? (isRTL ? "جارٍ الإرسال..." : "Submitting...") : t("submit")}
                 <CheckCircle2 className="w-4 h-4" />
@@ -311,7 +311,7 @@ export default function SurveysPage() {
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={goNext}
                 disabled={currentQ.required && !isAnswered}
-                className="flex items-center gap-2 bg-mauve text-white px-8 py-2.5 rounded-full font-semibold hover:bg-mauve-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-mauve text-white px-5 md:px-8 py-2.5 rounded-full font-semibold hover:bg-mauve-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
               >
                 {isRTL ? "التالي" : "Next"}
                 <NextArrow className="w-4 h-4" />
