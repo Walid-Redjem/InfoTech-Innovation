@@ -135,15 +135,15 @@ export default function Hero() {
           transition={{ delay: 0.3 }}
           className="text-base md:text-2xl font-semibold text-gray-600 mb-4 h-8 md:h-10 flex items-center justify-center gap-2 flex-wrap"
         >
-          <span className="whitespace-nowrap">{locale === "ar" ? "من أجل" : "Building a better"}</span>
-          <span className="relative inline-block overflow-hidden" style={{ minWidth: "8rem" }}>
+          <span>{locale === "ar" ? "من أجل" : "Building a better"}</span>
+          <span className="overflow-hidden inline-flex items-center">
             <AnimatePresence mode="wait">
               <motion.span
                 key={wordIndex}
-                initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
-                animate={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
-                exit={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3 }}
                 className="text-turquoise font-bold inline-block"
               >
                 {words[wordIndex]}
