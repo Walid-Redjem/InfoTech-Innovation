@@ -854,86 +854,119 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Create sub-tab */}
-                  {surveySubTab === "create" && <div className="max-w-2xl">
-                  <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "إنشاء استبيان جديد" : "Create New Survey"}</h2>
-                  <p className="text-sm text-gray-400 mb-6">{ar ? "أنشئ استبياناً وانشره فوراً على المنصة" : "Build a survey and publish it instantly to the platform"}</p>
+                  {surveySubTab === "create" && <div className="max-w-3xl">
 
                   {createSuccess && (
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                      className="bg-turquoise/10 border border-turquoise/30 text-turquoise-dark rounded-xl px-4 py-3 text-sm mb-6 flex items-center gap-2">
-                      <span className="text-xl">✓</span> {ar ? "تم نشر الاستبيان بنجاح!" : "Survey published successfully!"}
+                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                      className="bg-turquoise/10 border border-turquoise/30 text-turquoise-dark rounded-2xl px-5 py-4 text-sm mb-6 flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-turquoise shrink-0" />
+                      <span className="font-semibold">{ar ? "تم نشر الاستبيان بنجاح!" : "Survey published successfully!"}</span>
                     </motion.div>
                   )}
 
-                  <form onSubmit={handleCreateSurvey} className="space-y-5">
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-                      <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide">{ar ? "تفاصيل الاستبيان" : "Survey Details"}</h3>
-                      <AdminField label={ar ? "العنوان" : "Title"}>
-                        <input value={surveyTitle} onChange={e => setSurveyTitle(e.target.value)} required className={adminInput} placeholder={ar ? "مثال: تقييم احتياجات المجتمع" : "e.g. Community Needs Assessment"} />
-                      </AdminField>
-                      <AdminField label={ar ? "الوصف" : "Description"}>
-                        <input value={surveyDesc} onChange={e => setSurveyDesc(e.target.value)} className={adminInput} placeholder={ar ? "وصف قصير (اختياري)" : "Short description (optional)"} />
-                      </AdminField>
-                      <AdminField label={ar ? "السياق" : "Context"}>
-                        <select value={surveyContext} onChange={e => setSurveyContext(e.target.value)} className={adminInput}>
-                          {[["general", ar ? "عام" : "General"], ["education", ar ? "تعليم" : "Education"], ["youth", ar ? "شباب" : "Youth"], ["activity", ar ? "نشاط" : "Activity"]]
-                            .map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                        </select>
-                      </AdminField>
+                  <form onSubmit={handleCreateSurvey}>
+                    {/* ── SURVEY INFO ── */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-5">
+                      <div className="px-6 py-4 border-b border-gray-50 flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg,#9B6B9B,#2EC4B6)" }}>
+                          <ClipboardList className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <h3 className="font-bold text-gray-800 text-sm">{ar ? "تفاصيل الاستبيان" : "Survey Details"}</h3>
+                      </div>
+                      <div className="p-6 space-y-5">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">{ar ? "العنوان" : "Title"} <span className="text-red-400">*</span></label>
+                          <input value={surveyTitle} onChange={e => setSurveyTitle(e.target.value)} required className={adminInput} placeholder={ar ? "مثال: تقييم احتياجات المجتمع" : "e.g. Community Needs Assessment"} />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">{ar ? "الوصف" : "Description"}</label>
+                          <input value={surveyDesc} onChange={e => setSurveyDesc(e.target.value)} className={adminInput} placeholder={ar ? "وصف قصير (اختياري)" : "Short description (optional)"} />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">{ar ? "السياق" : "Category"}</label>
+                          <div className="flex flex-wrap gap-2">
+                            {[["general", ar ? "عام" : "General", "#9B6B9B"], ["education", ar ? "تعليم" : "Education", "#a855f7"], ["youth", ar ? "شباب" : "Youth", "#2EC4B6"], ["activity", ar ? "نشاط" : "Activity", "#f97316"]]
+                              .map(([v, l, color]) => (
+                                <button key={v} type="button" onClick={() => setSurveyContext(v)}
+                                  className={`px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all ${surveyContext === v ? "text-white border-transparent" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"}`}
+                                  style={surveyContext === v ? { background: color, borderColor: color } : {}}>
+                                  {l}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                      <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-4">{ar ? "الأسئلة" : "Questions"}</h3>
-                      <div className="space-y-4">
+                    {/* ── QUESTIONS ── */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-5">
+                      <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg,#9B6B9B,#2EC4B6)" }}>
+                            <span className="text-white text-xs font-bold">{questions.length}</span>
+                          </div>
+                          <h3 className="font-bold text-gray-800 text-sm">{ar ? "الأسئلة" : "Questions"}</h3>
+                        </div>
+                        <button type="button" onClick={addQuestion}
+                          className="flex items-center gap-1.5 text-xs font-bold text-mauve bg-lilac/50 hover:bg-lilac px-3 py-1.5 rounded-lg transition-colors">
+                          <PlusCircle className="w-3.5 h-3.5" /> {ar ? "إضافة سؤال" : "Add question"}
+                        </button>
+                      </div>
+                      <div className="p-6 space-y-4">
                         {questions.map((q, i) => (
-                          <div key={i} className="bg-gray-50 rounded-xl p-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-mauve uppercase">{ar ? `سؤال ${i + 1}` : `Question ${i + 1}`}</span>
+                          <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                            className="rounded-2xl border border-gray-100 overflow-hidden">
+                            {/* Question header */}
+                            <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                              <span className="text-xs font-bold text-mauve uppercase tracking-wide">
+                                {ar ? `السؤال ${i + 1}` : `Question ${i + 1}`}
+                              </span>
                               {questions.length > 1 && (
                                 <button type="button" onClick={() => setQuestions(prev => prev.filter((_, idx) => idx !== i))}
-                                  className="text-red-400 hover:text-red-600 transition-colors">
-                                  <Trash2 className="w-4 h-4" />
+                                  className="w-6 h-6 rounded-full hover:bg-red-50 flex items-center justify-center transition-colors group">
+                                  <Trash2 className="w-3.5 h-3.5 text-gray-300 group-hover:text-red-400 transition-colors" />
                                 </button>
                               )}
                             </div>
-                            <input value={q.text} onChange={e => updateQuestion(i, "text", e.target.value)} required className={adminInput} placeholder={ar ? "نص السؤال" : "Question text"} />
-                            <div className="flex gap-3 flex-wrap">
-                              <select value={q.type} onChange={e => updateQuestion(i, "type", e.target.value)} className={`${adminInput} max-w-[180px]`}>
-                                <option value="text">{ar ? "نص حر" : "Text answer"}</option>
-                                <option value="choice">{ar ? "اختيار متعدد" : "Multiple choice"}</option>
-                                <option value="rating">{ar ? "تقييم (1–5)" : "Rating (1–5)"}</option>
-                              </select>
-                              <label className="flex items-center gap-2 text-sm text-gray-500">
-                                <input type="checkbox" checked={q.required} onChange={e => updateQuestion(i, "required", e.target.checked)} className="accent-turquoise" />
-                                {ar ? "إلزامي" : "Required"}
-                              </label>
+                            {/* Question body */}
+                            <div className="p-4 space-y-3">
+                              <input value={q.text} onChange={e => updateQuestion(i, "text", e.target.value)} required className={adminInput} placeholder={ar ? "اكتب السؤال هنا..." : "Write your question here..."} />
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <select value={q.type} onChange={e => updateQuestion(i, "type", e.target.value)} className={`${adminInput} max-w-[180px]`}>
+                                  <option value="text">{ar ? "نص حر" : "Text answer"}</option>
+                                  <option value="choice">{ar ? "اختيار متعدد" : "Multiple choice"}</option>
+                                  <option value="rating">{ar ? "تقييم (1–5)" : "Rating (1–5)"}</option>
+                                </select>
+                                <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
+                                  <input type="checkbox" checked={q.required} onChange={e => updateQuestion(i, "required", e.target.checked)} className="accent-turquoise" />
+                                  {ar ? "إلزامي" : "Required"}
+                                </label>
+                              </div>
+                              {q.type === "choice" && (
+                                <input value={q.options} onChange={e => updateQuestion(i, "options", e.target.value)} className={adminInput} placeholder={ar ? "الخيارات: خيار أ، خيار ب، خيار ج" : "Options: Option A, Option B, Option C"} />
+                              )}
                             </div>
-                            {q.type === "choice" && (
-                              <input value={q.options} onChange={e => updateQuestion(i, "options", e.target.value)} className={adminInput} placeholder={ar ? "الخيارات: خيار أ، خيار ب، خيار ج" : "Options: Option A, Option B, Option C"} />
-                            )}
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
-                      <button type="button" onClick={addQuestion}
-                        className="mt-4 flex items-center gap-2 text-sm text-turquoise font-semibold hover:opacity-70 transition-opacity">
-                        <PlusCircle className="w-4 h-4" /> {ar ? "إضافة سؤال" : "Add question"}
-                      </button>
                     </div>
 
-                    {/* Notify users option */}
-                    <label className="flex items-center gap-3 bg-lilac/30 rounded-xl px-4 py-3 cursor-pointer hover:bg-lilac/50 transition-colors">
-                      <input type="checkbox" checked={notifyUsers} onChange={e => setNotifyUsers(e.target.checked)} className="accent-turquoise w-4 h-4" />
-                      <div>
-                        <p className="text-sm font-semibold text-mauve">{ar ? "إشعار المستخدمين المسجلين" : "Notify registered users"}</p>
-                        <p className="text-xs text-gray-400">{ar ? "سيتلقى جميع الأعضاء المقبولين بريداً إلكترونياً عن هذا الاستبيان" : "All approved members will receive an email about this survey"}</p>
-                      </div>
-                    </label>
-
-                    <motion.button type="submit" disabled={creating}
-                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                      className="bg-gradient-to-r from-mauve to-turquoise text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-mauve/20 hover:opacity-90 transition-opacity disabled:opacity-60">
-                      {creating ? (ar ? "جارٍ النشر..." : "Publishing...") : (ar ? "نشر الاستبيان" : "Publish Survey")}
-                    </motion.button>
+                    {/* ── BOTTOM BAR ── */}
+                    <div className="flex items-center justify-between gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={notifyUsers} onChange={e => setNotifyUsers(e.target.checked)} className="accent-turquoise w-4 h-4" />
+                        <div>
+                          <p className="text-sm font-semibold text-gray-700">{ar ? "إشعار المستخدمين" : "Notify users"}</p>
+                          <p className="text-xs text-gray-400">{ar ? "إرسال بريد إلكتروني للأعضاء المقبولين" : "Send email to approved members"}</p>
+                        </div>
+                      </label>
+                      <motion.button type="submit" disabled={creating}
+                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                        className="shrink-0 flex items-center gap-2 text-white px-7 py-2.5 rounded-xl font-semibold shadow-lg hover:opacity-90 transition-opacity disabled:opacity-60"
+                        style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)" }}>
+                        {creating ? (ar ? "جارٍ النشر..." : "Publishing...") : <><PlusCircle className="w-4 h-4" />{ar ? "نشر الاستبيان" : "Publish Survey"}</>}
+                      </motion.button>
+                    </div>
                   </form>
                   </div>}
 
