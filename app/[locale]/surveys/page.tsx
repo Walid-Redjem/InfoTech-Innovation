@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { collection, getDocs, addDoc, query, where, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where, orderBy, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { ClipboardList, CheckCircle2, Star, ArrowLeft, ArrowRight, Clock, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,7 +52,7 @@ export default function SurveysPage() {
   const [hoveredStar, setHoveredStar] = useState(0);
 
   useEffect(() => {
-    getDocs(query(collection(db, "surveys"), where("active", "==", true)))
+    getDocs(query(collection(db, "surveys"), where("active", "==", true), orderBy("createdAt", "desc")))
       .then(snap => setSurveys(snap.docs.map(d => ({ id: d.id, ...d.data() } as Survey))))
       .catch(() => {})
       .finally(() => setLoading(false));
