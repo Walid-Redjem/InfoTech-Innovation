@@ -40,6 +40,7 @@ export default function JoinPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
   const [shaking, setShaking] = useState(false);
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -623,7 +624,7 @@ export default function JoinPage() {
       {/* Terms Modal */}
       {showTerms && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowTerms(false)} />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => { setShowTerms(false); setTermsChecked(false); }} />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -637,7 +638,7 @@ export default function JoinPage() {
                 <h2 className="font-bold text-gray-800 text-lg">{ar ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}</h2>
                 <p className="text-xs text-gray-400 mt-0.5">{ar ? "آخر تحديث: يونيو 2026" : "Last updated: June 2026"}</p>
               </div>
-              <button onClick={() => setShowTerms(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+              <button onClick={() => { setShowTerms(false); setTermsChecked(false); }} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
                 <X className="w-4 h-4 text-gray-500" />
               </button>
             </div>
@@ -651,10 +652,22 @@ export default function JoinPage() {
               ))}
             </div>
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-100">
+            <div className="px-6 py-4 border-t border-gray-100 space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={termsChecked}
+                  onChange={e => setTermsChecked(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-mauve cursor-pointer flex-shrink-0"
+                />
+                <span className="text-xs text-gray-500">
+                  {ar ? "لقد قرأت الشروط وسياسة الخصوصية وأوافق عليها" : "I have read and agree to the Terms & Privacy Policy"}
+                </span>
+              </label>
               <button
-                onClick={() => setShowTerms(false)}
-                className="w-full bg-mauve text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-mauve-dark transition-colors"
+                onClick={() => { if (termsChecked) setShowTerms(false); }}
+                disabled={!termsChecked}
+                className="w-full bg-mauve text-white py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-mauve-dark"
               >
                 {ar ? "فهمت" : "Got it"}
               </button>
