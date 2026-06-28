@@ -1028,7 +1028,7 @@ export default function AdminDashboard() {
                             const qCount = (s.questions as unknown[])?.length || 0;
                             const respCount = allResponses.filter(r => String(r.surveyId) === String(s.id)).length;
                             const createdTs = (s as unknown as Record<string,unknown>).createdAt as Timestamp | undefined;
-                            const publishedDate = createdTs ? createdTs.toDate().toLocaleDateString(ar ? "ar-DZ" : "en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null;
+                            const publishedDate = createdTs ? createdTs.toDate().toLocaleDateString(ar ? "ar-DZ" : "en-GB", { month: "long", year: "numeric" }) : null;
                             return (
                               <motion.div key={String(s.id)}
                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
