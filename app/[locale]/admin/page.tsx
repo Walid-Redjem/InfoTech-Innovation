@@ -957,7 +957,7 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* Search bar */}
-                      <div className="flex items-center gap-3 mb-6">
+                      <div className="flex items-center gap-3 mb-6 max-w-lg">
                         <div className="relative flex-1">
                           <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
@@ -969,10 +969,10 @@ export default function AdminDashboard() {
                           />
                         </div>
                         <input
-                          type="date"
+                          type="month"
                           value={surveyDateFilter}
                           onChange={e => setSurveyDateFilter(e.target.value)}
-                          className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600"
+                          className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 shrink-0"
                         />
                         {(surveySearch || surveyDateFilter) && (
                           <button onClick={() => { setSurveySearch(""); setSurveyDateFilter(""); }}
@@ -986,7 +986,7 @@ export default function AdminDashboard() {
                         const filtered = surveys.filter(s => {
                           const matchName = !surveySearch || String(s.title).toLowerCase().includes(surveySearch.toLowerCase());
                           const ts = (s as unknown as Record<string,unknown>).createdAt as Timestamp | undefined;
-                          const matchDate = !surveyDateFilter || (ts && ts.toDate().toISOString().startsWith(surveyDateFilter));
+                          const matchDate = !surveyDateFilter || (ts && ts.toDate().toISOString().slice(0, 7) === surveyDateFilter);
                           return matchName && matchDate;
                         });
                         return surveys.length === 0 ? (
