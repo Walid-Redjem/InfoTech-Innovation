@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
+import { ChevronDown, HelpCircle } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import Link from "next/link";
 
@@ -83,26 +82,49 @@ export default function FAQPage() {
 
   return (
     <div>
-      <PageHeader
-        badge={ar ? "الأسئلة الشائعة" : "FAQ"}
-        title={ar ? "أسئلة وأجوبة" : "Frequently Asked Questions"}
-        subtitle={ar ? "كل ما تحتاج معرفته حول InfoTech Innovation" : "Everything you need to know about InfoTech Innovation"}
-      />
+      {/* Rich header */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-mauve via-[#7A4FA0] to-turquoise-dark py-20 px-6 text-center">
+        {/* Background decoration */}
+        <div className="absolute top-[-80px] left-[-80px] w-72 h-72 rounded-full bg-white/5" />
+        <div className="absolute bottom-[-60px] right-[-60px] w-80 h-80 rounded-full bg-white/5" />
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10 max-w-2xl mx-auto">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/15 rounded-2xl mb-6 backdrop-blur-sm">
+            <HelpCircle className="w-8 h-8 text-white" />
+          </div>
+          <span className="block text-xs font-bold uppercase tracking-widest text-turquoise/80 mb-3">
+            {ar ? "الأسئلة الشائعة" : "FAQ"}
+          </span>
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            {ar ? "أسئلة وأجوبة" : "Frequently Asked Questions"}
+          </h1>
+          <p className="text-white/70 text-sm md:text-base leading-relaxed">
+            {ar ? "كل ما تحتاج معرفته حول InfoTech Innovation" : "Everything you need to know about InfoTech Innovation"}
+          </p>
+        </motion.div>
+      </div>
 
       <section className="py-16 px-6 bg-gradient-to-b from-white to-lilac/20">
         <div className="max-w-2xl mx-auto space-y-3">
           {faqs.map((faq, i) => (
             <AnimatedSection key={i} delay={i * 0.04}>
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-200 ${open === i ? "border-mauve/30 shadow-mauve/10" : "border-gray-100"}`}>
                 <button
                   onClick={() => setOpen(open === i ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 px-6 py-4 text-start hover:bg-lilac/20 transition-colors"
+                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start hover:bg-lilac/20 transition-colors"
                 >
-                  <span className="font-semibold text-gray-800 text-sm leading-snug">
-                    {ar ? faq.ar : faq.en}
-                  </span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={`flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-colors ${open === i ? "bg-mauve text-white" : "bg-lilac text-mauve"}`}>
+                      {i + 1}
+                    </span>
+                    <span className="font-semibold text-gray-800 text-sm leading-snug">
+                      {ar ? faq.ar : faq.en}
+                    </span>
+                  </div>
                   <motion.div animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.25 }} className="flex-shrink-0">
-                    <ChevronDown className="w-4 h-4 text-mauve" />
+                    <ChevronDown className={`w-4 h-4 transition-colors ${open === i ? "text-mauve" : "text-gray-400"}`} />
                   </motion.div>
                 </button>
                 <AnimatePresence>
@@ -114,9 +136,13 @@ export default function FAQPage() {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <p className="px-6 pb-5 text-sm text-gray-500 leading-relaxed border-t border-gray-50 pt-3">
-                        {ar ? faq.answerAr : faq.answerEn}
-                      </p>
+                      <div className="px-5 pb-5 pt-3 border-t border-mauve/10">
+                        <div className={`border-s-2 border-turquoise ps-4`}>
+                          <p className="text-sm text-gray-500 leading-relaxed">
+                            {ar ? faq.answerAr : faq.answerEn}
+                          </p>
+                        </div>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

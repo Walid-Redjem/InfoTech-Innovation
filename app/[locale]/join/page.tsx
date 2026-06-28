@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Users, GraduationCap, Building2, CheckCircle2, Download, Mail, RefreshCw, X } from "lucide-react";
+import { Users, GraduationCap, Building2, CheckCircle2, Download, Mail, RefreshCw, X, Sparkles, Shield, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";
@@ -286,16 +286,75 @@ export default function JoinPage() {
     }
   }
 
+  const LeftPanel = (
+    <div className="hidden md:flex flex-col sticky top-0 h-screen bg-gradient-to-br from-mauve via-[#7A4FA0] to-[#1a9e94] p-10 text-white overflow-hidden">
+      <div className="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full bg-white/5" />
+      <div className="absolute bottom-[-60px] left-[-40px] w-80 h-80 rounded-full bg-white/5" />
+      <div className="absolute inset-0 opacity-10"
+        style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+
+      {/* Brand */}
+      <div className="relative z-10 flex items-center gap-3 mb-12">
+        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+          <Sparkles className="w-5 h-5 text-white" />
+        </div>
+        <span className="font-bold text-lg">InfoTech Innovation</span>
+      </div>
+
+      {/* Headline */}
+      <div className="relative z-10 flex-1">
+        <h2 className="text-3xl font-bold leading-tight mb-4">
+          {ar ? "انضم إلى مجتمع التغيير" : "Join the Community of Change"}
+        </h2>
+        <p className="text-white/65 text-sm mb-10 leading-relaxed">
+          {ar
+            ? "كن جزءاً من حركة تربط الشباب والمعلمين والمؤسسات في الجزائر."
+            : "Be part of a movement connecting youth, teachers, and institutions across Algeria."}
+        </p>
+
+        {[
+          { icon: Users,       text: ar ? "مجتمع من الشباب المبدعين"           : "A community of creative youth" },
+          { icon: GraduationCap, text: ar ? "إرشاد من معلمين وخبراء"           : "Mentorship from teachers & experts" },
+          { icon: Globe,       text: ar ? "فرص للشراكة مع المؤسسات"             : "Partnership opportunities with institutions" },
+          { icon: Shield,      text: ar ? "بياناتك محمية وآمنة تماماً"          : "Your data is fully protected & secure" },
+        ].map(({ icon: Icon, text }, i) => (
+          <div key={i} className="flex items-center gap-3 mb-5">
+            <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+              <Icon className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-sm text-white/85">{text}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Social proof */}
+      {memberCount !== null && memberCount > 0 && (
+        <div className="relative z-10 bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+          <div className="flex -space-x-1.5 mb-2">
+            {["#EDE0F5","#2EC4B6","#6366f1","#f97316"].map(c => (
+              <div key={c} className="w-7 h-7 rounded-full border-2 border-white/30" style={{ background: c }} />
+            ))}
+          </div>
+          <p className="text-white/90 text-sm font-semibold">{ar ? `${memberCount}+ عضو بالفعل` : `${memberCount}+ members already joined`}</p>
+          <p className="text-white/55 text-xs mt-0.5">{ar ? "كن القادم" : "Be the next one"}</p>
+        </div>
+      )}
+    </div>
+  );
+
   if (success) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-6">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
-          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5 }}>
-            <CheckCircle2 className="w-20 h-20 text-turquoise mx-auto mb-6" />
+      <div className="md:grid md:grid-cols-[420px_1fr] md:min-h-screen">
+        {LeftPanel}
+        <div className="min-h-[60vh] flex items-center justify-center px-6 bg-white">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+            <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5 }}>
+              <CheckCircle2 className="w-20 h-20 text-turquoise mx-auto mb-6" />
+            </motion.div>
+            <h2 className="text-2xl font-bold text-mauve mb-2">{t("success_title")}</h2>
+            <p className="text-gray-500">{t("success_message")}</p>
           </motion.div>
-          <h2 className="text-2xl font-bold text-mauve mb-2">{t("success_title")}</h2>
-          <p className="text-gray-500">{t("success_message")}</p>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -303,7 +362,9 @@ export default function JoinPage() {
   // OTP verification screen
   if (showOtp) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-gradient-to-b from-white to-lilac/20">
+      <div className="md:grid md:grid-cols-[420px_1fr] md:min-h-screen">
+        {LeftPanel}
+        <div className="min-h-[70vh] flex items-center justify-center px-6 bg-white">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
             <div className="w-16 h-16 bg-lilac rounded-2xl flex items-center justify-center mx-auto mb-5">
@@ -365,36 +426,25 @@ export default function JoinPage() {
             </button>
           </div>
         </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <PageHeader
-        badge={ar ? "انخرط معنا" : "Join Us"}
-        title={ar ? "كن جزءاً من التغيير" : "Be Part of the Change"}
-        subtitle={ar ? "اختر فئتك وأدخل بياناتك. سنتواصل معك قريباً." : "Choose your profile and fill in your details. We will get back to you shortly."}
-      />
+      <div className="md:grid md:grid-cols-[420px_1fr] md:min-h-screen">
+        {LeftPanel}
 
-      <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
-        <div className="max-w-2xl mx-auto">
+        <div className="bg-white py-10 px-6 md:px-12 md:py-14">
+          {/* Mobile header */}
+          <div className="md:hidden mb-8">
+            <h1 className="text-2xl font-bold text-mauve">{ar ? "انخرط معنا" : "Join Us"}</h1>
+            <p className="text-sm text-gray-500 mt-1">{ar ? "اختر فئتك وأدخل بياناتك." : "Choose your profile and fill in your details."}</p>
+          </div>
+
           {/* Breadcrumbs */}
           <Breadcrumbs crumbs={[{ label: ar ? "انضم إلينا" : "Join Us" }]} />
-
-          {/* Social proof */}
-          {memberCount !== null && memberCount > 0 && (
-            <div className="flex items-center gap-2 mb-6 text-sm text-gray-500">
-              <div className="flex -space-x-1.5">
-                {["#9B6B9B","#2EC4B6","#6366f1"].map(c => (
-                  <div key={c} className="w-6 h-6 rounded-full border-2 border-white" style={{ background: c }} />
-                ))}
-              </div>
-              <span>
-                {ar ? `انضم ${memberCount}+ عضو بالفعل` : `${memberCount}+ members already joined`}
-              </span>
-            </div>
-          )}
 
           {/* Step indicator */}
           <div className="flex items-center justify-center mb-10 gap-0">
