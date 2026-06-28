@@ -1,52 +1,23 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import PageHeader from "@/components/PageHeader";
 import AnimatedSection from "@/components/AnimatedSection";
-import { CalendarDays, MapPin, Sparkles } from "lucide-react";
+import { ImageIcon, Video, FileText, BookOpen, Sparkles } from "lucide-react";
 
-const categoryColors: Record<string, string> = {
-  workshop:    "#9B6B9B",
-  event:       "#2EC4B6",
-  competition: "#6366f1",
-  training:    "#f59e0b",
-  other:       "#f97316",
-};
-
-const categoryLabelsEn: Record<string, string> = {
-  workshop: "Workshop", event: "Event", competition: "Competition", training: "Training", other: "Other",
-};
-const categoryLabelsAr: Record<string, string> = {
-  workshop: "ورشة عمل", event: "فعالية", competition: "مسابقة", training: "تدريب", other: "أخرى",
-};
-
-interface Activity {
-  id: string;
-  title: string; titleAr: string;
-  description: string; descriptionAr: string;
-  date: string;
-  category: string;
-  location: string; locationAr: string;
-  imageUrl?: string;
-}
+const placeholders = [
+  { icon: ImageIcon, color: "#9B6B9B", bg: "bg-purple-50", typeEn: "Photos", typeAr: "صور", titleEn: "Workshop Highlights", titleAr: "أبرز ورشات العمل", dateEn: "Coming soon", dateAr: "قريباً" },
+  { icon: Video, color: "#2EC4B6", bg: "bg-teal-50", typeEn: "Video", typeAr: "فيديو", titleEn: "Community Sessions", titleAr: "الجلسات المجتمعية", dateEn: "Coming soon", dateAr: "قريباً" },
+  { icon: FileText, color: "#6366f1", bg: "bg-indigo-50", typeEn: "Report", typeAr: "تقرير", titleEn: "Impact Report 2025", titleAr: "تقرير الأثر 2025", dateEn: "Coming soon", dateAr: "قريباً" },
+  { icon: BookOpen, color: "#f59e0b", bg: "bg-yellow-50", typeEn: "Blog", typeAr: "مقال", titleEn: "Innovation Stories", titleAr: "قصص الابتكار", dateEn: "Coming soon", dateAr: "قريباً" },
+  { icon: ImageIcon, color: "#ec4899", bg: "bg-pink-50", typeEn: "Photos", typeAr: "صور", titleEn: "Youth Hackathon", titleAr: "هاكاثون الشباب", dateEn: "Coming soon", dateAr: "قريباً" },
+  { icon: Video, color: "#f97316", bg: "bg-orange-50", typeEn: "Video", typeAr: "فيديو", titleEn: "Expert Talks", titleAr: "محاضرات الخبراء", dateEn: "Coming soon", dateAr: "قريباً" },
+];
 
 export default function ActivitiesPage() {
   const locale = useLocale();
   const ar = locale === "ar";
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getDocs(query(collection(db, "activities"), where("active", "==", true), orderBy("date", "desc")))
-      .then(snap => setActivities(snap.docs.map(d => ({ id: d.id, ...d.data() } as Activity))))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
 
   return (
     <div>
@@ -67,62 +38,50 @@ export default function ActivitiesPage() {
         </div>
       </AnimatedSection>
 
+      {/* Placeholder gallery grid */}
       <section className="py-20 px-6 bg-gradient-to-b from-white to-lilac/20">
         <div className="max-w-5xl mx-auto">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-lilac/40 rounded-3xl h-72 animate-pulse" />
-              ))}
-            </div>
-          ) : activities.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">
-              <CalendarDays className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">{ar ? "لا توجد أنشطة بعد." : "No activities yet."}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activities.map((activity, i) => {
-                const color = categoryColors[activity.category] || "#9B6B9B";
-                const catLabel = ar ? (categoryLabelsAr[activity.category] || activity.category) : (categoryLabelsEn[activity.category] || activity.category);
-                return (
-                  <AnimatedSection key={activity.id} delay={i * 0.08}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {placeholders.map((item, i) => (
+              <AnimatedSection key={i} delay={i * 0.08}>
+                <motion.div
+                  whileHover={{ y: -6, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`${item.bg} rounded-3xl overflow-hidden border border-white hover:shadow-xl transition-shadow group`}
+                >
+                  {/* Preview area */}
+                  <div className="h-32 md:h-44 flex items-center justify-center relative overflow-hidden">
                     <motion.div
-                      whileHover={{ y: -6, scale: 1.01 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      className="bg-white rounded-3xl overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow group"
+                      className="absolute inset-0 opacity-20"
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 4, repeat: Infinity, delay: i * 0.5 }}
+                      style={{ background: `radial-gradient(circle, ${item.color}40, transparent 70%)` }}
+                    />
+                    <motion.div
+                      whileHover={{ rotate: 10, scale: 1.2 }}
+                      className="w-16 h-16 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center"
                     >
-                      {/* Image or color block */}
-                      <div className="h-44 relative overflow-hidden bg-lilac/30">
-                        {activity.imageUrl ? (
-                          <Image src={activity.imageUrl} alt={ar ? activity.titleAr : activity.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${color}22, ${color}44)` }}>
-                            <CalendarDays className="w-12 h-12 opacity-30" style={{ color }} />
-                          </div>
-                        )}
-                      </div>
-                      {/* Info */}
-                      <div className="p-5">
-                        <span className="text-xs font-bold uppercase tracking-wide" style={{ color }}>{catLabel}</span>
-                        <h3 className="font-bold text-gray-800 mt-1 mb-2 leading-snug">{ar ? activity.titleAr : activity.title}</h3>
-                        {activity.date && (
-                          <p className="text-xs text-gray-400 flex items-center gap-1 mb-1">
-                            <CalendarDays className="w-3 h-3" /> {activity.date}
-                          </p>
-                        )}
-                        {(ar ? activity.locationAr : activity.location) && (
-                          <p className="text-xs text-gray-400 flex items-center gap-1">
-                            <MapPin className="w-3 h-3" /> {ar ? activity.locationAr : activity.location}
-                          </p>
-                        )}
-                      </div>
+                      <item.icon className="w-8 h-8" style={{ color: item.color }} />
                     </motion.div>
-                  </AnimatedSection>
-                );
-              })}
-            </div>
-          )}
+                    {/* Coming soon overlay */}
+                    <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="bg-white/90 text-mauve text-xs font-bold px-3 py-1 rounded-full shadow">
+                        {ar ? "قريباً" : "Coming Soon"}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Info */}
+                  <div className="p-5">
+                    <span className="text-xs font-bold uppercase tracking-wide" style={{ color: item.color }}>
+                      {ar ? item.typeAr : item.typeEn}
+                    </span>
+                    <h3 className="font-bold text-gray-800 mt-1 mb-1">{ar ? item.titleAr : item.titleEn}</h3>
+                    <p className="text-xs text-gray-400">{ar ? item.dateAr : item.dateEn}</p>
+                  </div>
+                </motion.div>
+              </AnimatedSection>
+            ))}
+          </div>
         </div>
       </section>
 

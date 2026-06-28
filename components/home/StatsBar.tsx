@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { motion, useInView } from "framer-motion";
 import { UserCheck, Rocket, Globe } from "lucide-react";
 
@@ -35,13 +33,7 @@ export default function StatsBar() {
   const t = useTranslations("home.stats");
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
-  const [stats, setStats] = useState({ participants: 1800, projects: 60, partners: 10 });
-
-  useEffect(() => {
-    getDoc(doc(db, "settings", "stats"))
-      .then(snap => { if (snap.exists()) setStats(snap.data() as { participants: number; projects: number; partners: number }); })
-      .catch(() => {});
-  }, []);
+  const [stats] = useState({ participants: 1800, projects: 60, partners: 10 });
 
   const values = [stats.participants, stats.projects, stats.partners];
   const labels = [t("participants"), t("projects"), t("partners")];
