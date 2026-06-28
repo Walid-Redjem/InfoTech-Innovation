@@ -15,7 +15,7 @@ import {
   ChevronRight, Menu, X, Search, CheckCircle2, Clock,
   FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink,
   Printer, Copy, ChevronsUpDown, ChevronUp, ChevronDown,
-  CalendarDays, Pencil, ImageIcon, MapPin
+  CalendarDays, Pencil, ImageIcon, MapPin, Star
 } from "lucide-react";
 
 type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities";
