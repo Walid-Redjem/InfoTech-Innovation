@@ -35,6 +35,13 @@ const contextColors: Record<string, string> = {
   general:   "bg-gray-100 text-gray-600",
 };
 
+const contextAccents: Record<string, string> = {
+  education: "from-purple-400 to-mauve",
+  youth:     "from-turquoise to-teal-400",
+  activity:  "from-orange-400 to-amber-400",
+  general:   "from-mauve to-turquoise",
+};
+
 export default function SurveysPage() {
   const t = useTranslations("surveys");
   const locale = useLocale();
@@ -343,40 +350,63 @@ export default function SurveysPage() {
           )}
 
           {!loading && surveys.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {surveys.map((survey, i) => (
-                <motion.div
-                  key={survey.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }}
-                  onClick={() => openSurvey(survey)}
-                  className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-mauve/20 transition-all cursor-pointer group"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${contextColors[survey.context] || contextColors.general}`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {surveys.map((survey, i) => {
+                const accent = contextAccents[survey.context] || contextAccents.general;
+                const qCount = survey.questions?.length || 0;
+                const mins = Math.max(1, Math.ceil(qCount * 0.5));
+                return (
+                  <motion.div
+                    key={survey.id}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ y: -4 }}
+                    onClick={() => openSurvey(survey)}
+                    className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-mauve/10 transition-all cursor-pointer group flex flex-col"
+                  >
+                    {/* Gradient top accent */}
+                    <div className={`h-2 w-full bg-gradient-to-r ${accent}`} />
+
+                    <div className="p-6 flex flex-col flex-1">
+                      {/* Badge */}
+                      <span className={`self-start text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-4 ${contextColors[survey.context] || contextColors.general}`}>
                         {t(`context.${survey.context}`) || survey.context}
                       </span>
-                      <h3 className="font-bold text-gray-800 mt-3 mb-1.5 text-lg group-hover:text-mauve transition-colors">{survey.title}</h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">{survey.description}</p>
-                      <div className="flex items-center gap-4 mt-4 text-xs text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <ClipboardList className="w-3.5 h-3.5" />
-                          {survey.questions?.length || 0} {t("questions_count")}
+
+                      {/* Title */}
+                      <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-mauve transition-colors">
+                        {survey.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-gray-400 text-sm leading-relaxed flex-1 line-clamp-3">
+                        {survey.description}
+                      </p>
+
+                      {/* Meta */}
+                      <div className="flex items-center gap-4 mt-5 pt-4 border-t border-gray-50 text-xs text-gray-400">
+                        <span className="flex items-center gap-1.5">
+                          <ClipboardList className="w-3.5 h-3.5 text-mauve/50" />
+                          {qCount} {t("questions_count")}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          ~{Math.ceil((survey.questions?.length || 1) * 0.5)} {ar ? "دقائق" : "min"}
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-mauve/50" />
+                          ~{mins} {ar ? "دقيقة" : "min"}
                         </span>
                       </div>
+
+                      {/* CTA */}
+                      <button
+                        onClick={e => { e.stopPropagation(); openSurvey(survey); }}
+                        className={`mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r ${accent} opacity-90 group-hover:opacity-100 transition-opacity shadow-sm`}
+                      >
+                        {t("start")}
+                      </button>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-lilac group-hover:bg-mauve transition-colors flex items-center justify-center flex-shrink-0 mt-1">
-                      <ChevronRight className="w-5 h-5 text-mauve group-hover:text-white transition-colors" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </div>
