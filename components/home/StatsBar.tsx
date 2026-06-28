@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { collection, getCountFromServer, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { motion, useInView } from "framer-motion";
 import { UserCheck, Rocket, Globe } from "lucide-react";
 
@@ -35,21 +33,7 @@ export default function StatsBar() {
   const t = useTranslations("home.stats");
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
-  const [stats, setStats] = useState({ participants: 0, projects: 0, partners: 0 });
-
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const [a, b, c] = await Promise.all([
-          getCountFromServer(collection(db, "registrations")),
-          getCountFromServer(collection(db, "activities")),
-          getCountFromServer(query(collection(db, "registrations"), where("category", "==", "institution"))),
-        ]);
-        setStats({ participants: a.data().count, projects: b.data().count, partners: c.data().count });
-      } catch { }
-    }
-    fetchStats();
-  }, []);
+  const [stats] = useState({ participants: 1800, projects: 60, partners: 10 });
 
   const values = [stats.participants, stats.projects, stats.partners];
   const labels = [t("participants"), t("projects"), t("partners")];
