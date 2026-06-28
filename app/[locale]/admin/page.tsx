@@ -957,28 +957,49 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* Search bar */}
-                      <div className="flex items-center gap-3 mb-6 max-w-lg">
-                        <div className="relative flex-1">
-                          <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            value={surveySearch}
-                            onChange={e => setSurveySearch(e.target.value)}
-                            placeholder={ar ? "ابحث باسم الاستبيان..." : "Search by name..."}
-                            className="w-full ps-9 pe-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white"
-                          />
+                      <div className="flex flex-col gap-3 mb-6">
+                        <div className="flex items-center gap-3">
+                          {/* Search by name */}
+                          <div className="relative flex-1 max-w-xs">
+                            <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input
+                              type="text"
+                              value={surveySearch}
+                              onChange={e => { setSurveySearch(e.target.value); setSurveyDateFilter(""); }}
+                              placeholder={ar ? "بحث باسم الاستبيان..." : "Search by name..."}
+                              className="w-full ps-9 pe-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white"
+                            />
+                          </div>
+
+                          <span className="text-xs text-gray-400 font-medium">{ar ? "أو" : "or"}</span>
+
+                          {/* Filter by month */}
+                          <div className="relative">
+                            <CalendarDays className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            <input
+                              type="month"
+                              value={surveyDateFilter}
+                              onChange={e => { setSurveyDateFilter(e.target.value); setSurveySearch(""); }}
+                              className="ps-9 pe-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600"
+                            />
+                          </div>
+
+                          {(surveySearch || surveyDateFilter) && (
+                            <button onClick={() => { setSurveySearch(""); setSurveyDateFilter(""); }}
+                              className="text-xs text-gray-400 hover:text-red-400 transition-colors font-medium whitespace-nowrap flex items-center gap-1">
+                              <X className="w-3 h-3" />{ar ? "مسح" : "Clear"}
+                            </button>
+                          )}
                         </div>
-                        <input
-                          type="month"
-                          value={surveyDateFilter}
-                          onChange={e => setSurveyDateFilter(e.target.value)}
-                          className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 shrink-0"
-                        />
+
+                        {/* Active filter indicator */}
                         {(surveySearch || surveyDateFilter) && (
-                          <button onClick={() => { setSurveySearch(""); setSurveyDateFilter(""); }}
-                            className="text-xs text-gray-400 hover:text-mauve transition-colors font-medium whitespace-nowrap">
-                            {ar ? "مسح" : "Clear"}
-                          </button>
+                          <p className="text-xs text-mauve font-medium">
+                            {surveySearch
+                              ? `${ar ? "نتائج البحث عن" : "Results for"} "${surveySearch}"`
+                              : `${ar ? "الاستبيانات في" : "Surveys from"} ${new Date(surveyDateFilter + "-01").toLocaleDateString(ar ? "ar-DZ" : "en-GB", { month: "long", year: "numeric" })}`
+                            }
+                          </p>
                         )}
                       </div>
 
@@ -1006,6 +1027,8 @@ export default function AdminDashboard() {
                             const isActive = (s as Record<string,unknown>).active !== false;
                             const qCount = (s.questions as unknown[])?.length || 0;
                             const respCount = allResponses.filter(r => String(r.surveyId) === String(s.id)).length;
+                            const createdTs = (s as unknown as Record<string,unknown>).createdAt as Timestamp | undefined;
+                            const publishedDate = createdTs ? createdTs.toDate().toLocaleDateString(ar ? "ar-DZ" : "en-GB", { day: "2-digit", month: "short", year: "numeric" }) : null;
                             return (
                               <motion.div key={String(s.id)}
                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
@@ -1035,6 +1058,12 @@ export default function AdminDashboard() {
                                         <Users className="w-3 h-3" />
                                         {respCount} {ar ? "رد" : "responses"}
                                       </span>
+                                      {publishedDate && (
+                                        <span className="flex items-center gap-1">
+                                          <CalendarDays className="w-3 h-3" />
+                                          {publishedDate}
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
 
