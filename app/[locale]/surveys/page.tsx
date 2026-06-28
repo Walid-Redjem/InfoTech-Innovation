@@ -326,18 +326,38 @@ export default function SurveysPage() {
   const ar = locale === "ar";
   return (
     <div>
-      <PageHeader
-        badge={ar ? "استبيانات" : "Surveys"}
-        title={ar ? "رأيك يصنع الفرق" : "Your Opinion Shapes Our Work"}
-        subtitle={ar ? "رأيك يهمنا. ساعدنا على فهم احتياجات مجتمعنا." : "Your opinion matters. Help us understand our community better."}
-      />
 
-      <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
+      {/* Rich header */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-mauve via-[#6b3fa0] to-turquoise-dark py-20 px-6 text-center">
+        {/* Dot grid */}
+        <div className="absolute inset-0 opacity-15"
+          style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+        {/* Blobs */}
+        <div className="absolute top-[-60px] left-[-60px] w-72 h-72 rounded-full bg-mauve/40 blur-3xl" />
+        <div className="absolute bottom-[-60px] right-[-60px] w-72 h-72 rounded-full bg-turquoise/30 blur-3xl" />
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10 max-w-2xl mx-auto">
+          {/* Glowing badge */}
+          <span className="inline-block text-xs font-bold uppercase tracking-widest text-white/90 bg-white/10 border border-white/25 px-4 py-1.5 rounded-full mb-5"
+            style={{ boxShadow: "0 0 20px rgba(255,255,255,0.15)" }}>
+            {ar ? "استبيانات" : "Surveys"}
+          </span>
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            {ar ? "رأيك يصنع الفرق" : "Your Opinion Shapes Our Work"}
+          </h1>
+          <p className="text-white/60 text-sm md:text-base">
+            {ar ? "رأيك يهمنا. ساعدنا على فهم احتياجات مجتمعنا." : "Your opinion matters. Help us understand our community better."}
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Cards on gradient background */}
+      <div className="bg-gradient-to-b from-[#f3edfb] to-lilac/30 py-16 px-6">
         <div className="max-w-5xl mx-auto">
 
           {loading && (
             <div className="flex justify-center py-20">
-              <div className="w-8 h-8 border-4 border-lilac-dark border-t-turquoise rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-lilac-dark border-t-mauve rounded-full animate-spin" />
             </div>
           )}
 
@@ -358,48 +378,68 @@ export default function SurveysPage() {
                 return (
                   <motion.div
                     key={survey.id}
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 28 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ y: -4 }}
+                    transition={{ delay: i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ y: -6, scale: 1.01 }}
                     onClick={() => openSurvey(survey)}
-                    className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-mauve/10 transition-all cursor-pointer group flex flex-col"
+                    className="relative rounded-3xl overflow-hidden cursor-pointer group flex flex-col transition-all duration-300"
+                    style={{
+                      background: "rgba(255,255,255,0.55)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      border: "1px solid rgba(255,255,255,0.7)",
+                      boxShadow: "0 4px 24px rgba(155,107,155,0.08)",
+                    }}
                   >
-                    {/* Gradient top accent */}
-                    <div className={`h-2 w-full bg-gradient-to-r ${accent}`} />
+                    {/* Hover glow */}
+                    <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+                      style={{ boxShadow: "0 8px 40px rgba(155,107,155,0.22), inset 0 0 0 1px rgba(155,107,155,0.2)" }} />
 
-                    <div className="p-6 flex flex-col flex-1">
+                    {/* Gradient top accent line */}
+                    <div className={`h-[3px] w-full bg-gradient-to-r ${accent} flex-shrink-0`} />
+
+                    <div className="relative p-6 flex flex-col flex-1">
+                      {/* Large decorative number */}
+                      <span className="absolute top-2 end-4 text-[72px] font-black leading-none select-none pointer-events-none"
+                        style={{ color: "rgba(155,107,155,0.07)" }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+
                       {/* Badge */}
                       <span className={`self-start text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-4 ${contextColors[survey.context] || contextColors.general}`}>
                         {t(`context.${survey.context}`) || survey.context}
                       </span>
 
                       {/* Title */}
-                      <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-mauve transition-colors">
+                      <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-mauve transition-colors relative z-10">
                         {survey.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-gray-400 text-sm leading-relaxed flex-1 line-clamp-3">
+                      <p className="text-gray-400 text-sm leading-relaxed flex-1 line-clamp-3 relative z-10">
                         {survey.description}
                       </p>
 
                       {/* Meta */}
-                      <div className="flex items-center gap-4 mt-5 pt-4 border-t border-gray-50 text-xs text-gray-400">
+                      <div className="flex items-center gap-4 mt-5 pt-4 border-t border-mauve/10 text-xs text-gray-400">
                         <span className="flex items-center gap-1.5">
-                          <ClipboardList className="w-3.5 h-3.5 text-mauve/50" />
+                          <ClipboardList className="w-3.5 h-3.5 text-mauve/40" />
                           {qCount} {t("questions_count")}
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-mauve/50" />
+                          <Clock className="w-3.5 h-3.5 text-mauve/40" />
                           ~{mins} {ar ? "دقيقة" : "min"}
                         </span>
                       </div>
 
-                      {/* CTA */}
+                      {/* Gradient CTA with glow on hover */}
                       <button
                         onClick={e => { e.stopPropagation(); openSurvey(survey); }}
-                        className={`mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r ${accent} opacity-90 group-hover:opacity-100 transition-opacity shadow-sm`}
+                        className={`mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r ${accent} transition-all duration-300 relative z-10`}
+                        style={{ boxShadow: "0 2px 12px rgba(155,107,155,0.2)" }}
+                        onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 20px rgba(155,107,155,0.45)")}
+                        onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 12px rgba(155,107,155,0.2)")}
                       >
                         {t("start")}
                       </button>
