@@ -32,7 +32,7 @@ export default function ActivitiesPage() {
         <div className="bg-gradient-to-r from-mauve/10 to-turquoise/10 border-y border-lilac-dark/30 py-4 px-6 text-center">
           <div className="flex items-center justify-center gap-2 text-mauve font-semibold text-sm">
             <Sparkles className="w-4 h-4 text-turquoise" />
-            {ar ? "المحتوى قيد الإعداد — سيتم النشر قريباً" : "Content is being prepared — Publishing soon"}
+            {ar ? "المحتوى قيد الإعداد، سيتم النشر قريباً" : "Content is being prepared. Publishing soon"}
             <Sparkles className="w-4 h-4 text-turquoise" />
           </div>
         </div>

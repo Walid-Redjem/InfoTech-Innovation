@@ -170,8 +170,8 @@ export default function TermsPage() {
           <AnimatedSection delay={0.5}>
             <p className="text-center text-xs text-gray-400 pt-4">
               {ar
-                ? "آخر تحديث: يونيو 2026 — InfoTech Innovation"
-                : "Last updated: June 2026 — InfoTech Innovation"}
+                ? "آخر تحديث: يونيو 2026، InfoTech Innovation"
+                : "Last updated: June 2026, InfoTech Innovation"}
             </p>
           </AnimatedSection>
         </div>

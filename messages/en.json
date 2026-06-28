@@ -10,7 +10,7 @@
   "home": {
     "hero": {
       "title": "InfoTech Innovation",
-      "subtitle": "Algeria's digital hub for youth, educators, and institutions — where community ideas become real solutions.",
+      "subtitle": "Algeria's digital hub for youth, educators, and institutions, where community ideas become real solutions.",
       "cta_join": "Join Us",
       "cta_issue": "Submit an Issue",
       "cta_idea": "Share an Idea"
@@ -22,7 +22,7 @@
     },
     "about": {
       "title": "About InfoTech Innovation",
-      "description": "InfoTech Innovation is an Algerian initiative that bridges the gap between young talent and the digital world. We offer structured programs in coding, digital design, and technology — equipping the next generation with real skills to solve real problems."
+      "description": "InfoTech Innovation is an Algerian initiative that bridges the gap between young talent and the digital world. We offer structured programs in coding, digital design, and technology, equipping the next generation with real skills to solve real problems."
     },
     "services": {
       "title": "What We Offer",
@@ -79,7 +79,7 @@
       "degree": "Diploma / Degree",
       "underage_form": "Signed Parental Consent Form"
     },
-    "upload_hint": "PDF, JPG or PNG — max 5MB",
+    "upload_hint": "PDF, JPG or PNG, max 5MB",
     "underage": {
       "title": "Parental Consent Required",
       "description": "Since you are under 17, a signed parental consent form is required. Download the form below, fill it out, and upload the signed copy.",
@@ -155,7 +155,7 @@
     "title": "Surveys",
     "subtitle": "Your opinion matters. Help us understand your community better.",
     "empty_title": "No surveys available yet",
-    "empty_message": "Check back soon — new surveys will be published regularly.",
+    "empty_message": "Check back soon. New surveys will be published regularly.",
     "context": {
       "education": "Education",
       "youth": "Youth",
