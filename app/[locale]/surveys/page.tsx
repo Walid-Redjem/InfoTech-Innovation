@@ -327,26 +327,11 @@ export default function SurveysPage() {
   return (
     <div>
 
-      {/* Rich header */}
-      <div className="relative overflow-hidden py-20 px-6 text-center" style={{ background: "linear-gradient(135deg, #b57abd 0%, #9B6B9B 40%, #7a4fa8 100%)" }}>
-        {/* Blobs */}
-        <div className="absolute top-[-60px] left-[-60px] w-72 h-72 rounded-full bg-mauve/40 blur-3xl" />
-        <div className="absolute bottom-[-60px] right-[-60px] w-72 h-72 rounded-full bg-turquoise/30 blur-3xl" />
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10 max-w-2xl mx-auto">
-          {/* Glowing badge */}
-          <span className="inline-block text-xs font-bold uppercase tracking-widest text-white/90 bg-white/10 border border-white/25 px-4 py-1.5 rounded-full mb-5"
-            style={{ boxShadow: "0 0 20px rgba(255,255,255,0.15)" }}>
-            {ar ? "استبيانات" : "Surveys"}
-          </span>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-            {ar ? "رأيك يصنع الفرق" : "Your Opinion Shapes Our Work"}
-          </h1>
-          <p className="text-white/60 text-sm md:text-base">
-            {ar ? "رأيك يهمنا. ساعدنا على فهم احتياجات مجتمعنا." : "Your opinion matters. Help us understand our community better."}
-          </p>
-        </motion.div>
-      </div>
+      <PageHeader
+        badge={ar ? "استبيانات" : "Surveys"}
+        title={ar ? "رأيك يصنع الفرق" : "Your Opinion Shapes Our Work"}
+        subtitle={ar ? "رأيك يهمنا. ساعدنا على فهم احتياجات مجتمعنا." : "Your opinion matters. Help us understand our community better."}
+      />
 
       {/* Cards on gradient background */}
       <div className="bg-gradient-to-b from-[#f3edfb] to-lilac/30 py-16 px-6">
