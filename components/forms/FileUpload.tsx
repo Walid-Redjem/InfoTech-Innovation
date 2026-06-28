@@ -20,21 +20,18 @@ export default function FileUpload({ label, hint, accept = ".pdf,.jpg,.jpeg,.png
   const [uploaded, setUploaded] = useState(false);
   const [fileName, setFileName] = useState("");
   const [progress, setProgress] = useState(0);
+  const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const locale = useLocale();
   const ar = locale === "ar";
 
-  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function uploadFile(file: File) {
     setUploading(true);
     setProgress(0);
     setFileName(file.name);
-
     try {
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", uploadPreset!);
@@ -69,6 +66,18 @@ export default function FileUpload({ label, hint, accept = ".pdf,.jpg,.jpeg,.png
     }
   }
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) uploadFile(file);
+  }
+
   function handleClear() {
     setUploaded(false);
     setFileName("");
@@ -92,19 +101,31 @@ export default function FileUpload({ label, hint, accept = ".pdf,.jpg,.jpeg,.png
           </button>
         </div>
       ) : (
-        <label className={`flex flex-col gap-2 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
-          error ? "border-red-400 bg-red-50" : "border-lilac-dark bg-lilac/30 hover:border-mauve hover:bg-lilac/50"
-        }`}>
+        <label
+          className={`flex flex-col gap-2 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
+            dragging
+              ? "border-mauve bg-lilac/60 scale-[1.01]"
+              : error
+              ? "border-red-400 bg-red-50"
+              : "border-lilac-dark bg-lilac/30 hover:border-mauve hover:bg-lilac/50"
+          }`}
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragEnter={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+        >
           <input ref={inputRef} type="file" accept={accept} onChange={handleChange} className="hidden" />
           <div className="flex items-center gap-3">
-            <Upload className={`w-5 h-5 shrink-0 ${uploading ? "text-mauve animate-pulse" : "text-mauve"}`} />
+            <Upload className={`w-5 h-5 shrink-0 transition-colors ${dragging ? "text-mauve scale-110" : "text-mauve"}`} />
             <div>
               <span className="text-sm text-gray-600 block">
                 {uploading
                   ? `${ar ? "جارٍ الرفع" : "Uploading"} ${progress}%`
-                  : (ar ? "انقر للرفع" : "Click to upload")}
+                  : dragging
+                  ? (ar ? "أفلت الملف هنا" : "Drop file here")
+                  : (ar ? "انقر أو اسحب ملفاً" : "Click or drag a file here")}
               </span>
-              {hint && !uploading && <span className="text-xs text-gray-400">{hint}</span>}
+              {hint && !uploading && !dragging && <span className="text-xs text-gray-400">{hint}</span>}
             </div>
           </div>
 
