@@ -326,40 +326,26 @@ export default function SurveysPage() {
   const ar = locale === "ar";
   return (
     <div>
-      {/* Rich gradient page header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#1a0a2e] via-[#2d1854] to-[#0e3d3a] py-20 px-6 text-center">
-        <div className="absolute inset-0 opacity-20"
-          style={{ backgroundImage: "radial-gradient(circle, rgba(155,107,155,0.4) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
-        <div className="absolute top-[-100px] left-[-100px] w-96 h-96 rounded-full bg-mauve/20 blur-3xl" />
-        <div className="absolute bottom-[-80px] right-[-80px] w-80 h-80 rounded-full bg-turquoise/20 blur-3xl" />
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10 max-w-2xl mx-auto">
-          <span className="inline-block text-xs font-bold uppercase tracking-widest text-turquoise/80 bg-turquoise/10 border border-turquoise/20 px-4 py-1.5 rounded-full mb-5">
-            {ar ? "استبيانات" : "Surveys"}
-          </span>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-            {ar ? "رأيك يصنع الفرق" : "Your Opinion Shapes Our Work"}
-          </h1>
-          <p className="text-white/55 text-sm md:text-base">
-            {ar ? "رأيك يهمنا. ساعدنا على فهم احتياجات مجتمعنا." : "Your opinion matters. Help us understand our community better."}
-          </p>
-        </motion.div>
-      </div>
+      <PageHeader
+        badge={ar ? "استبيانات" : "Surveys"}
+        title={ar ? "رأيك يصنع الفرق" : "Your Opinion Shapes Our Work"}
+        subtitle={ar ? "رأيك يهمنا. ساعدنا على فهم احتياجات مجتمعنا." : "Your opinion matters. Help us understand our community better."}
+      />
 
-      {/* Cards section */}
-      <div className="bg-gradient-to-b from-[#0e1a2e] to-[#0a1628] py-16 px-6 min-h-[40vh]">
+      <div className="bg-gradient-to-b from-white to-lilac/20 py-16 px-6">
         <div className="max-w-5xl mx-auto">
 
           {loading && (
             <div className="flex justify-center py-20">
-              <div className="w-8 h-8 border-2 border-white/20 border-t-turquoise rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-lilac-dark border-t-turquoise rounded-full animate-spin" />
             </div>
           )}
 
           {!loading && surveys.length === 0 && (
             <div className="text-center py-20">
-              <ClipboardList className="w-14 h-14 text-white/20 mx-auto mb-4" />
-              <h2 className="text-lg font-semibold text-white/60 mb-2">{t("empty_title")}</h2>
-              <p className="text-white/30 text-sm">{t("empty_message")}</p>
+              <ClipboardList className="w-14 h-14 text-mauve/30 mx-auto mb-4" />
+              <h2 className="text-lg font-semibold text-mauve mb-2">{t("empty_title")}</h2>
+              <p className="text-gray-400 text-sm">{t("empty_message")}</p>
             </div>
           )}
 
@@ -372,56 +358,40 @@ export default function SurveysPage() {
                 return (
                   <motion.div
                     key={survey.id}
-                    initial={{ opacity: 0, y: 32 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ y: -6, scale: 1.02 }}
+                    transition={{ delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ y: -4 }}
                     onClick={() => openSurvey(survey)}
-                    className="relative rounded-3xl overflow-hidden cursor-pointer group flex flex-col"
-                    style={{
-                      background: "rgba(255,255,255,0.05)",
-                      backdropFilter: "blur(16px)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-                    }}
+                    className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-mauve/10 transition-all cursor-pointer group flex flex-col"
                   >
-                    {/* Glow on hover */}
-                    <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${accent} rounded-3xl`}
-                      style={{ opacity: 0, filter: "blur(40px)", zIndex: 0 }} />
+                    {/* Gradient top accent */}
+                    <div className={`h-2 w-full bg-gradient-to-r ${accent}`} />
 
-                    {/* Large decorative number */}
-                    <div className="absolute top-3 end-4 text-[80px] font-black leading-none select-none pointer-events-none"
-                      style={{ color: "rgba(255,255,255,0.04)" }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </div>
-
-                    <div className="relative z-10 p-6 flex flex-col flex-1">
-                      {/* Top gradient line */}
-                      <div className={`h-[2px] w-12 rounded-full bg-gradient-to-r ${accent} mb-5`} />
-
+                    <div className="p-6 flex flex-col flex-1">
                       {/* Badge */}
-                      <span className="self-start text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-4 bg-white/10 text-white/70 border border-white/10">
+                      <span className={`self-start text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-4 ${contextColors[survey.context] || contextColors.general}`}>
                         {t(`context.${survey.context}`) || survey.context}
                       </span>
 
                       {/* Title */}
-                      <h3 className="font-bold text-white text-xl leading-snug mb-3 group-hover:text-white transition-colors">
+                      <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-mauve transition-colors">
                         {survey.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-white/45 text-sm leading-relaxed flex-1 line-clamp-3">
+                      <p className="text-gray-400 text-sm leading-relaxed flex-1 line-clamp-3">
                         {survey.description}
                       </p>
 
                       {/* Meta */}
-                      <div className="flex items-center gap-4 mt-5 pt-4 border-t border-white/10 text-xs text-white/40">
+                      <div className="flex items-center gap-4 mt-5 pt-4 border-t border-gray-50 text-xs text-gray-400">
                         <span className="flex items-center gap-1.5">
-                          <ClipboardList className="w-3.5 h-3.5" />
+                          <ClipboardList className="w-3.5 h-3.5 text-mauve/50" />
                           {qCount} {t("questions_count")}
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5" />
+                          <Clock className="w-3.5 h-3.5 text-mauve/50" />
                           ~{mins} {ar ? "دقيقة" : "min"}
                         </span>
                       </div>
@@ -429,7 +399,7 @@ export default function SurveysPage() {
                       {/* CTA */}
                       <button
                         onClick={e => { e.stopPropagation(); openSurvey(survey); }}
-                        className={`mt-4 w-full py-3 rounded-xl font-semibold text-sm text-white bg-gradient-to-r ${accent} shadow-lg opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:shadow-mauve/40`}
+                        className={`mt-4 w-full py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r ${accent} opacity-90 group-hover:opacity-100 transition-opacity shadow-sm`}
                       >
                         {t("start")}
                       </button>
