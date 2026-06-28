@@ -59,6 +59,8 @@ export default function AdminDashboard() {
 
   const [tab, setTab] = useState<Tab>((searchParams.get("tab") as Tab) || "registrations");
   const [surveySubTab, setSurveySubTab] = useState<"create" | "view">("create");
+  const [surveySearch, setSurveySearch] = useState("");
+  const [surveyDateFilter, setSurveyDateFilter] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Registration modal
@@ -954,15 +956,53 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
-                      {surveys.length === 0 ? (
+                      {/* Search bar */}
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="relative flex-1">
+                          <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            value={surveySearch}
+                            onChange={e => setSurveySearch(e.target.value)}
+                            placeholder={ar ? "ابحث باسم الاستبيان..." : "Search by name..."}
+                            className="w-full ps-9 pe-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white"
+                          />
+                        </div>
+                        <input
+                          type="date"
+                          value={surveyDateFilter}
+                          onChange={e => setSurveyDateFilter(e.target.value)}
+                          className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600"
+                        />
+                        {(surveySearch || surveyDateFilter) && (
+                          <button onClick={() => { setSurveySearch(""); setSurveyDateFilter(""); }}
+                            className="text-xs text-gray-400 hover:text-mauve transition-colors font-medium whitespace-nowrap">
+                            {ar ? "مسح" : "Clear"}
+                          </button>
+                        )}
+                      </div>
+
+                      {(() => {
+                        const filtered = surveys.filter(s => {
+                          const matchName = !surveySearch || String(s.title).toLowerCase().includes(surveySearch.toLowerCase());
+                          const ts = (s as unknown as Record<string,unknown>).createdAt as Timestamp | undefined;
+                          const matchDate = !surveyDateFilter || (ts && ts.toDate().toISOString().startsWith(surveyDateFilter));
+                          return matchName && matchDate;
+                        });
+                        return surveys.length === 0 ? (
                         <div className="text-center py-20 text-gray-400">
                           <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30" />
                           <p className="text-sm font-medium">{ar ? "لا توجد استبيانات بعد" : "No surveys yet"}</p>
                           <p className="text-xs mt-1 text-gray-300">{ar ? "أنشئ استبياناً من التبويب أعلاه" : "Create one from the tab above"}</p>
                         </div>
+                      ) : filtered.length === 0 ? (
+                        <div className="text-center py-16 text-gray-400">
+                          <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                          <p className="text-sm">{ar ? "لا توجد نتائج" : "No results found"}</p>
+                        </div>
                       ) : (
                         <div className="grid gap-4">
-                          {surveys.map((s, i) => {
+                          {filtered.map((s, i) => {
                             const isActive = (s as Record<string,unknown>).active !== false;
                             const qCount = (s.questions as unknown[])?.length || 0;
                             const respCount = allResponses.filter(r => String(r.surveyId) === String(s.id)).length;
@@ -1013,7 +1053,8 @@ export default function AdminDashboard() {
                             );
                           })}
                         </div>
-                      )}
+                      );
+                      })()}
                     </div>
                   )}
                 </div>
