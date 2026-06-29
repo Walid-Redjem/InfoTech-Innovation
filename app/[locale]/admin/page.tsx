@@ -85,7 +85,7 @@ export default function AdminDashboard() {
   const [surveys, setSurveys]             = useState<Record<string, unknown>[]>([]);
   const [responses, setResponses]         = useState<Record<string, unknown>[]>([]);
   const [allResponses, setAllResponses]   = useState<Record<string, unknown>[]>([]);
-  const [selectedSurvey, setSelectedSurvey] = useState("");
+  const [responseSurveyFilter, setResponseSurveyFilter] = useState("");
   const [selectedResponse, setSelectedResponse] = useState<Record<string,unknown> | null>(null);
   const [activities, setActivities] = useState<Record<string,unknown>[]>([]);
   const [activityForm, setActivityForm] = useState({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" });
@@ -432,7 +432,7 @@ export default function AdminDashboard() {
             <nav className="p-4 space-y-1 flex-1">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-3">{ar ? "القائمة" : "Navigation"}</p>
               {tabs.map(({ key, label, icon: Icon }) => (
-                <button key={key} onClick={() => { setTab(key); updateParam("tab", key); setSidebarOpen(false); }}
+                <button key={key} onClick={() => { setTab(key); updateParam("tab", key); setSidebarOpen(false); setResponseSurveyFilter(""); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                     tab === key
                       ? "bg-gradient-to-r from-mauve to-mauve/80 text-white shadow-md shadow-mauve/20"
@@ -708,8 +708,8 @@ export default function AdminDashboard() {
                   {allResponses.length > 0 && (
                     <div className="flex items-center gap-3 mb-6">
                       <select
-                        value={selectedSurvey}
-                        onChange={e => setSelectedSurvey(e.target.value)}
+                        value={responseSurveyFilter}
+                        onChange={e => setResponseSurveyFilter(e.target.value)}
                         className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 min-w-[220px]"
                       >
                         <option value="">{ar ? "كل الاستبيانات" : "All surveys"}</option>
@@ -717,8 +717,8 @@ export default function AdminDashboard() {
                           <option key={String(s.id)} value={String(s.id)}>{String(s.title)}</option>
                         ))}
                       </select>
-                      {selectedSurvey && (
-                        <button onClick={() => setSelectedSurvey("")} className="text-xs text-gray-400 hover:text-mauve transition-colors flex items-center gap-1">
+                      {responseSurveyFilter && (
+                        <button onClick={() => setResponseSurveyFilter("")} className="text-xs text-gray-400 hover:text-mauve transition-colors flex items-center gap-1">
                           <X className="w-3 h-3" />{ar ? "مسح" : "Clear"}
                         </button>
                       )}
@@ -733,7 +733,7 @@ export default function AdminDashboard() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {surveys.filter(s => !selectedSurvey || String(s.id) === selectedSurvey).map(survey => {
+                      {surveys.filter(s => !responseSurveyFilter || String(s.id) === responseSurveyFilter).map(survey => {
                         const surveyResps = allResponses.filter(r => String(r.surveyId) === String(survey.id));
                         if (surveyResps.length === 0) return null;
                         return (
