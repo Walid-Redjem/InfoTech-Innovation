@@ -15,10 +15,11 @@ import {
   ChevronRight, Menu, X, Search, CheckCircle2, Clock,
   FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink,
   Printer, Copy, ChevronsUpDown, ChevronUp, ChevronDown,
-  CalendarDays, Pencil, ImageIcon, MapPin, Star, Moon, Sun
+  CalendarDays, Pencil, ImageIcon, MapPin, Star, Moon, Sun,
+  ChevronLeft, Settings, Send
 } from "lucide-react";
 
-type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities";
+type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities" | "settings";
 
 interface Question {
   id: string; text: string; type: "text" | "choice" | "rating";
@@ -55,6 +56,7 @@ export default function AdminDashboard() {
     { key: "analytics",     label: ar ? "الإحصائيات"          : "Analytics",        icon: BarChart3 },
     { key: "activities",    label: ar ? "الأنشطة"             : "Activities",       icon: CalendarDays },
     { key: "create",        label: ar ? "الاستبيانات"         : "Surveys",          icon: ClipboardList },
+    { key: "settings",      label: ar ? "الإعدادات"           : "Settings",         icon: Settings },
   ];
 
   const [tab, setTab] = useState<Tab>((searchParams.get("tab") as Tab) || "registrations");
@@ -72,6 +74,22 @@ export default function AdminDashboard() {
   }
   const [surveySearch, setSurveySearch] = useState("");
   const [surveyDateFilter, setSurveyDateFilter] = useState("");
+  // Global search
+  const [globalSearch, setGlobalSearch] = useState("");
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
+  // Bulk issues
+  const [selectedIssueIds, setSelectedIssueIds] = useState<Set<string>>(new Set());
+  const [bulkIssueLoading, setBulkIssueLoading] = useState(false);
+  // Calendar view
+  const [calendarMonth, setCalendarMonth] = useState(() => { const d = new Date(); return { year: d.getFullYear(), month: d.getMonth() }; });
+  const [calendarView, setCalendarView] = useState(false);
+  // Broadcast
+  const [broadcastSubject, setBroadcastSubject] = useState("");
+  const [broadcastBody, setBroadcastBody]       = useState("");
+  const [broadcasting, setBroadcasting]         = useState(false);
+  const [broadcastSuccess, setBroadcastSuccess] = useState(false);
+  // Rejection log
+  const [rejectionLog, setRejectionLog] = useState<Record<string, string>>({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Registration modal
@@ -198,6 +216,10 @@ export default function AdminDashboard() {
           reason: action === "reject" ? rejectionReason : undefined,
         }),
       });
+      // Store rejection reason in local log
+      if (action === "reject" && rejectionReason) {
+        setRejectionLog(prev => ({ ...prev, [String(selectedReg.id)]: rejectionReason }));
+      }
       // Remove from local state immediately
       setRegistrations(prev => prev.filter(r => r.id !== selectedReg.id));
       setOverviewStats(prev => ({ ...prev, registrations: prev.registrations - 1 }));
@@ -207,6 +229,29 @@ export default function AdminDashboard() {
     } finally {
       setActionLoading(null);
     }
+  }
+
+  async function sendBroadcast() {
+    if (!broadcastSubject.trim() || !broadcastBody.trim()) return;
+    setBroadcasting(true);
+    try {
+      const emails = registrations.filter(r => String(r.status) === "approved" && r.email).map(r => String(r.email));
+      const res = await fetch("/api/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
+        body: JSON.stringify({ subject: broadcastSubject, body: broadcastBody, emails }),
+      });
+      if (res.ok) { setBroadcastSuccess(true); setBroadcastSubject(""); setBroadcastBody(""); setTimeout(() => setBroadcastSuccess(false), 4000); }
+    } finally { setBroadcasting(false); }
+  }
+
+  async function bulkUpdateIssues(status: "done" | "pending") {
+    if (!selectedIssueIds.size) return;
+    setBulkIssueLoading(true);
+    await Promise.all([...selectedIssueIds].map(id => updateDoc(doc(db, "issues", id), { status })));
+    setIssues(prev => prev.map(i => selectedIssueIds.has(String(i.id)) ? { ...i, status } : i));
+    setSelectedIssueIds(new Set());
+    setBulkIssueLoading(false);
   }
 
   async function toggleSurveyActive(surveyId: string, currentActive: boolean) {
@@ -398,6 +443,30 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Global search */}
+          <div className="relative hidden md:block">
+            {showGlobalSearch ? (
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input autoFocus value={globalSearch} onChange={e => setGlobalSearch(e.target.value)}
+                    placeholder={ar ? "بحث عام..." : "Search everything..."}
+                    className="ps-9 pe-4 py-2 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve w-56 bg-white"
+                    onBlur={() => { if (!globalSearch) setShowGlobalSearch(false); }} />
+                </div>
+                {globalSearch && (
+                  <button onClick={() => { setGlobalSearch(""); setShowGlobalSearch(false); }}>
+                    <X className="w-4 h-4 text-gray-400 hover:text-red-400 transition-colors" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button onClick={() => setShowGlobalSearch(true)}
+                className="p-2 rounded-xl text-gray-500 hover:text-mauve hover:bg-lilac/50 transition-colors" title={ar ? "بحث" : "Search"}>
+                <Search className="w-4 h-4" />
+              </button>
+            )}
+          </div>
           <button onClick={toggleDarkAdmin}
             className="p-2 rounded-xl text-gray-500 hover:text-mauve hover:bg-lilac/50 transition-colors"
             title={darkAdmin ? "Light mode" : "Dark mode"}>
@@ -431,7 +500,11 @@ export default function AdminDashboard() {
           `}>
             <nav className="p-4 space-y-1 flex-1">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-3">{ar ? "القائمة" : "Navigation"}</p>
-              {tabs.map(({ key, label, icon: Icon }) => (
+              {tabs.map(({ key, label, icon: Icon }) => {
+                const badge =
+                  key === "registrations" ? registrations.filter(r => String(r.status) === "pending").length :
+                  key === "issues"        ? issues.filter(r => String(r.status) !== "done").length : 0;
+                return (
                 <button key={key} onClick={() => { setTab(key); updateParam("tab", key); setSidebarOpen(false); setResponseSurveyFilter(""); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                     tab === key
@@ -439,10 +512,16 @@ export default function AdminDashboard() {
                       : "text-gray-500 hover:bg-lilac/50 hover:text-mauve"
                   }`}>
                   <Icon className="w-4 h-4 shrink-0" />
-                  {label}
+                  <span className="flex-1">{label}</span>
+                  {badge > 0 && tab !== key && (
+                    <span className="text-[10px] font-black bg-red-500 text-white rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                      {badge > 99 ? "99+" : badge}
+                    </span>
+                  )}
                   {tab === key && <ChevronRight className="w-4 h-4 ms-auto" />}
                 </button>
-              ))}
+                );
+              })}
             </nav>
             <div className="p-4 border-t border-gray-100">
               <div className="bg-gradient-to-br from-lilac to-white rounded-2xl p-4 text-center">
@@ -580,7 +659,14 @@ export default function AdminDashboard() {
                                   checked={selectedIds.has(String(r.id))}
                                   onChange={e => setSelectedIds(prev => { const n = new Set(prev); e.target.checked ? n.add(String(r.id)) : n.delete(String(r.id)); return n; })} />
                               </td>
-                              <td className="px-5 py-3.5 font-medium text-gray-700">{String(r.name || r.institution_name || "—")}</td>
+                              <td className="px-5 py-3.5">
+                                <p className="font-medium text-gray-700">{String(r.name || r.institution_name || "—")}</p>
+                                {rejectionLog[String(r.id)] && (
+                                  <p className="text-[10px] text-red-400 mt-0.5 flex items-center gap-1">
+                                    <X className="w-2.5 h-2.5" />{rejectionLog[String(r.id)]}
+                                  </p>
+                                )}
+                              </td>
                               <td className="px-5 py-3.5 text-gray-500">{String(r.email || "—")}</td>
                               <td className="px-5 py-3.5 text-gray-500">{String(r.phone || "—")}</td>
                               <td className="px-5 py-3.5">
@@ -638,6 +724,25 @@ export default function AdminDashboard() {
                       ]} />
                     </div>
                   }>
+                  {/* Bulk action bar */}
+                  {selectedIssueIds.size > 0 && (
+                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-3 mb-4 bg-mauve/10 border border-mauve/20 rounded-xl px-4 py-3">
+                      <span className="text-sm font-semibold text-mauve">{selectedIssueIds.size} {ar ? "محدد" : "selected"}</span>
+                      <button onClick={() => bulkUpdateIssues("done")} disabled={bulkIssueLoading}
+                        className="flex items-center gap-1.5 text-xs font-bold bg-turquoise text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">
+                        <CheckCircle2 className="w-3.5 h-3.5" />{ar ? "تحديد كـ تم" : "Mark as Done"}
+                      </button>
+                      <button onClick={() => bulkUpdateIssues("pending")} disabled={bulkIssueLoading}
+                        className="flex items-center gap-1.5 text-xs font-bold bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">
+                        <Clock className="w-3.5 h-3.5" />{ar ? "تحديد كـ قيد المعالجة" : "Mark as Pending"}
+                      </button>
+                      <button onClick={() => setSelectedIssueIds(new Set())} className="ms-auto text-xs text-gray-400 hover:text-red-400 transition-colors">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </motion.div>
+                  )}
+
                   {/* Issues with status toggle */}
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     {filteredIssues.length === 0 ? (
@@ -647,6 +752,11 @@ export default function AdminDashboard() {
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="border-b border-gray-100 bg-gray-50/50">
+                              <th className="px-4 py-3.5 w-10">
+                                <input type="checkbox" className="accent-mauve w-3.5 h-3.5"
+                                  checked={selectedIssueIds.size === filteredIssues.length && filteredIssues.length > 0}
+                                  onChange={e => setSelectedIssueIds(e.target.checked ? new Set(filteredIssues.map(r => String(r.id))) : new Set())} />
+                              </th>
                               {(ar ? ["العنوان","النوع","الفئة المعنية","التاريخ","الحالة"] : ["Title","Type","Affected Group","Date","Status"]).map(h => (
                                 <th key={h} className="text-left px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                               ))}
@@ -655,9 +765,15 @@ export default function AdminDashboard() {
                           <tbody>
                             {filteredIssues.map((r, i) => {
                               const isDone = (r.status || "pending") === "done";
+                              const isSelected = selectedIssueIds.has(String(r.id));
                               return (
                                 <motion.tr key={String(r.id)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                                  className="border-b border-gray-50 hover:bg-lilac/20 transition-colors">
+                                  className={`border-b border-gray-50 hover:bg-lilac/20 transition-colors ${isSelected ? "bg-lilac/20" : ""}`}>
+                                  <td className="px-4 py-3.5">
+                                    <input type="checkbox" className="accent-mauve w-3.5 h-3.5"
+                                      checked={isSelected}
+                                      onChange={e => setSelectedIssueIds(prev => { const s = new Set(prev); e.target.checked ? s.add(String(r.id)) : s.delete(String(r.id)); return s; })} />
+                                  </td>
                                   <td className="px-5 py-3.5 text-gray-700 font-medium max-w-[200px] truncate">{String(r.title || "—")}</td>
                                   <td className="px-5 py-3.5 text-gray-500">{String(r.type || "—")}</td>
                                   <td className="px-5 py-3.5 text-gray-500">{String(r.affected_group || "—")}</td>
@@ -808,11 +924,65 @@ export default function AdminDashboard() {
                       <h2 className="text-xl font-bold text-gray-800">{ar ? "الأنشطة" : "Activities"}</h2>
                       <p className="text-sm text-gray-400">{activities.length} {ar ? "نشاط" : "activities"}</p>
                     </div>
-                    <button onClick={() => { setShowActivityForm(true); setEditingActivity(null); setActivityForm({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" }); }}
-                      className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-mauve/20">
-                      <PlusCircle className="w-4 h-4" />{ar ? "إضافة نشاط" : "Add Activity"}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setCalendarView(v => !v)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm border transition-colors ${calendarView ? "bg-mauve text-white border-mauve" : "bg-white border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve"}`}>
+                        <CalendarDays className="w-4 h-4" />{ar ? "تقويم" : "Calendar"}
+                      </button>
+                      <button onClick={() => { setShowActivityForm(true); setEditingActivity(null); setActivityForm({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" }); }}
+                        className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-mauve/20">
+                        <PlusCircle className="w-4 h-4" />{ar ? "إضافة نشاط" : "Add Activity"}
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Calendar view */}
+                  {calendarView && (() => {
+                    const { year, month } = calendarMonth;
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const monthName = new Date(year, month, 1).toLocaleDateString(ar ? "ar-DZ" : "en-GB", { month: "long", year: "numeric" });
+                    const activitiesByDay: Record<number, typeof activities> = {};
+                    activities.forEach(a => {
+                      if (a.date) {
+                        const d = new Date(String(a.date));
+                        if (d.getFullYear() === year && d.getMonth() === month) {
+                          const day = d.getDate();
+                          activitiesByDay[day] = [...(activitiesByDay[day] || []), a];
+                        }
+                      }
+                    });
+                    return (
+                      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 overflow-hidden">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                          <button onClick={() => setCalendarMonth(m => { const d = new Date(m.year, m.month - 1); return { year: d.getFullYear(), month: d.getMonth() }; })}
+                            className="p-1.5 rounded-lg hover:bg-lilac transition-colors"><ChevronLeft className="w-4 h-4 text-mauve" /></button>
+                          <span className="font-bold text-gray-800 text-sm">{monthName}</span>
+                          <button onClick={() => setCalendarMonth(m => { const d = new Date(m.year, m.month + 1); return { year: d.getFullYear(), month: d.getMonth() }; })}
+                            className="p-1.5 rounded-lg hover:bg-lilac transition-colors"><ChevronRight className="w-4 h-4 text-mauve" /></button>
+                        </div>
+                        <div className="grid grid-cols-7 text-center">
+                          {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
+                            <div key={d} className="py-2 text-xs font-bold text-gray-400 uppercase">{d}</div>
+                          ))}
+                          {Array.from({ length: firstDay }).map((_, i) => <div key={`e${i}`} />)}
+                          {Array.from({ length: daysInMonth }).map((_, i) => {
+                            const day = i + 1;
+                            const dayActivities = activitiesByDay[day] || [];
+                            const isToday = new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year;
+                            return (
+                              <div key={day} className={`p-2 min-h-[60px] border-t border-gray-50 ${isToday ? "bg-lilac/30" : ""}`}>
+                                <span className={`text-xs font-semibold ${isToday ? "text-mauve" : "text-gray-500"}`}>{day}</span>
+                                {dayActivities.slice(0,2).map(a => (
+                                  <div key={String(a.id)} className="mt-1 text-[10px] bg-mauve/15 text-mauve rounded px-1 truncate">{String(a.title)}</div>
+                                ))}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Activity form */}
                   {showActivityForm && (
@@ -1206,6 +1376,26 @@ export default function AdminDashboard() {
                     <p className="text-sm text-gray-400">{ar ? "نظرة شاملة على أداء المنصة" : "A full overview of platform performance"}</p>
                   </div>
 
+                  {/* Urgency alerts */}
+                  {(analytics.pendingRegs > 0 || issues.filter(i => String(i.status) !== "done").length > 0) && (
+                    <div className="flex flex-wrap gap-3">
+                      {analytics.pendingRegs > 0 && (
+                        <button onClick={() => { setTab("registrations"); updateParam("tab","registrations"); }}
+                          className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-100 transition-colors">
+                          <Clock className="w-4 h-4" />
+                          {analytics.pendingRegs} {ar ? "تسجيل بانتظار المراجعة" : "registrations awaiting review"}
+                        </button>
+                      )}
+                      {issues.filter(i => String(i.status) !== "done").length > 0 && (
+                        <button onClick={() => { setTab("issues"); updateParam("tab","issues"); }}
+                          className="flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-orange-100 transition-colors">
+                          <AlertCircle className="w-4 h-4" />
+                          {issues.filter(i => String(i.status) !== "done").length} {ar ? "إشكالية لم تُحل بعد" : "unresolved issues"}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {/* KPI strip */}
                   <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
                     {[
@@ -1459,6 +1649,63 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
+                  {/* Row 5b: Per-question analytics */}
+                  {surveys.length > 0 && allResponses.length > 0 && (
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                      <h3 className="font-bold text-gray-700 mb-5">{ar ? "تحليل إجابات الأسئلة" : "Question Answer Analytics"}</h3>
+                      <div className="space-y-6">
+                        {surveys.slice(0, 3).map(survey => {
+                          const surveyResps = allResponses.filter(r => String(r.surveyId) === String(survey.id));
+                          if (!surveyResps.length) return null;
+                          const qs = (survey.questions as { id:string; text:string; type:string }[] | undefined) || [];
+                          return (
+                            <div key={String(survey.id)}>
+                              <p className="text-sm font-bold text-mauve mb-3">{String(survey.title)}</p>
+                              {qs.filter(q => q.type === "choice" || q.type === "rating").map(q => {
+                                const answers = surveyResps.map(r => (r.answers as Record<string,string|number>)?.[q.id]).filter(Boolean);
+                                if (!answers.length) return null;
+                                if (q.type === "rating") {
+                                  const avg = (answers.reduce((s: number, v) => s + Number(v), 0) / answers.length).toFixed(1);
+                                  return (
+                                    <div key={q.id} className="mb-3">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <p className="text-xs font-medium text-gray-600 truncate max-w-[70%]">{q.text}</p>
+                                        <span className="text-xs font-black text-turquoise">{avg}/5 ⭐</span>
+                                      </div>
+                                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-turquoise rounded-full" style={{ width: `${(Number(avg)/5)*100}%` }} />
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                const counts: Record<string, number> = {};
+                                answers.forEach(a => { counts[String(a)] = (counts[String(a)] || 0) + 1; });
+                                const max = Math.max(...Object.values(counts));
+                                return (
+                                  <div key={q.id} className="mb-4">
+                                    <p className="text-xs font-medium text-gray-600 mb-2 truncate">{q.text}</p>
+                                    <div className="space-y-1.5">
+                                      {Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([opt, count]) => (
+                                        <div key={opt} className="flex items-center gap-2">
+                                          <span className="text-xs text-gray-500 w-28 truncate">{opt}</span>
+                                          <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
+                                            <motion.div initial={{ width: 0 }} animate={{ width: `${(count/max)*100}%` }}
+                                              transition={{ duration: 0.6 }} className="h-full bg-mauve/70 rounded-full" />
+                                          </div>
+                                          <span className="text-xs font-bold text-mauve w-6 text-right">{count}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Row 6: Recent activity feed */}
                   <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h3 className="font-bold text-gray-700 mb-5">{ar ? "النشاط الأخير" : "Recent Activity"}</h3>
@@ -1485,6 +1732,109 @@ export default function AdminDashboard() {
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+
+              {/* ── SETTINGS ── */}
+              {tab === "settings" && (
+                <div className="max-w-3xl space-y-8">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800 mb-1">{ar ? "الإعدادات" : "Settings"}</h2>
+                    <p className="text-sm text-gray-400">{ar ? "إدارة إعدادات المنصة والتواصل مع الأعضاء" : "Manage platform settings and communicate with members"}</p>
+                  </div>
+
+                  {/* Email broadcast */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-50 flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg,#9B6B9B,#2EC4B6)" }}>
+                        <Mail className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-800 text-sm">{ar ? "بريد جماعي" : "Email Broadcast"}</h3>
+                        <p className="text-xs text-gray-400">{ar ? `${registrations.filter(r=>String(r.status)==="approved").length} عضو مقبول سيتلقى الرسالة` : `${registrations.filter(r=>String(r.status)==="approved").length} approved members will receive this`}</p>
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      {broadcastSuccess && (
+                        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                          className="bg-turquoise/10 border border-turquoise/30 text-turquoise-dark rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4" /> {ar ? "تم الإرسال بنجاح!" : "Broadcast sent successfully!"}
+                        </motion.div>
+                      )}
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">{ar ? "الموضوع" : "Subject"}</label>
+                        <input value={broadcastSubject} onChange={e => setBroadcastSubject(e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors"
+                          placeholder={ar ? "موضوع الرسالة..." : "Email subject..."} />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">{ar ? "نص الرسالة" : "Message"}</label>
+                        <textarea value={broadcastBody} onChange={e => setBroadcastBody(e.target.value)} rows={5}
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors resize-none"
+                          placeholder={ar ? "اكتب رسالتك هنا..." : "Write your message here..."} />
+                      </div>
+                      <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                        onClick={sendBroadcast}
+                        disabled={broadcasting || !broadcastSubject.trim() || !broadcastBody.trim() || registrations.filter(r=>String(r.status)==="approved").length === 0}
+                        className="flex items-center gap-2 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:opacity-90 transition-opacity disabled:opacity-50"
+                        style={{ background: "linear-gradient(135deg,#9B6B9B,#2EC4B6)" }}>
+                        <Mail className="w-4 h-4" />
+                        {broadcasting ? (ar ? "جارٍ الإرسال..." : "Sending...") : (ar ? "إرسال للجميع" : "Send to All")}
+                      </motion.button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── GLOBAL SEARCH RESULTS ── */}
+              {globalSearch && (
+                <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setGlobalSearch(""); setShowGlobalSearch(false); }} />
+                  <motion.div initial={{ opacity: 0, y: -10, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[70vh] flex flex-col overflow-hidden z-10">
+                    <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-gray-400" />
+                      <input autoFocus value={globalSearch} onChange={e => setGlobalSearch(e.target.value)}
+                        className="flex-1 text-sm outline-none bg-transparent"
+                        placeholder={ar ? "بحث في التسجيلات والإشكاليات..." : "Search registrations, issues..."} />
+                      <button onClick={() => { setGlobalSearch(""); setShowGlobalSearch(false); }}>
+                        <X className="w-4 h-4 text-gray-400 hover:text-red-400 transition-colors" />
+                      </button>
+                    </div>
+                    <div className="overflow-y-auto">
+                      {(() => {
+                        const q = globalSearch.toLowerCase();
+                        const regResults = registrations.filter(r => String(r.name||r.institution_name||"").toLowerCase().includes(q) || String(r.email||"").toLowerCase().includes(q)).slice(0, 5);
+                        const issueResults = issues.filter(r => String(r.title||"").toLowerCase().includes(q) || String(r.description||"").toLowerCase().includes(q)).slice(0, 5);
+                        const total = regResults.length + issueResults.length;
+                        if (total === 0) return <div className="text-center py-10 text-gray-400 text-sm">{ar ? "لا نتائج" : "No results found"}</div>;
+                        return (
+                          <div className="divide-y divide-gray-50">
+                            {regResults.map(r => (
+                              <button key={String(r.id)} onClick={() => { setSelectedReg(r); setGlobalSearch(""); setShowGlobalSearch(false); setTab("registrations"); updateParam("tab","registrations"); }}
+                                className="w-full flex items-center gap-3 px-5 py-3.5 text-start hover:bg-lilac/20 transition-colors">
+                                <UserCheck className="w-4 h-4 text-mauve shrink-0" />
+                                <div>
+                                  <p className="text-sm font-semibold text-gray-700">{String(r.name||r.institution_name||"—")}</p>
+                                  <p className="text-xs text-gray-400">{String(r.email||"")} · {String(r.category||"")}</p>
+                                </div>
+                              </button>
+                            ))}
+                            {issueResults.map(r => (
+                              <button key={String(r.id)} onClick={() => { setTab("issues"); updateParam("tab","issues"); setGlobalSearch(""); setShowGlobalSearch(false); }}
+                                className="w-full flex items-center gap-3 px-5 py-3.5 text-start hover:bg-lilac/20 transition-colors">
+                                <AlertCircle className="w-4 h-4 text-orange-400 shrink-0" />
+                                <div>
+                                  <p className="text-sm font-semibold text-gray-700">{String(r.title||"—")}</p>
+                                  <p className="text-xs text-gray-400">{String(r.type||"")} · {String(r.status||"")}</p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </motion.div>
                 </div>
               )}
 
