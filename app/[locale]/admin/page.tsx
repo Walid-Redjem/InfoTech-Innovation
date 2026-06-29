@@ -1253,13 +1253,12 @@ export default function AdminDashboard() {
 
                           {/* Filter by month name */}
                           <div className="relative">
-                            <CalendarDays className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                             <input
                               type="text"
                               value={surveyDateFilter}
                               onChange={e => { setSurveyDateFilter(e.target.value); setSurveySearch(""); }}
                               placeholder={ar ? "يونيو، ديسمبر..." : "Jun, Dec..."}
-                              className="ps-9 pe-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 w-36"
+                              className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 w-36"
                             />
                           </div>
 
