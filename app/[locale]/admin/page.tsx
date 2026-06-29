@@ -1258,7 +1258,7 @@ export default function AdminDashboard() {
                               type="text"
                               value={surveyDateFilter}
                               onChange={e => { setSurveyDateFilter(e.target.value); setSurveySearch(""); }}
-                              placeholder={ar ? "مثال: يونيو" : "e.g. Jun"}
+                              placeholder={ar ? "يونيو، ديسمبر..." : "Jun, Dec..."}
                               className="ps-9 pe-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white text-gray-600 w-36"
                             />
                           </div>
