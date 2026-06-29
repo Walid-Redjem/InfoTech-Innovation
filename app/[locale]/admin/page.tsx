@@ -1245,7 +1245,7 @@ export default function AdminDashboard() {
                               value={surveySearch}
                               onChange={e => { setSurveySearch(e.target.value); setSurveyDateFilter(""); }}
                               placeholder={ar ? "بحث باسم الاستبيان..." : "Search by name..."}
-                              className="w-full ps-9 pe-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white"
+                              className="w-full ps-10 pe-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors bg-white"
                             />
                           </div>
 
