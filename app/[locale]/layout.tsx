@@ -15,6 +15,7 @@ import CursorSpotlight from "@/components/CursorSpotlight";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
 import FloatingSectionDots from "@/components/FloatingSectionDots";
+import CookieBanner from "@/components/CookieBanner";
 
 export default async function LocaleLayout({
   children,
@@ -47,6 +48,7 @@ export default async function LocaleLayout({
         <WhatsAppButton />
         <BackToTop />
         <PWAInstallBanner />
+        <CookieBanner />
       </ToastProvider>
     </NextIntlClientProvider>
   );

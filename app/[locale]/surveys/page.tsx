@@ -40,7 +40,7 @@ const contextGradients: Record<string, string> = {
   education: "linear-gradient(135deg, #a855f7, #9B6B9B)",
   youth:     "linear-gradient(135deg, #2EC4B6, #0d9488)",
   activity:  "linear-gradient(135deg, #f97316, #f59e0b)",
-  general:   "linear-gradient(135deg, #9B6B9B, #2EC4B6)",
+  general:   "linear-gradient(to right, #7B45A8, #2EC4B6)",
 };
 
 export default function SurveysPage() {

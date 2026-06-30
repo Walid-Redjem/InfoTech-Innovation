@@ -1,14 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+export const viewport: Viewport = {
+  themeColor: "#9B6B9B",
+};
+
 export const metadata: Metadata = {
   title: "InfoTech Innovation",
   description: "A digital platform for community innovation, education, and social impact in Algeria.",
   manifest: "/manifest.json",
-  themeColor: "#9B6B9B",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "InfoTech" },
   icons: { icon: "/logo.png", apple: "/logo.png" },
   openGraph: {
