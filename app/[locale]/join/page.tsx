@@ -466,7 +466,7 @@ export default function JoinPage() {
               </Field>
               <Field label={t("fields.contribution")} error={errors.contribution}>
                 <select name="contribution" value={form.contribution || ""} onChange={handleChange} className={inputClass(errors.contribution)}>
-                  <option value="">—</option>
+                  <option value=""></option>
                   {contributionKeys.map(key => <option key={key} value={key}>{t(`contribution.${key}`)}</option>)}
                 </select>
               </Field>
@@ -554,7 +554,7 @@ export default function JoinPage() {
               </Field>
               <Field label={t("fields.contribution")} error={errors.contribution}>
                 <select name="contribution" value={form.contribution || ""} onChange={handleChange} className={inputClass(errors.contribution)}>
-                  <option value="">—</option>
+                  <option value=""></option>
                   {contributionKeys.map(key => <option key={key} value={key}>{t(`contribution.${key}`)}</option>)}
                 </select>
               </Field>
@@ -582,7 +582,7 @@ export default function JoinPage() {
               </div>
               <Field label={t("fields.partnership")} error={errors.partnership}>
                 <select name="partnership" value={form.partnership || ""} onChange={handleChange} className={inputClass(errors.partnership)}>
-                  <option value="">—</option>
+                  <option value=""></option>
                   {partnershipKeys.map(key => <option key={key} value={key}>{t(`partnership.${key}`)}</option>)}
                 </select>
               </Field>

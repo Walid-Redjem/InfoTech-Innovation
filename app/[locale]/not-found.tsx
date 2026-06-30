@@ -12,7 +12,7 @@ export default function LocaleNotFound() {
           404
         </p>
         <h1 className="text-2xl font-bold text-gray-800 mb-3">Page not found</h1>
-        <p className="text-gray-500 mb-8">The page you're looking for doesn't exist or has been moved.</p>
+        <p className="text-gray-500 mb-8">The page you&apos;re looking for doesn&apos;t exist or has been moved.</p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link href="/"
             className="inline-block bg-gradient-to-r from-mauve to-turquoise text-white font-semibold px-8 py-3 rounded-full hover:opacity-90 transition-opacity shadow-lg">

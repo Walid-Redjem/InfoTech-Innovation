@@ -3,6 +3,8 @@
  * These mirror the useMemo filters in app/[locale]/admin/page.tsx
  */
 
+export {};
+
 type Reg = Record<string, unknown>;
 
 function filterRegistrations(

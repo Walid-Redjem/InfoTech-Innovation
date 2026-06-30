@@ -3,6 +3,8 @@
  * Mirrors the data aggregation in app/api/digest/route.ts
  */
 
+export {};
+
 interface Reg { status?: string; createdAt?: { toDate: () => Date } | string }
 interface Issue { createdAt?: { toDate: () => Date } | string }
 

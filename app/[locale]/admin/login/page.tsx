@@ -69,8 +69,8 @@ export default function AdminLoginPage() {
             </h1>
             <p className="text-white/70 text-lg leading-relaxed max-w-sm">
               {ar
-                ? "أدر التسجيلات وردود الاستبيانات والإشكاليات ومحتوى المنصة — كل شيء في مكان واحد."
-                : "Manage registrations, survey responses, issues, and platform content — all in one place."}
+                ? "أدر التسجيلات وردود الاستبيانات والإشكاليات ومحتوى المنصة، كل شيء في مكان واحد."
+                : "Manage registrations, survey responses, issues, and platform content, all in one place."}
             </p>
           </motion.div>
         </div>
@@ -160,7 +160,7 @@ export default function AdminLoginPage() {
 
           <div className="flex items-center justify-between mt-8">
             <p className="text-xs text-gray-400">
-              InfoTech Innovation — {ar ? "وصول مقيّد" : "Restricted Access"}
+              InfoTech Innovation: {ar ? "وصول مقيّد" : "Restricted Access"}
             </p>
             <button onClick={switchLocale}
               className="text-xs font-semibold px-3 py-1.5 rounded-full border-2 border-mauve text-mauve hover:bg-mauve hover:text-white transition-colors">

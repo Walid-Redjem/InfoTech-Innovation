@@ -259,6 +259,13 @@ export default function AdminDashboard() {
     setSurveys(prev => prev.map(s => String(s.id) === surveyId ? { ...s, active: !currentActive } : s));
   }
 
+  async function deleteSurvey(surveyId: string) {
+    if (!confirm(ar ? "هل تريد حذف هذا الاستبيان؟ لا يمكن التراجع عن هذا الإجراء." : "Delete this survey? This cannot be undone.")) return;
+    const { deleteDoc, doc: firestoreDoc } = await import("firebase/firestore");
+    await deleteDoc(firestoreDoc(db, "surveys", surveyId));
+    setSurveys(prev => prev.filter(s => String(s.id) !== surveyId));
+  }
+
   function addQuestion() {
     setQuestions(prev => [...prev, { id: `q${prev.length + 1}`, text: "", type: "text", options: "", required: true }]);
   }
@@ -406,7 +413,7 @@ export default function AdminDashboard() {
       return null;
     };
     const activity: ActivityItem[] = [
-      ...registrations.map(r => ({ type: "reg" as const, label: String(r.name || r.institution_name || r.email || "—"), date: toDate(r.createdAt), color: "#9B6B9B" })),
+      ...registrations.map(r => ({ type: "reg" as const, label: String(r.name || r.institution_name || r.email || "-"), date: toDate(r.createdAt), color: "#9B6B9B" })),
       ...issues.map(r => ({ type: "issue" as const, label: String(r.title || "Issue"), date: toDate(r.createdAt), color: "#f97316" })),
       ...allResponses.map(r => ({ type: "response" as const, label: "Survey response", date: toDate(r.createdAt), color: "#6366f1" })),
     ].filter(a => a.date !== null).sort((a, b) => b.date!.getTime() - a.date!.getTime()).slice(0, 8);
@@ -660,17 +667,17 @@ export default function AdminDashboard() {
                                   onChange={e => setSelectedIds(prev => { const n = new Set(prev); e.target.checked ? n.add(String(r.id)) : n.delete(String(r.id)); return n; })} />
                               </td>
                               <td className="px-5 py-3.5">
-                                <p className="font-medium text-gray-700">{String(r.name || r.institution_name || "—")}</p>
+                                <p className="font-medium text-gray-700">{String(r.name || r.institution_name || "-")}</p>
                                 {rejectionLog[String(r.id)] && (
                                   <p className="text-[10px] text-red-400 mt-0.5 flex items-center gap-1">
                                     <X className="w-2.5 h-2.5" />{rejectionLog[String(r.id)]}
                                   </p>
                                 )}
                               </td>
-                              <td className="px-5 py-3.5 text-gray-500">{String(r.email || "—")}</td>
-                              <td className="px-5 py-3.5 text-gray-500">{String(r.phone || "—")}</td>
+                              <td className="px-5 py-3.5 text-gray-500">{String(r.email || "-")}</td>
+                              <td className="px-5 py-3.5 text-gray-500">{String(r.phone || "-")}</td>
                               <td className="px-5 py-3.5">
-                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${colorMap[String(r.category || "")] || "bg-gray-100 text-gray-600"}`}>{String(r.category || "—")}</span>
+                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${colorMap[String(r.category || "")] || "bg-gray-100 text-gray-600"}`}>{String(r.category || "-")}</span>
                               </td>
                               <td className="px-5 py-3.5 text-gray-400 text-xs whitespace-nowrap">{formatDate(r.createdAt)}</td>
                               <td className="px-5 py-3.5">
@@ -774,9 +781,9 @@ export default function AdminDashboard() {
                                       checked={isSelected}
                                       onChange={e => setSelectedIssueIds(prev => { const s = new Set(prev); e.target.checked ? s.add(String(r.id)) : s.delete(String(r.id)); return s; })} />
                                   </td>
-                                  <td className="px-5 py-3.5 text-gray-700 font-medium max-w-[200px] truncate">{String(r.title || "—")}</td>
-                                  <td className="px-5 py-3.5 text-gray-500">{String(r.type || "—")}</td>
-                                  <td className="px-5 py-3.5 text-gray-500">{String(r.affected_group || "—")}</td>
+                                  <td className="px-5 py-3.5 text-gray-700 font-medium max-w-[200px] truncate">{String(r.title || "-")}</td>
+                                  <td className="px-5 py-3.5 text-gray-500">{String(r.type || "-")}</td>
+                                  <td className="px-5 py-3.5 text-gray-500">{String(r.affected_group || "-")}</td>
                                   <td className="px-5 py-3.5 text-gray-400 text-xs whitespace-nowrap">{formatDate(r.createdAt)}</td>
                                   <td className="px-5 py-3.5">
                                     <button onClick={() => toggleIssueStatus(String(r.id), String(r.status || "pending"))}
@@ -1355,6 +1362,15 @@ export default function AdminDashboard() {
                                     </button>
                                     <span className="text-[10px] text-gray-400">{isActive ? (ar ? "تعطيل" : "Disable") : (ar ? "تفعيل" : "Enable")}</span>
                                   </div>
+
+                                  {/* Delete */}
+                                  <button
+                                    onClick={() => deleteSurvey(String(s.id))}
+                                    className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors group shrink-0"
+                                    title={ar ? "حذف الاستبيان" : "Delete survey"}
+                                  >
+                                    <Trash2 className="w-4 h-4 text-gray-300 group-hover:text-red-400 transition-colors" />
+                                  </button>
                                 </div>
                               </motion.div>
                             );
@@ -1742,6 +1758,48 @@ export default function AdminDashboard() {
                     <p className="text-sm text-gray-400">{ar ? "إدارة إعدادات المنصة والتواصل مع الأعضاء" : "Manage platform settings and communicate with members"}</p>
                   </div>
 
+                  {/* Danger Zone */}
+                  <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-red-50 flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
+                        <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-red-600 text-sm">{ar ? "منطقة الخطر" : "Danger Zone"}</h3>
+                        <p className="text-xs text-gray-400">{ar ? "حذف جميع البيانات بشكل دائم ولا يمكن التراجع عنه" : "Permanently delete all data — irreversible"}</p>
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-3">
+                      {([
+                        ["registrations", ar ? "التسجيلات" : "Registrations",   () => { setRegistrations([]); }],
+                        ["issues",        ar ? "الإشكاليات" : "Issues",          () => { setIssues([]); }],
+                        ["surveys",       ar ? "الاستبيانات" : "Surveys",        () => { setSurveys([]); }],
+                        ["surveyResponses", ar ? "ردود الاستبيانات" : "Survey Responses", () => { setAllResponses([]); }],
+                        ["activities",    ar ? "الأنشطة" : "Activities",         () => { setActivities([]); }],
+                      ] as [string, string, () => void][]).map(([col, label, clearState]) => (
+                        <div key={col} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-700">{label}</p>
+                            <p className="text-xs text-gray-400">{col}</p>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              if (!confirm(ar ? `هل أنت متأكد أنك تريد حذف جميع ${label}؟ لا يمكن التراجع عن هذا.` : `Delete ALL ${label}? This cannot be undone.`)) return;
+                              const { getDocs: _getDocs, deleteDoc: _deleteDoc, doc: _doc, collection: _col } = await import("firebase/firestore");
+                              const snap = await _getDocs(_col(db, col));
+                              await Promise.all(snap.docs.map(d => _deleteDoc(_doc(db, col, d.id))));
+                              clearState();
+                            }}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            {ar ? "حذف الكل" : "Clear All"}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Email broadcast */}
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-50 flex items-center gap-3">
@@ -1814,7 +1872,7 @@ export default function AdminDashboard() {
                                 className="w-full flex items-center gap-3 px-5 py-3.5 text-start hover:bg-lilac/20 transition-colors">
                                 <UserCheck className="w-4 h-4 text-mauve shrink-0" />
                                 <div>
-                                  <p className="text-sm font-semibold text-gray-700">{String(r.name||r.institution_name||"—")}</p>
+                                  <p className="text-sm font-semibold text-gray-700">{String(r.name||r.institution_name||"-")}</p>
                                   <p className="text-xs text-gray-400">{String(r.email||"")} · {String(r.category||"")}</p>
                                 </div>
                               </button>
@@ -1824,7 +1882,7 @@ export default function AdminDashboard() {
                                 className="w-full flex items-center gap-3 px-5 py-3.5 text-start hover:bg-lilac/20 transition-colors">
                                 <AlertCircle className="w-4 h-4 text-orange-400 shrink-0" />
                                 <div>
-                                  <p className="text-sm font-semibold text-gray-700">{String(r.title||"—")}</p>
+                                  <p className="text-sm font-semibold text-gray-700">{String(r.title||"-")}</p>
                                   <p className="text-xs text-gray-400">{String(r.type||"")} · {String(r.status||"")}</p>
                                 </div>
                               </button>
@@ -1870,7 +1928,7 @@ export default function AdminDashboard() {
               <p class="meta">Date: ${responseDate} &nbsp;·&nbsp; ${entries.length} answers &nbsp;·&nbsp; InfoTech Innovation</p>
               <hr style="border:none;border-top:2px solid #ede0f5;margin-bottom:24px"/>
               ${rows}
-              <p style="margin-top:32px;font-size:11px;color:#bbb;text-align:center">InfoTech Innovation — Survey Response</p>
+              <p style="margin-top:32px;font-size:11px;color:#bbb;text-align:center">InfoTech Innovation: Survey Response</p>
             </body></html>`;
           const w = window.open("", "_blank");
           if (!w) return;
@@ -2024,7 +2082,7 @@ function RegistrationModal({ reg, ar, onClose, onReview, actionLoading, rejectio
     { label: ar ? "الفئة" : "Category", value: category },
     { label: ar ? "اللغة" : "Locale", value: reg.locale },
     { label: ar ? "الحالة" : "Status", value: reg.status },
-    { label: ar ? "التاريخ" : "Date", value: reg.createdAt instanceof Timestamp ? reg.createdAt.toDate().toLocaleDateString("en-GB") : "—" },
+    { label: ar ? "التاريخ" : "Date", value: reg.createdAt instanceof Timestamp ? reg.createdAt.toDate().toLocaleDateString("en-GB") : "-" },
   ].filter(Boolean) as { label: string; value: unknown }[];
 
   const fileEntries = [
@@ -2055,7 +2113,7 @@ function RegistrationModal({ reg, ar, onClose, onReview, actionLoading, rejectio
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <div>
               <h2 className="font-bold text-gray-800 text-lg">
-                {String(reg.name || reg.institution_name || "—")}
+                {String(reg.name || reg.institution_name || "-")}
               </h2>
               <div className="flex items-center gap-2 mt-1">
                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colorMap[category] || "bg-gray-100 text-gray-600"}`}>
@@ -2085,7 +2143,7 @@ function RegistrationModal({ reg, ar, onClose, onReview, actionLoading, rejectio
                 {fieldRows.map(({ label, value }) => (
                   <div key={label} className="flex gap-4 px-4 py-2.5">
                     <span className="text-xs text-gray-400 w-32 shrink-0 pt-0.5">{label}</span>
-                    <span className="text-sm text-gray-700 font-medium">{String(value || "—")}</span>
+                    <span className="text-sm text-gray-700 font-medium">{String(value || "-")}</span>
                   </div>
                 ))}
               </div>
