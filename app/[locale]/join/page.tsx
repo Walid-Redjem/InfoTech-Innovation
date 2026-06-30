@@ -667,7 +667,7 @@ export default function JoinPage() {
               <button
                 onClick={() => { if (termsChecked) setShowTerms(false); }}
                 disabled={!termsChecked}
-                className="w-full bg-mauve text-white py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-mauve-dark"
+                className="w-full bg-gradient-to-r from-mauve to-turquoise text-white py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
               >
                 {ar ? "فهمت" : "Got it"}
               </button>

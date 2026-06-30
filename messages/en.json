@@ -50,6 +50,23 @@
         "title": "Digital Assistant",
         "description": "Our intelligent chatbot guides you through the platform and helps you find what you need."
       }
+    },
+    "founder": {
+      "label": "Behind This Project",
+      "name": "Hayet Laimouche",
+      "role": "Founder of InfoTech Innovation",
+      "tagline": "Driving InfoTech Innovation's mission to bring generative AI and modern education to communities across Algeria.",
+      "credentials": "Generative AI Expert · Education Management (Microsoft Certified)",
+      "viewAchievements": "View Achievements"
+    },
+    "location": {
+      "label": "Find Us",
+      "title": "Our Location",
+      "subtitle": "Come visit InfoTech Innovation in Merad, Algeria — we'd love to meet you.",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "openMaps": "Open in Google Maps"
     }
   },
   "join": {

@@ -30,8 +30,6 @@ export default function Hero() {
   const words = isRTL ? wordsAr : wordsEn;
 
   const [wordIndex, setWordIndex] = useState(0);
-  const [glitching, setGlitching] = useState(false);
-
   const { scrollY } = useScroll();
   const blobY    = useTransform(scrollY, [0, 600], [0, -180]);
   const contentY = useTransform(scrollY, [0, 600], [0, -80]);
@@ -43,27 +41,6 @@ export default function Hero() {
     }, 2500);
     return () => clearInterval(interval);
   }, [words.length]);
-
-  useEffect(() => {
-    let offTimeout: ReturnType<typeof setTimeout>;
-    let interval: ReturnType<typeof setInterval>;
-
-    function runGlitch() {
-      setGlitching(true);
-      offTimeout = setTimeout(() => setGlitching(false), 450);
-    }
-
-    const initial = setTimeout(() => {
-      runGlitch();
-      interval = setInterval(runGlitch, 3000);
-    }, 1300);
-
-    return () => {
-      clearTimeout(initial);
-      clearTimeout(offTimeout);
-      clearInterval(interval);
-    };
-  }, []);
 
   return (
     <section className="relative overflow-hidden min-h-[92vh] flex items-center py-16 md:py-20 px-5 md:px-6"
@@ -117,17 +94,13 @@ export default function Hero() {
           {locale === "ar" ? "منصة ابتكار مجتمعي" : "Community Innovation Platform"}
         </motion.div>
 
-        {/* Title with glitch */}
-        <div className={glitching ? "glitch-title" : ""}>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl md:text-7xl font-bold mb-4 leading-tight tracking-tight"
-            style={{ background: "linear-gradient(135deg, #8B2FC9 0%, #00BFFF 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
-          >
-            {t("title")}
-          </motion.h1>
-        </div>
+        {/* Title */}
+        <h1
+          className="text-5xl md:text-7xl font-bold mb-4 leading-tight tracking-tight"
+          style={{ background: "linear-gradient(135deg, #8B2FC9 0%, #00BFFF 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+        >
+          {t("title")}
+        </h1>
 
         {/* Typewriter line */}
         <motion.div
@@ -168,7 +141,7 @@ export default function Hero() {
           className="flex flex-wrap gap-4 justify-center"
         >
           {[
-            { label: t("cta_join"), href: "/join", style: "bg-mauve text-white shadow-xl shadow-mauve/30 hover:bg-mauve-dark hover:shadow-mauve/50", arrow: true, primary: true },
+            { label: t("cta_join"), href: "/join", style: "bg-gradient-to-r from-mauve to-turquoise text-white shadow-xl shadow-mauve/30 hover:opacity-90 hover:shadow-mauve/50", arrow: true, primary: true },
             { label: t("cta_issue"), href: "/issues", style: "bg-white border-2 border-mauve text-mauve hover:bg-mauve hover:text-white shadow-lg shadow-mauve/10" },
             { label: t("cta_idea"), href: "/issues", style: "bg-turquoise/10 border-2 border-turquoise text-turquoise hover:bg-turquoise hover:text-white shadow-lg shadow-turquoise/10" },
           ].map((btn) => (

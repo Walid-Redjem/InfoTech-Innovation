@@ -64,7 +64,7 @@ export default function Footer() {
           </ul>
           <Link
             href={`/${locale}/join`}
-            className="inline-block mt-5 bg-turquoise text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-turquoise-dark transition-colors"
+            className="inline-block mt-5 bg-gradient-to-r from-mauve to-turquoise text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition-opacity"
           >
             {locale === "ar" ? "انخرط معنا" : "Join Us"}
           </Link>

@@ -167,7 +167,7 @@ export default function AboutPage() {
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
               <Link href={`/${locale}/join`}
-                className="inline-block bg-turquoise text-white px-10 py-4 rounded-full font-bold hover:bg-turquoise-dark transition-colors shadow-xl shadow-turquoise/30">
+                className="inline-block bg-gradient-to-r from-mauve to-turquoise text-white px-10 py-4 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30">
                 {ar ? "انخرط معنا" : "Join Us Today"}
               </Link>
             </motion.div>

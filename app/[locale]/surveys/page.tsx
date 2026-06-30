@@ -142,7 +142,7 @@ export default function SurveysPage() {
           <h2 className="text-2xl font-bold text-mauve mb-2">{t("success_title")}</h2>
           <p className="text-gray-500 mb-8">{t("success_message")}</p>
           <button onClick={() => setView("list")}
-            className="inline-flex items-center gap-2 bg-mauve text-white px-8 py-3 rounded-full font-semibold hover:bg-mauve-dark transition-colors shadow-lg shadow-mauve/20">
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-mauve/20">
             {t("back_to_surveys")}
           </button>
         </motion.div>
@@ -311,7 +311,7 @@ export default function SurveysPage() {
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={goNext}
                 disabled={currentQ.required && !isAnswered}
-                className="flex items-center gap-2 bg-mauve text-white px-5 md:px-8 py-2.5 rounded-full font-semibold hover:bg-mauve-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+                className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 md:px-8 py-2.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed text-sm"
               >
                 {isRTL ? "التالي" : "Next"}
                 <NextArrow className="w-4 h-4" />

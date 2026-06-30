@@ -80,24 +80,6 @@ body {
   z-index: 1;
 }
 
-@keyframes glitch-anim {
-  0%   { transform: translateX(0);    clip-path: none;                                          filter: none; }
-  10%  { transform: translateX(-4px); clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);        filter: hue-rotate(90deg) saturate(4); }
-  20%  { transform: translateX(4px);  clip-path: polygon(0 66%, 100% 66%, 100% 100%, 0 100%);  filter: hue-rotate(-90deg) brightness(1.4); }
-  30%  { transform: translateX(-2px); clip-path: none;                                          filter: saturate(5) brightness(1.2); }
-  40%  { transform: translateX(3px);  clip-path: polygon(0 40%, 100% 40%, 100% 58%, 0 58%);    filter: hue-rotate(180deg); }
-  50%  { transform: translateX(0);    clip-path: none;                                          filter: none; }
-  60%  { transform: translateX(-5px); clip-path: polygon(0 8%, 100% 8%, 100% 22%, 0 22%);      filter: saturate(3); }
-  70%  { transform: translateX(2px);  clip-path: none;                                          filter: none; }
-  80%  { transform: translateX(-1px); clip-path: polygon(0 75%, 100% 75%, 100% 88%, 0 88%);    filter: hue-rotate(45deg); }
-  90%  { transform: translateX(2px);  clip-path: none;                                          filter: none; }
-  100% { transform: translateX(0);    clip-path: none;                                          filter: none; }
-}
-
-.glitch-title {
-  animation: glitch-anim 0.45s steps(1) 1 forwards;
-}
-
 /* ── Focus ring ── */
 :focus-visible {
   outline: 2px solid #9B6B9B;
