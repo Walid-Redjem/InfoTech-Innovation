@@ -6,7 +6,7 @@ import { Home, ArrowLeft } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #EDE0F5 0%, #f8f4fc 60%, #ffffff 100%)" }}>
+      style={{ background: "linear-gradient(135deg, #D9C5E8 0%, #D9C5E8 60%, #ffffff 100%)" }}>
 
       {/* Dot grid */}
       <div className="absolute inset-0 opacity-20"

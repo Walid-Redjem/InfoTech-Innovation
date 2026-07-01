@@ -63,11 +63,10 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-lilac-dark/50 dark:border-gray-700/50"
-          : "bg-transparent border-b border-transparent"
-      }`}>
+      <nav
+        className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-lg" : ""}`}
+        style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #2EC4B6 100%)" }}
+      >
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center">
@@ -82,8 +81,8 @@ export default function Navbar() {
                   href={`/${locale}${link.href === "/" ? "" : link.href}`}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors block ${
                     isActive(link.href)
-                      ? "text-mauve dark:text-lilac"
-                      : "text-gray-500 dark:text-gray-400 hover:text-mauve hover:bg-lilac/50 dark:hover:bg-mauve/10 dark:hover:text-lilac"
+                      ? "text-white font-semibold"
+                      : "text-white/75 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {link.label}
@@ -109,7 +108,7 @@ export default function Navbar() {
             {/* Dark mode toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-mauve hover:bg-lilac dark:hover:bg-mauve/20 transition-colors"
+              className="p-2 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               aria-label="Toggle dark mode"
             >
               {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -121,14 +120,14 @@ export default function Navbar() {
               whileTap={{ scale: 0.85, rotate: locale === "ar" ? -12 : 12 }}
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="text-sm font-semibold px-4 py-1.5 rounded-full border-2 border-mauve text-mauve hover:bg-mauve hover:text-white transition-colors"
+              className="text-sm font-semibold px-4 py-1.5 rounded-full border-2 border-white/50 text-white hover:bg-white/20 transition-colors"
             >
               {locale === "ar" ? "EN" : "عربي"}
             </motion.button>
 
             {/* Hamburger */}
             <button
-              className="md:hidden p-1.5 rounded-lg text-mauve hover:bg-lilac dark:hover:bg-mauve/20 transition-colors"
+              className="md:hidden p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               onClick={() => setMobileOpen((v) => !v)}
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -138,15 +137,15 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-lilac-dark/50 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-4 space-y-1">
+          <div className="md:hidden border-t border-white/20 px-6 py-4 space-y-1" style={{ background: "#5C2D91" }}>
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={`/${locale}${link.href === "/" ? "" : link.href}`}
                 className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isActive(link.href)
-                    ? "bg-lilac text-mauve dark:bg-mauve/20 dark:text-lilac"
-                    : "text-gray-500 dark:text-gray-400 hover:bg-lilac/50 hover:text-mauve dark:hover:bg-mauve/10 dark:hover:text-lilac"
+                    ? "bg-white/20 text-white font-semibold"
+                    : "text-white/75 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {link.label}

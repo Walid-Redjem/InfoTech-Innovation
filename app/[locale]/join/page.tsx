@@ -274,8 +274,8 @@ export default function JoinPage() {
           locale,
         }),
       });
-      confetti({ particleCount: 160, spread: 80, colors: ["#9B6B9B", "#2EC4B6", "#EDE0F5", "#f97316", "#6366f1"], origin: { y: 0.55 } });
-      setTimeout(() => confetti({ particleCount: 80, spread: 120, colors: ["#9B6B9B", "#2EC4B6", "#EDE0F5"], origin: { y: 0.5, x: 0.3 } }), 300);
+      confetti({ particleCount: 160, spread: 80, colors: ["#9B6B9B", "#2EC4B6", "#D9C5E8", "#f97316", "#6366f1"], origin: { y: 0.55 } });
+      setTimeout(() => confetti({ particleCount: 80, spread: 120, colors: ["#9B6B9B", "#2EC4B6", "#D9C5E8"], origin: { y: 0.5, x: 0.3 } }), 300);
       setTimeout(() => confetti({ particleCount: 80, spread: 120, colors: ["#9B6B9B", "#2EC4B6", "#f97316"], origin: { y: 0.5, x: 0.7 } }), 500);
       showToast(ar ? "تم التسجيل بنجاح! 🎉" : "Registration successful! 🎉", "success");
       setSuccess(true);

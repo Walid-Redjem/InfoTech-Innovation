@@ -62,7 +62,7 @@ export default function IssuesPage() {
         locale,
         createdAt: serverTimestamp(),
       });
-      confetti({ particleCount: 120, spread: 70, colors: ["#2EC4B6","#9B6B9B","#EDE0F5","#f97316"], origin: { y: 0.6 } });
+      confetti({ particleCount: 120, spread: 70, colors: ["#2EC4B6","#9B6B9B","#D9C5E8","#f97316"], origin: { y: 0.6 } });
       setSuccess(true);
     } catch {
       setError(true);

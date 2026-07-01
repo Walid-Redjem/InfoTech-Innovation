@@ -61,7 +61,7 @@ export default function AboutPage() {
       <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-white to-lilac/20">
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-turquoise mb-2 block">{ar ? "ما نؤمن به" : "What We Believe"}</span>
+            <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: "#6B35A0" }}>{ar ? "ما نؤمن به" : "What We Believe"}</span>
             <h2 className="text-3xl font-bold text-mauve">{ar ? "قيمنا" : "Our Values"}</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
           </AnimatedSection>
@@ -86,7 +86,7 @@ export default function AboutPage() {
       <section className="py-12 md:py-20 px-4 md:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-turquoise mb-2 block">{ar ? "كيف نعمل" : "How We Work"}</span>
+            <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: "#6B35A0" }}>{ar ? "كيف نعمل" : "How We Work"}</span>
             <h2 className="text-3xl font-bold text-mauve">{ar ? "منهجيتنا" : "Our Methodology"}</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
           </AnimatedSection>
@@ -116,7 +116,7 @@ export default function AboutPage() {
       <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-lilac/20 to-white">
         <div className="max-w-3xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-turquoise mb-2 block">{ar ? "مسيرتنا" : "Our Journey"}</span>
+            <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: "#6B35A0" }}>{ar ? "مسيرتنا" : "Our Journey"}</span>
             <h2 className="text-3xl font-bold text-mauve">{ar ? "التسلسل الزمني" : "Timeline"}</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
           </AnimatedSection>

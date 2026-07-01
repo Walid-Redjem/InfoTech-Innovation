@@ -19,7 +19,7 @@ export default function Marquee() {
         {repeated.map((item, i) => (
           <span key={i} className="inline-flex items-center gap-4 px-6">
             <span className="text-white/90 font-semibold text-sm tracking-widest uppercase">{item}</span>
-            <span className="text-turquoise text-lg">✦</span>
+            <span className="text-white/60 text-lg">✦</span>
           </span>
         ))}
       </div>

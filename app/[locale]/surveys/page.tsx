@@ -118,7 +118,7 @@ export default function SurveysPage() {
         locale,
         createdAt: serverTimestamp(),
       });
-      confetti({ particleCount: 130, spread: 75, colors: ["#9B6B9B","#2EC4B6","#EDE0F5","#6366f1"], origin: { y: 0.55 } });
+      confetti({ particleCount: 130, spread: 75, colors: ["#9B6B9B","#2EC4B6","#D9C5E8","#6366f1"], origin: { y: 0.55 } });
       setTimeout(() => confetti({ particleCount: 60, spread: 100, colors: ["#9B6B9B","#2EC4B6"], origin: { y: 0.5, x: 0.3 } }), 350);
       setView("success");
     } catch {

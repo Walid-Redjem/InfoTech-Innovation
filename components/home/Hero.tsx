@@ -44,7 +44,7 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden min-h-[92vh] flex items-center py-16 md:py-20 px-5 md:px-6"
-      style={{ background: "linear-gradient(135deg, #EDE0F5 0%, #f8f4fc 50%, #ffffff 100%)" }}>
+      style={{ background: "linear-gradient(135deg, #D9C5E8 0%, #D9C5E8 50%, #ffffff 100%)" }}>
 
       {/* Static gradient overlay */}
       <div className="absolute inset-0 opacity-40" style={{
@@ -106,7 +106,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-base md:text-2xl font-semibold text-gray-600 mb-4 h-8 md:h-10 flex items-center justify-center gap-2 flex-wrap"
+          className="text-base md:text-2xl font-semibold mb-4 h-8 md:h-10 flex items-center justify-center gap-2 flex-wrap" style={{ color: "#3D2060" }}
         >
           <span>{locale === "ar" ? "من أجل" : "Building a better"}</span>
           <span className="overflow-hidden inline-flex items-center">
@@ -117,7 +117,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3 }}
-                className="text-turquoise font-bold inline-block"
+                className="font-bold inline-block" style={{ color: "#4A1880" }}
               >
                 {words[wordIndex]}
               </motion.span>
@@ -129,7 +129,7 @@ export default function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35 }}
-          className="text-base md:text-lg text-gray-400 mb-12 max-w-xl mx-auto leading-relaxed"
+          className="text-base md:text-lg mb-12 max-w-xl mx-auto leading-relaxed" style={{ color: "#4A3060" }}
         >
           {t("subtitle")}
         </motion.p>
@@ -142,8 +142,7 @@ export default function Hero() {
         >
           {[
             { label: t("cta_join"), href: "/join", style: "bg-gradient-to-r from-mauve to-turquoise text-white shadow-xl shadow-mauve/30 hover:opacity-90 hover:shadow-mauve/50", arrow: true, primary: true },
-            { label: t("cta_issue"), href: "/issues", style: "bg-white border-2 border-mauve text-mauve hover:bg-mauve hover:text-white shadow-lg shadow-mauve/10" },
-            { label: t("cta_idea"), href: "/issues", style: "bg-turquoise/10 border-2 border-turquoise text-turquoise hover:bg-turquoise hover:text-white shadow-lg shadow-turquoise/10" },
+            { label: t("cta_voice"), href: "/issues", style: "bg-white border-2 border-mauve/40 text-mauve hover:bg-gradient-to-r hover:from-mauve hover:to-turquoise hover:text-white hover:border-transparent shadow-lg shadow-mauve/10" },
           ].map((btn) => (
             <motion.div key={btn.label} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }}>
               {btn.primary ? (

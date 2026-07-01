@@ -29,7 +29,7 @@ export default function AboutSection() {
 
         {/* Text side */}
         <AnimatedSection>
-          <span className="text-xs font-bold uppercase tracking-widest text-turquoise mb-3 block">
+          <span className="text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: "#6B35A0" }}>
             {locale === "ar" ? "من نحن" : "Who We Are"}
           </span>
           <h2 className="text-2xl md:text-4xl font-bold text-mauve mb-4 leading-tight">{t("title")}</h2>

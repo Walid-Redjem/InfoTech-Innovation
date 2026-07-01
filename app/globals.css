@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #D9C5E8;
   --foreground: #171717;
 }
 
@@ -70,7 +70,7 @@ body {
   height: 200%;
   top: -50%;
   left: -50%;
-  background: conic-gradient(from 0deg, #9B6B9B, #2EC4B6, #6366f1, #f97316, #EDE0F5, #9B6B9B);
+  background: conic-gradient(from 0deg, #9B6B9B, #2EC4B6, #6366f1, #f97316, #D9C5E8, #9B6B9B);
   animation: border-spin 5s linear infinite;
   z-index: 0;
 }
@@ -88,7 +88,7 @@ body {
 }
 
 /* ── Text selection ── */
-::selection { background: #EDE0F5; color: #7A5580; }
+::selection { background: #D9C5E8; color: #7A5580; }
 
 /* ── Skip to content ── */
 .skip-link {

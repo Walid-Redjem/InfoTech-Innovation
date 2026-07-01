@@ -41,7 +41,7 @@ export default function LocationSection() {
       <div className="max-w-6xl mx-auto relative">
         {/* Header */}
         <AnimatedSection className="text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-turquoise mb-3 block">
+          <span className="text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: "#6B35A0" }}>
             {t("label")}
           </span>
           <h2 className="text-2xl md:text-4xl font-bold text-mauve mb-4">{t("title")}</h2>
