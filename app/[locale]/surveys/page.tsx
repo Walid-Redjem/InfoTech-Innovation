@@ -30,16 +30,16 @@ interface Survey {
 type View = "list" | "form" | "success";
 
 const contextColors: Record<string, string> = {
-  education: "bg-purple-100 text-purple-700",
-  youth:     "bg-teal-100 text-teal-700",
-  activity:  "bg-orange-100 text-orange-700",
-  general:   "bg-purple-100 text-purple-700",
+  education: "bg-lilac text-[#6B35A0]",
+  youth:     "bg-turquoise/10 text-[#0D9488]",
+  activity:  "bg-mauve/10 text-mauve",
+  general:   "bg-lilac text-[#6B35A0]",
 };
 
 const contextGradients: Record<string, string> = {
-  education: "linear-gradient(135deg, #a855f7, #9B6B9B)",
-  youth:     "linear-gradient(135deg, #2EC4B6, #0d9488)",
-  activity:  "linear-gradient(135deg, #f97316, #f59e0b)",
+  education: "linear-gradient(135deg, #6B35A0, #9B6B9B)",
+  youth:     "linear-gradient(135deg, #2EC4B6, #0D9488)",
+  activity:  "linear-gradient(135deg, #9B6B9B, #2EC4B6)",
   general:   "linear-gradient(to right, #6B35A0, #7B45A8 65%, #2EC4B6)",
 };
 

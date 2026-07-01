@@ -94,7 +94,7 @@ export default function FAQPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/15 rounded-2xl mb-6 backdrop-blur-sm">
             <HelpCircle className="w-8 h-8 text-white" />
           </div>
-          <span className="block text-xs font-bold uppercase tracking-widest text-mauve-dark mb-3">
+          <span className="block text-xs font-bold uppercase tracking-widest text-white/80 mb-3">
             {ar ? "الأسئلة الشائعة" : "FAQ"}
           </span>
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">

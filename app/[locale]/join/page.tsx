@@ -704,7 +704,7 @@ const sectionsAr = [
 function Field({ label, error, children }: { label: string; error?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-mauve mb-1.5">{label}</label>
+      <label className="block text-sm font-medium mb-1.5" style={{ color: "#6B35A0" }}>{label}</label>
       {children}
       {error && <p className="text-red-400 text-xs mt-1">Required</p>}
     </div>
