@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter, useParams, usePathname, useSearchParams } from "next/navigation";
 import { Tooltip } from "@/components/Tooltip";
+import ActivityMediaManager from "@/components/admin/ActivityMediaManager";
 import {
   Users, AlertCircle, ClipboardList, PlusCircle,
   Download, LogOut, Trash2, UserCheck, Rocket, Globe, BarChart3,
@@ -925,181 +926,17 @@ export default function AdminDashboard() {
 
               {/* ── ACTIVITIES ── */}
               {tab === "activities" && (
-                <div>
-                  <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-800">{ar ? "الأنشطة" : "Activities"}</h2>
-                      <p className="text-sm text-gray-400">{activities.length} {ar ? "نشاط" : "activities"}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => setCalendarView(v => !v)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm border transition-colors ${calendarView ? "bg-mauve text-white border-mauve" : "bg-white border-gray-200 text-gray-500 hover:border-mauve hover:text-mauve"}`}>
-                        <CalendarDays className="w-4 h-4" />{ar ? "تقويم" : "Calendar"}
-                      </button>
-                      <button onClick={() => { setShowActivityForm(true); setEditingActivity(null); setActivityForm({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" }); }}
-                        className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-mauve/20">
-                        <PlusCircle className="w-4 h-4" />{ar ? "إضافة نشاط" : "Add Activity"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Calendar view */}
-                  {calendarView && (() => {
-                    const { year, month } = calendarMonth;
-                    const firstDay = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    const monthName = new Date(year, month, 1).toLocaleDateString(ar ? "ar-DZ" : "en-GB", { month: "long", year: "numeric" });
-                    const activitiesByDay: Record<number, typeof activities> = {};
-                    activities.forEach(a => {
-                      if (a.date) {
-                        const d = new Date(String(a.date));
-                        if (d.getFullYear() === year && d.getMonth() === month) {
-                          const day = d.getDate();
-                          activitiesByDay[day] = [...(activitiesByDay[day] || []), a];
-                        }
-                      }
-                    });
-                    return (
-                      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 overflow-hidden">
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                          <button onClick={() => setCalendarMonth(m => { const d = new Date(m.year, m.month - 1); return { year: d.getFullYear(), month: d.getMonth() }; })}
-                            className="p-1.5 rounded-lg hover:bg-lilac transition-colors"><ChevronLeft className="w-4 h-4 text-mauve" /></button>
-                          <span className="font-bold text-gray-800 text-sm">{monthName}</span>
-                          <button onClick={() => setCalendarMonth(m => { const d = new Date(m.year, m.month + 1); return { year: d.getFullYear(), month: d.getMonth() }; })}
-                            className="p-1.5 rounded-lg hover:bg-lilac transition-colors"><ChevronRight className="w-4 h-4 text-mauve" /></button>
-                        </div>
-                        <div className="grid grid-cols-7 text-center">
-                          {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
-                            <div key={d} className="py-2 text-xs font-bold text-gray-400 uppercase">{d}</div>
-                          ))}
-                          {Array.from({ length: firstDay }).map((_, i) => <div key={`e${i}`} />)}
-                          {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const day = i + 1;
-                            const dayActivities = activitiesByDay[day] || [];
-                            const isToday = new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year;
-                            return (
-                              <div key={day} className={`p-2 min-h-[60px] border-t border-gray-50 ${isToday ? "bg-lilac/30" : ""}`}>
-                                <span className={`text-xs font-semibold ${isToday ? "text-mauve" : "text-gray-500"}`}>{day}</span>
-                                {dayActivities.slice(0,2).map(a => (
-                                  <div key={String(a.id)} className="mt-1 text-[10px] bg-mauve/15 text-mauve rounded px-1 truncate">{String(a.title)}</div>
-                                ))}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Activity form */}
-                  {showActivityForm && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                      className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 space-y-4">
-                      <h3 className="font-bold text-gray-700">{editingActivity ? (ar ? "تعديل النشاط" : "Edit Activity") : (ar ? "نشاط جديد" : "New Activity")}</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                          { label: "Title (EN)", key: "title" }, { label: "العنوان (AR)", key: "titleAr" },
-                          { label: "Description (EN)", key: "description" }, { label: "الوصف (AR)", key: "descriptionAr" },
-                          { label: "Location (EN)", key: "location" }, { label: "الموقع (AR)", key: "locationAr" },
-                          { label: "Date", key: "date" }, { label: "Image URL (Cloudinary)", key: "imageUrl" },
-                        ].map(({ label, key }) => (
-                          <div key={key}>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{label}</label>
-                            <input value={(activityForm as Record<string,string>)[key] || ""} onChange={e => setActivityForm(p => ({ ...p, [key]: e.target.value }))}
-                              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors" />
-                          </div>
-                        ))}
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Category</label>
-                          <select value={activityForm.category} onChange={e => setActivityForm(p => ({ ...p, category: e.target.value }))}
-                            className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-mauve transition-colors">
-                            {["workshop","event","competition","training","other"].map(c => <option key={c} value={c}>{c}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                      <div className="flex gap-3 pt-2">
-                        <button disabled={savingActivity} onClick={async () => {
-                          if (!activityForm.title.trim()) return;
-                          setSavingActivity(true);
-                          try {
-                            if (editingActivity) {
-                              await updateDoc(doc(db, "activities", editingActivity), { ...activityForm, active: true });
-                              setActivities(prev => prev.map(a => a.id === editingActivity ? { ...a, ...activityForm } : a));
-                            } else {
-                              const ref = await addDoc(collection(db, "activities"), { ...activityForm, active: true, createdAt: serverTimestamp() });
-                              setActivities(prev => [...prev, { id: ref.id, ...activityForm, active: true }]);
-                            }
-                            setShowActivityForm(false); setEditingActivity(null);
-                          } finally { setSavingActivity(false); }
-                        }} className="bg-mauve text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-mauve-dark transition-colors disabled:opacity-60">
-                          {savingActivity ? "Saving…" : (editingActivity ? (ar ? "حفظ التعديلات" : "Save Changes") : (ar ? "نشر النشاط" : "Publish Activity"))}
-                        </button>
-                        <button onClick={() => setShowActivityForm(false)} className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-500 text-sm hover:bg-gray-50 transition-colors">
-                          {ar ? "إلغاء" : "Cancel"}
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Activities list */}
-                  {activities.length === 0 && !showActivityForm ? (
-                    <div className="text-center py-20 text-gray-400">
-                      <CalendarDays className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                      <p className="text-sm">{ar ? "لا توجد أنشطة بعد. أضف أول نشاط!" : "No activities yet. Add the first one!"}</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {activities.map((a, i) => (
-                        <motion.div key={String(a.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                          className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                          {a.imageUrl ? (
-                            <div className="h-36 overflow-hidden relative">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={String(a.imageUrl)} alt={String(a.title)} className="w-full h-full object-cover" />
-                            </div>
-                          ) : (
-                            <div className="h-24 bg-lilac/30 flex items-center justify-center">
-                              <ImageIcon className="w-8 h-8 text-mauve/30" />
-                            </div>
-                          )}
-                          <div className="p-4">
-                            <span className="text-xs font-bold text-mauve uppercase tracking-wide">{String(a.category || "")}</span>
-                            <h3 className="font-bold text-gray-800 mb-1 truncate">{String(a.title || "")}</h3>
-                            {a.date ? <p className="text-xs text-gray-400 flex items-center gap-1"><CalendarDays className="w-3 h-3" />{String(a.date)}</p> : null}
-                            {a.location ? <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{String(a.location)}</p> : null}
-                            <div className="flex gap-2 mt-3">
-                              <button onClick={() => {
-                                setEditingActivity(String(a.id));
-                                setActivityForm({ title: String(a.title||""), titleAr: String(a.titleAr||""), description: String(a.description||""), descriptionAr: String(a.descriptionAr||""), date: String(a.date||""), category: String(a.category||"workshop"), location: String(a.location||""), locationAr: String(a.locationAr||""), imageUrl: String(a.imageUrl||"") });
-                                setShowActivityForm(true);
-                              }} className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-mauve bg-lilac px-3 py-1.5 rounded-lg hover:bg-lilac-dark transition-colors">
-                                <Pencil className="w-3 h-3" />{ar ? "تعديل" : "Edit"}
-                              </button>
-                              <button onClick={async () => {
-                                if (!confirm(ar ? "هل تريد حذف هذا النشاط؟" : "Delete this activity?")) return;
-                                const { deleteDoc, doc: firestoreDoc } = await import("firebase/firestore");
-                                await deleteDoc(firestoreDoc(db, "activities", String(a.id)));
-                                setActivities(prev => prev.filter(x => x.id !== a.id));
-                              }} className="flex items-center justify-center gap-1 text-xs font-semibold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors">
-                                <Trash2 className="w-3 h-3" />{ar ? "حذف" : "Delete"}
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <ActivityMediaManager ar={ar} />
               )}
 
               {/* ── SURVEYS (create + view) ── */}
               {tab === "create" && (
                 <div>
                   {/* Sub-tab bar */}
-                  <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-full sm:w-fit mb-8">
+                  <div className="flex gap-1.5 p-1.5 bg-gray-100/80 rounded-2xl w-full sm:w-fit mb-8">
                     {([["create", ar ? "إنشاء استبيان" : "Create Survey", PlusCircle], ["view", ar ? "عرض الاستبيانات" : "View Surveys", ClipboardList]] as const).map(([key, label, Icon]) => (
                       <button key={key} onClick={() => setSurveySubTab(key)}
-                        className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${surveySubTab === key ? "bg-white shadow-sm text-mauve" : "text-gray-500 hover:text-gray-700"}`}>
+                        className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${surveySubTab === key ? "bg-white shadow-sm text-mauve border border-gray-100" : "text-gray-400 hover:text-gray-600"}`}>
                         <Icon className="w-4 h-4" />{label}
                       </button>
                     ))}
