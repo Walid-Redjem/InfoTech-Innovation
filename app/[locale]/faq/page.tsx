@@ -83,7 +83,7 @@ export default function FAQPage() {
   return (
     <div>
       {/* Rich header */}
-      <div className="relative overflow-hidden py-20 px-6 text-center" style={{ background: "linear-gradient(to right, #7B45A8 0%, #2EC4B6 100%)" }}>
+      <div className="relative overflow-hidden py-20 px-6 text-center" style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #2EC4B6 100%)" }}>
         {/* Background decoration */}
         <div className="absolute top-[-80px] left-[-80px] w-48 h-48 sm:w-72 sm:h-72 rounded-full bg-white/5" />
         <div className="absolute bottom-[-60px] right-[-60px] w-56 h-56 sm:w-80 sm:h-80 rounded-full bg-white/5" />

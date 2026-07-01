@@ -13,11 +13,7 @@ export default function PageHeader({ badge, title, subtitle }: Props) {
 
   return (
     <section className="relative overflow-hidden py-14 md:py-20 px-5 md:px-6"
-      style={{ background: "linear-gradient(to right, #7B45A8 0%, #2EC4B6 100%)" }}>
-      <div className="absolute inset-0 opacity-10"
-        style={{ backgroundImage: "radial-gradient(circle, #ffffff 1.5px, transparent 1.5px)", backgroundSize: "28px 28px" }} />
-      <div className="absolute top-[-80px] right-[-80px] w-64 h-64 rounded-full bg-white/5" />
-      <div className="absolute bottom-[-60px] left-[-60px] w-48 h-48 rounded-full bg-white/5" />
+      style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #2EC4B6 100%)" }}>
       <div className="relative max-w-3xl mx-auto text-center">
 
         {/* Badge */}
@@ -44,7 +40,7 @@ export default function PageHeader({ badge, title, subtitle }: Props) {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-white/75 text-lg leading-relaxed max-w-xl mx-auto flex flex-wrap justify-center gap-x-1.5">
+        <p className="text-lg leading-relaxed max-w-xl mx-auto flex flex-wrap justify-center gap-x-1.5" style={{ color: "rgba(255,255,255,0.8)" }}>
           {subWords.map((word, i) => (
             <motion.span
               key={i}
