@@ -19,7 +19,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-mauve text-white">
+    <footer className="text-white" style={{ background: "linear-gradient(135deg, #1A0533 0%, #2D1155 60%, #1A3A4A 100%)" }}>
       <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-3 gap-10">
 
         {/* Brand */}
@@ -64,7 +64,7 @@ export default function Footer() {
           </ul>
           <Link
             href={`/${locale}/join`}
-            className="inline-block mt-5 bg-gradient-to-r from-mauve to-turquoise text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition-opacity"
+            className="inline-block mt-5 text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition-opacity" style={{ background: "linear-gradient(135deg, #6B35A0, #2EC4B6)" }}
           >
             {locale === "ar" ? "انخرط معنا" : "Join Us"}
           </Link>

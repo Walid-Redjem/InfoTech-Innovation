@@ -29,22 +29,12 @@ export default function FounderSection() {
           <AnimatedSection>
             <motion.button
               onClick={() => setOpen(true)}
-              whileHover={{ y: -6, scale: 1.01 }}
+              whileHover={{ y: -6, scale: 1.01, filter: "drop-shadow(0 8px 32px rgba(107,53,160,0.5)) drop-shadow(0 4px 16px rgba(46,196,182,0.3))" }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="w-full cursor-pointer group relative"
-              style={{ borderRadius: "28px" }}
+              style={{ borderRadius: "28px", filter: "drop-shadow(0 4px 20px rgba(107,53,160,0.2))" }}
             >
-              {/* Outer glow that intensifies on hover */}
-              <motion.div
-                className="absolute inset-0 rounded-[28px] opacity-50 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{
-                  background: "linear-gradient(135deg, #6B35A0, #2EC4B6)",
-                  filter: "blur(24px)",
-                  transform: "scale(1.08) translateY(8px)",
-                }}
-              />
-
               {/* Card */}
               <div className="relative rounded-[28px] overflow-hidden bg-white">
 
