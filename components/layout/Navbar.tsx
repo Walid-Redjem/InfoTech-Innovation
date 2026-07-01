@@ -66,7 +66,7 @@ export default function Navbar() {
       <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-lilac-dark/50 dark:border-gray-700/50"
-          : "bg-white dark:bg-gray-900 border-b border-transparent"
+          : "bg-transparent border-b border-transparent"
       }`}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
