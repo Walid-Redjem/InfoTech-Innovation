@@ -13,6 +13,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isHome = pathname === `/${locale}` || pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dark, setDark] = useState(false);
@@ -66,7 +67,9 @@ export default function Navbar() {
       <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-lilac-dark/50 dark:border-gray-700/50"
-          : "bg-transparent border-b border-transparent"
+          : isHome
+            ? "bg-black/30 backdrop-blur-sm border-b border-white/5"
+            : "bg-transparent border-b border-transparent"
       }`}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
@@ -82,8 +85,8 @@ export default function Navbar() {
                   href={`/${locale}${link.href === "/" ? "" : link.href}`}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors block ${
                     isActive(link.href)
-                      ? "text-mauve dark:text-lilac"
-                      : "text-gray-500 dark:text-gray-400 hover:text-mauve hover:bg-lilac/50 dark:hover:bg-mauve/10 dark:hover:text-lilac"
+                      ? (isHome && !scrolled ? "text-turquoise" : "text-mauve dark:text-lilac")
+                      : (isHome && !scrolled ? "text-white/80 hover:text-white" : "text-gray-500 dark:text-gray-400 hover:text-mauve hover:bg-lilac/50 dark:hover:bg-mauve/10 dark:hover:text-lilac")
                   }`}
                 >
                   {link.label}
@@ -109,7 +112,7 @@ export default function Navbar() {
             {/* Dark mode toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-mauve hover:bg-lilac dark:hover:bg-mauve/20 transition-colors"
+              className={`p-2 rounded-full transition-colors ${isHome && !scrolled ? "text-white/80 hover:text-white" : "text-mauve hover:bg-lilac dark:hover:bg-mauve/20"}`}
               aria-label="Toggle dark mode"
             >
               {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -121,14 +124,14 @@ export default function Navbar() {
               whileTap={{ scale: 0.85, rotate: locale === "ar" ? -12 : 12 }}
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="text-sm font-semibold px-4 py-1.5 rounded-full border-2 border-mauve text-mauve hover:bg-mauve hover:text-white transition-colors"
+              className={`text-sm font-semibold px-4 py-1.5 rounded-full border-2 transition-colors ${isHome && !scrolled ? "border-white/40 text-white/80 hover:bg-white/10" : "border-mauve text-mauve hover:bg-mauve hover:text-white"}`}
             >
               {locale === "ar" ? "EN" : "عربي"}
             </motion.button>
 
             {/* Hamburger */}
             <button
-              className="md:hidden p-1.5 rounded-lg text-mauve hover:bg-lilac dark:hover:bg-mauve/20 transition-colors"
+              className={`md:hidden p-1.5 rounded-lg transition-colors ${isHome && !scrolled ? "text-white/80 hover:text-white" : "text-mauve hover:bg-lilac dark:hover:bg-mauve/20"}`}
               onClick={() => setMobileOpen((v) => !v)}
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

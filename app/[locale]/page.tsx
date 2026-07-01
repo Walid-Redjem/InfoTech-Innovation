@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <WaveDivider fill="#ffffff" />
+      <WaveDivider fill="#ffffff" className="bg-[#0d0d1a]" />
       <StatsBar />
       <WaveDivider fill="#f9f6fc" flip />
       <Marquee />
