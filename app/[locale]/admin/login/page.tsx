@@ -150,7 +150,8 @@ export default function AdminLoginPage() {
 
             <motion.button type="submit" disabled={loading}
               whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-              className="w-full bg-gradient-to-r from-mauve to-turquoise text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-mauve/25 hover:opacity-90 transition-opacity disabled:opacity-60">
+              className="w-full text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-mauve/25 hover:opacity-90 transition-opacity disabled:opacity-60"
+              style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
               {loading
                 ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 : <>{ar ? "تسجيل الدخول" : "Sign In"} <Arrow className="w-4 h-4" /></>

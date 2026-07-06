@@ -30,7 +30,7 @@ export default function AboutPage() {
       <PageHeader
         badge={ar ? "قصتنا" : "Our Story"}
         title={ar ? "نمكّن المجتمعات من خلال الابتكار" : "Empowering Communities Through Innovation"}
-        subtitle={ar ? "InfoTech Innovation منصة رقمية تربط الشباب والمعلمين والمؤسسات لبناء مستقبل أفضل." : "InfoTech Innovation is a digital platform connecting youth, teachers, and institutions to build a better future."}
+        subtitle={ar ? "إنفوتك إنوفيشن منصة رقمية تربط الشباب والمعلمين والمؤسسات لبناء مستقبل أفضل." : "InfoTech Innovation is a digital platform connecting youth, teachers, and institutions to build a better future."}
       />
 
       {/* Mission & Vision */}
@@ -61,20 +61,21 @@ export default function AboutPage() {
       <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-white to-lilac/20">
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: "#6B35A0" }}>{ar ? "ما نؤمن به" : "What We Believe"}</span>
-            <h2 className="text-3xl font-bold text-mauve">{ar ? "قيمنا" : "Our Values"}</h2>
+            <span className="text-xs font-bold uppercase tracking-widest mb-2 block text-mauve">{ar ? "ما نؤمن به" : "What We Believe"}</span>
+            <h2 className="text-3xl font-bold" style={{ color: "#6B35A0" }}>{ar ? "قيمنا" : "Our Values"}</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
           </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {values.map((v, i) => (
               <AnimatedSection key={i} delay={i * 0.1}>
                 <motion.div whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}
-                  className={`${v.bg} rounded-3xl p-6 text-center border border-white hover:shadow-xl transition-shadow`}>
+                  className="rounded-3xl p-6 text-center border border-white hover:shadow-xl transition-shadow"
+                  style={{ background: "linear-gradient(135deg, #7C5CFA 0%, #4FD9E8 100%)" }}>
                   <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-4">
                     <v.icon className="w-6 h-6" style={{ color: v.color }} />
                   </div>
-                  <h3 className="font-bold text-gray-800 mb-2">{ar ? v.ar : v.en}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{ar ? v.descAr : v.descEn}</p>
+                  <h3 className="font-bold text-white mb-2">{ar ? v.ar : v.en}</h3>
+                  <p className="text-white/80 text-sm leading-relaxed">{ar ? v.descAr : v.descEn}</p>
                 </motion.div>
               </AnimatedSection>
             ))}
@@ -86,8 +87,8 @@ export default function AboutPage() {
       <section className="py-12 md:py-20 px-4 md:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: "#6B35A0" }}>{ar ? "كيف نعمل" : "How We Work"}</span>
-            <h2 className="text-3xl font-bold text-mauve">{ar ? "منهجيتنا" : "Our Methodology"}</h2>
+            <span className="text-xs font-bold uppercase tracking-widest mb-2 block text-mauve">{ar ? "كيف نعمل" : "How We Work"}</span>
+            <h2 className="text-3xl font-bold" style={{ color: "#6B35A0" }}>{ar ? "منهجيتنا" : "Our Methodology"}</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
           </AnimatedSection>
           <div className="space-y-4">
@@ -113,19 +114,19 @@ export default function AboutPage() {
       </section>
 
       {/* Timeline */}
-      <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-lilac/20 to-white">
+      <section className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-b from-lilac/20 to-white">
         <div className="max-w-3xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: "#6B35A0" }}>{ar ? "مسيرتنا" : "Our Journey"}</span>
-            <h2 className="text-3xl font-bold text-mauve">{ar ? "التسلسل الزمني" : "Timeline"}</h2>
+            <span className="text-xs font-bold uppercase tracking-widest mb-2 block text-mauve">{ar ? "مسيرتنا" : "Our Journey"}</span>
+            <h2 className="text-3xl font-bold" style={{ color: "#6B35A0" }}>{ar ? "التسلسل الزمني" : "Timeline"}</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mt-3" />
           </AnimatedSection>
           <div className="relative">
             {/* Center line */}
-            <div className="absolute start-6 md:start-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-mauve via-turquoise to-lilac-dark opacity-30 md:-translate-x-1/2" />
+            <div className="absolute start-6 md:start-1/2 top-0 bottom-0 w-[2px] bg-mauve opacity-40 md:-translate-x-1/2" />
             <div className="space-y-8">
               {[
-                { year: "2023", en: "A Dream Takes Root", ar: "بذرة الحلم", descEn: "Learning Informatique was born in Algeria from a bold idea: that technology could bridge the gap between youth, educators, and institutions to build something greater together.", descAr: "وُلدت Learning Informatique في الجزائر من فكرة جريئة: أن التكنولوجيا قادرة على ردم الهوة بين الشباب والمعلمين والمؤسسات لبناء شيء أعظم معاً.", color: "#9B6B9B" },
+                { year: "2023", en: "A Dream Takes Root", ar: "بذرة الحلم", descEn: "Learning Informatique was born in Algeria from a bold idea: that technology could bridge the gap between youth, educators, and institutions to build something greater together.", descAr: "ولدت Learning Informatique في الجزائر من فكرة جريئة: أن التكنولوجيا قادرة على سدّ الفجوة بين الشباب والمعلمين والمؤسسات، لبناء مستقبل أعظم معًا.", color: "#9B6B9B" },
                 { year: "2024", en: "A New Identity, A Bigger Vision", ar: "هوية جديدة، رؤية أوسع", descEn: "What started as 5 students eager to learn grew to 25 learners by year's end. We shed the old name and emerged as InfoTech Innovation, ready to move faster, think bigger, and impact deeper.", descAr: "ما بدأ بـ 5 طلاب شغوفين بالتعلّم نما إلى 25 طالباً بنهاية العام. تخلّينا عن الاسم القديم وانطلقنا بهوية InfoTech Innovation، أسرع، أطمح، وأعمق أثراً.", color: "#2EC4B6" },
                 { year: "2025", en: "Opening Doors to the Real World", ar: "فتح أبواب العالم الحقيقي", descEn: "We took innovation beyond the classroom, organizing workshops and conventions with real enterprises. Over 70 students joined to learn, grow, and be part of something meaningful.", descAr: "نقلنا الابتكار خارج الفصول الدراسية، ورشات عمل وملتقيات مع مؤسسات حقيقية. انضم أكثر من 70 طالباً للتعلّم والنمو والمساهمة في شيء ذي معنى.", color: "#f97316" },
                 { year: "2026", en: "Official. Unstoppable.", ar: "رسميون. لا شيء يوقفنا.", descEn: "InfoTech Innovation is now officially recognized, and we're just getting started. A full digital platform, real-time impact tracking, and a community that's rewriting what's possible in Algeria.", descAr: "InfoTech Innovation باتت رسمية، ونحن لم نبدأ بعد. منصة رقمية متكاملة، تتبع الأثر لحظة بلحظة، ومجتمع يعيد كتابة ما هو ممكن في الجزائر.", color: "#22c55e" },
@@ -135,15 +136,15 @@ export default function AboutPage() {
                     {/* Card */}
                     <motion.div
                       whileHover={{ scale: 1.02 }}
-                      className="ms-12 md:ms-0 md:w-[calc(50%-2rem)] bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:shadow-mauve/10 transition-shadow"
-                      style={{ borderLeftColor: item.color, borderLeftWidth: 3 }}
+                      className="ms-12 md:ms-0 md:w-[calc(50%-2rem)] rounded-2xl p-5 shadow-sm hover:shadow-lg transition-shadow"
+                      style={{ background: "#6B35A0" }}
                     >
-                      <span className="text-xs font-black uppercase tracking-widest mb-1 block" style={{ color: item.color }}>{item.year}</span>
-                      <h3 className="font-bold text-gray-800 mb-1">{ar ? item.ar : item.en}</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed">{ar ? item.descAr : item.descEn}</p>
+                      <span className="text-xs font-black uppercase tracking-widest mb-1 block text-white/80">{item.year}</span>
+                      <h3 className="font-bold text-white mb-1">{ar ? item.ar : item.en}</h3>
+                      <p className="text-white/80 text-sm leading-relaxed">{ar ? item.descAr : item.descEn}</p>
                     </motion.div>
                     {/* Dot on center line */}
-                    <div className="absolute start-[18px] md:start-1/2 md:-translate-x-1/2 mt-5 w-5 h-5 rounded-full border-4 border-white shadow-md flex-shrink-0" style={{ backgroundColor: item.color }} />
+                    <div className="absolute start-[18px] md:start-1/2 md:-translate-x-1/2 mt-5 w-5 h-5 rounded-full border-4 border-white shadow-md flex-shrink-0" style={{ background: "#6B35A0" }} />
                   </div>
                 </AnimatedSection>
               ))}
@@ -154,20 +155,21 @@ export default function AboutPage() {
 
       {/* CTA */}
       <AnimatedSection>
-        <section className="py-20 px-6 bg-mauve text-center relative overflow-hidden">
+        <section className="py-20 px-6 bg-white text-center relative overflow-hidden">
           <motion.div className="absolute inset-0 opacity-20"
             animate={{ background: ["radial-gradient(ellipse at 20% 50%, #2EC4B633, transparent 60%)", "radial-gradient(ellipse at 80% 50%, #2EC4B633, transparent 60%)", "radial-gradient(ellipse at 20% 50%, #2EC4B633, transparent 60%)"] }}
             transition={{ duration: 6, repeat: Infinity }} />
           <div className="relative max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
               {ar ? "هل أنت مستعد لإحداث الفرق؟" : "Ready to make a difference?"}
             </h2>
-            <p className="text-white/70 mb-8">
+            <p className="text-gray-500 mb-8">
               {ar ? "انضم إلى آلاف الشباب والمعلمين والمؤسسات الذين يبنون مستقبلاً أفضل." : "Join thousands of youth, teachers, and institutions building a better future."}
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
               <Link href={`/${locale}/join`}
-                className="inline-block bg-gradient-to-r from-mauve to-turquoise text-white px-10 py-4 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30">
+                className="inline-block text-white px-10 py-4 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30"
+                style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
                 {ar ? "انخرط معنا" : "Join Us Today"}
               </Link>
             </motion.div>

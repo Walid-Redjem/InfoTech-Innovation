@@ -53,7 +53,8 @@ export default function PWAInstallBanner() {
             </div>
           </div>
           <button onClick={install}
-            className="w-full bg-gradient-to-r from-mauve to-turquoise text-white py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-mauve/20">
+            className="w-full text-white py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-mauve/20"
+            style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
             Install App
           </button>
         </motion.div>

@@ -139,10 +139,11 @@ export default function SurveysPage() {
           <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 0.5 }}>
             <CheckCircle2 className="w-20 h-20 text-turquoise mx-auto mb-6" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-mauve mb-2">{t("success_title")}</h2>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "#6B35A0" }}>{t("success_title")}</h2>
           <p className="text-gray-500 mb-8">{t("success_message")}</p>
           <button onClick={() => setView("list")}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-mauve/20">
+            className="inline-flex items-center gap-2 text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-mauve/20"
+            style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
             {t("back_to_surveys")}
           </button>
         </motion.div>
@@ -301,7 +302,8 @@ export default function SurveysPage() {
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={handleSubmit}
                 disabled={submitting || (currentQ.required && !isAnswered)}
-                className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 md:px-8 py-2.5 rounded-full font-semibold shadow-lg shadow-mauve/20 hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
+                className="flex items-center gap-2 text-white px-5 md:px-8 py-2.5 rounded-full font-semibold shadow-lg shadow-mauve/20 hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
+                style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}
               >
                 {submitting ? (isRTL ? "جارٍ الإرسال..." : "Submitting...") : t("submit")}
                 <CheckCircle2 className="w-4 h-4" />
@@ -311,7 +313,8 @@ export default function SurveysPage() {
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={goNext}
                 disabled={currentQ.required && !isAnswered}
-                className="flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white px-5 md:px-8 py-2.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+                className="flex items-center gap-2 text-white px-5 md:px-8 py-2.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed text-sm"
+                style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}
               >
                 {isRTL ? "التالي" : "Next"}
                 <NextArrow className="w-4 h-4" />
@@ -347,7 +350,7 @@ export default function SurveysPage() {
           {!loading && surveys.length === 0 && (
             <div className="text-center py-20">
               <ClipboardList className="w-14 h-14 text-mauve/30 mx-auto mb-4" />
-              <h2 className="text-lg font-semibold text-mauve mb-2">{t("empty_title")}</h2>
+              <h2 className="text-lg font-semibold mb-2" style={{ color: "#6B35A0" }}>{t("empty_title")}</h2>
               <p className="text-gray-400 text-sm">{t("empty_message")}</p>
             </div>
           )}

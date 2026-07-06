@@ -40,7 +40,13 @@ function ActivityHero({
 }) {
   const Icon = activity.icon;
   return (
-    <section className="relative overflow-hidden py-20 md:py-28 px-6" style={{ background: activity.gradient }}>
+    <section
+      className="relative overflow-hidden py-20 md:py-28 px-6 bg-cover bg-center"
+      style={activity.coverImage ? { backgroundImage: `url(${activity.coverImage})` } : { background: activity.gradient }}
+    >
+      {activity.coverImage && (
+        <div className="absolute inset-0" style={{ background: activity.gradient, opacity: 0.75 }} />
+      )}
       <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-white/5" />
       <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5" />
       <div className="absolute top-10 left-1/3 w-3 h-3 rounded-full bg-white/30" />
@@ -89,8 +95,14 @@ function ActivityHero({
 
           <motion.div initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
-            className="hidden md:flex flex-shrink-0 w-40 h-40 rounded-full bg-white/15 backdrop-blur-sm border-2 border-white/30 items-center justify-center shadow-2xl">
-            <Icon className="w-16 h-16 text-white" />
+            className="hidden md:flex flex-shrink-0 w-40 h-40 rounded-full bg-white/15 backdrop-blur-sm border-2 border-white/30 items-center justify-center shadow-2xl overflow-hidden">
+            {activity.badgeImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={activity.badgeImage} alt="" className="w-full h-full object-cover"
+                style={{ objectPosition: activity.badgePosition || "center" }} />
+            ) : (
+              <Icon className="w-16 h-16 text-white" />
+            )}
           </motion.div>
         </div>
       </div>
@@ -685,16 +697,17 @@ export default function ActivityDetailPage() {
       <RelatedActivities currentSlug={activity.slug} ar={ar} locale={locale} />
 
       <AnimatedSection>
-        <section className="py-16 px-6 bg-mauve text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">
+        <section className="py-16 px-6 bg-white text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
             {ar ? "هل تريد المشاركة في أنشطتنا القادمة؟" : "Want to join our upcoming activities?"}
           </h2>
-          <p className="text-white/70 mb-6 text-sm">
+          <p className="text-gray-500 mb-6 text-sm">
             {ar ? "سجّل الآن وكن أول من يعلم." : "Register now and be the first to know."}
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
             <Link href={`/${locale}/join`}
-              className="inline-block bg-gradient-to-r from-mauve to-turquoise text-white px-10 py-3.5 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30">
+              className="inline-block text-white px-10 py-3.5 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30"
+              style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
               {ar ? "انخرط معنا" : "Join Us"}
             </Link>
           </motion.div>

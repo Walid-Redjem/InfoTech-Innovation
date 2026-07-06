@@ -8,6 +8,10 @@ export interface Activity {
   type: ActivityType;
   gradient: string;
   iconBg: string;
+  coverImage?: string;
+  badgeImage?: string;
+  badgePosition?: string;
+  cardPosition?: string;
   typeEn: string;
   typeAr: string;
   titleEn: string;
@@ -27,6 +31,9 @@ export const activities: Activity[] = [
     type: "photos",
     gradient: "linear-gradient(135deg, #6B35A0 0%, #9B6B9B 60%, #C084FC 100%)",
     iconBg: "#6B35A0",
+    coverImage: "/activity-workshop-highlights.jpg",
+    badgeImage: "/activity-workshop-highlights.jpg",
+    cardPosition: "35% 20%",
     typeEn: "Photos", typeAr: "صور",
     titleEn: "Workshop Highlights", titleAr: "أبرز ورشات العمل",
     descEn: "A look back at our hands-on technical workshops and training sessions.",
@@ -55,6 +62,9 @@ export const activities: Activity[] = [
     type: "projects",
     gradient: "linear-gradient(135deg, #DC2626 0%, #EF4444 55%, #FCA5A5 100%)",
     iconBg: "#DC2626",
+    coverImage: "/activity-our-projects.jpg",
+    badgeImage: "/activity-our-projects.jpg",
+    cardPosition: "center 15%",
     typeEn: "Projects", typeAr: "مشاريع",
     titleEn: "Our Projects", titleAr: "مشاريعنا",
     descEn: "Discover the initiatives and projects our community is building across Algeria.",
@@ -69,6 +79,9 @@ export const activities: Activity[] = [
     type: "blog",
     gradient: "linear-gradient(135deg, #F97316 0%, #FB923C 55%, #FED7AA 100%)",
     iconBg: "#EA6A0A",
+    coverImage: "/activity-innovation-stories.jpg",
+    badgeImage: "/activity-innovation-stories.jpg",
+    cardPosition: "28% 35%",
     typeEn: "Blog", typeAr: "مقال",
     titleEn: "Innovation Stories", titleAr: "قصص الابتكار",
     descEn: "Stories of youth and institutions driving real change across Algeria.",
@@ -83,8 +96,11 @@ export const activities: Activity[] = [
     type: "photos",
     gradient: "linear-gradient(135deg, #059669 0%, #10B981 55%, #6EE7B7 100%)",
     iconBg: "#059669",
+    coverImage: "/activity-youth-hackathon.jpg",
+    badgeImage: "/activity-youth-hackathon.jpg",
+    cardPosition: "center 20%",
     typeEn: "Photos", typeAr: "صور",
-    titleEn: "Youth Hackathon", titleAr: "هاكاثون الشباب",
+    titleEn: "Young Programmers", titleAr: "مبرمجونا الصغار",
     descEn: "Highlights from our youth innovation competition and team projects.",
     descAr: "أبرز لحظات مسابقتنا في الابتكار ومشاريع الفرق الشبابية.",
     dateEn: "Coming soon", dateAr: "قريباً",
@@ -97,6 +113,10 @@ export const activities: Activity[] = [
     type: "video",
     gradient: "linear-gradient(135deg, #2563EB 0%, #3B82F6 55%, #BFDBFE 100%)",
     iconBg: "#2563EB",
+    coverImage: "/activity-expert-talks.jpg",
+    badgeImage: "/activity-expert-talks.jpg",
+    badgePosition: "85% 30%",
+    cardPosition: "60% 55%",
     typeEn: "Video", typeAr: "فيديو",
     titleEn: "Expert Talks", titleAr: "محاضرات الخبراء",
     descEn: "Inspiring talks from technology leaders and innovators shaping our future.",

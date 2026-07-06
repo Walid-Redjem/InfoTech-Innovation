@@ -44,7 +44,7 @@ export default function LocationSection() {
           <span className="text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: "#6B35A0" }}>
             {t("label")}
           </span>
-          <h2 className="text-2xl md:text-4xl font-bold text-mauve mb-4">{t("title")}</h2>
+          <h2 className="text-2xl md:text-4xl font-bold mb-4" style={{ color: "#6B35A0" }}>{t("title")}</h2>
           <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto mb-5" />
           <p className="text-gray-500 text-sm md:text-base max-w-xl mx-auto">{t("subtitle")}</p>
         </AnimatedSection>
@@ -77,7 +77,8 @@ export default function LocationSection() {
               href={MAPS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white font-semibold text-sm rounded-2xl py-4 px-6 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mt-auto"
+              className="flex items-center justify-center gap-2 text-white font-semibold text-sm rounded-2xl py-4 px-6 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mt-auto"
+              style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}
             >
               <ExternalLink className="w-4 h-4" />
               {t("openMaps")}

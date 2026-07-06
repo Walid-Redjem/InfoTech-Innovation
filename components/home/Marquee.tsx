@@ -10,10 +10,10 @@ export default function Marquee() {
   const repeated = [...items, ...items, ...items];
 
   return (
-    <div className="py-5 bg-mauve overflow-hidden relative">
+    <div className="py-5 overflow-hidden relative" style={{ background: "#6B35A0" }}>
       {/* Fade edges */}
-      <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-mauve to-transparent z-10" />
-      <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-mauve to-transparent z-10" />
+      <div className="absolute inset-y-0 left-0 w-20 z-10" style={{ background: "linear-gradient(to right, #6B35A0, transparent)" }} />
+      <div className="absolute inset-y-0 right-0 w-20 z-10" style={{ background: "linear-gradient(to left, #6B35A0, transparent)" }} />
 
       <div className="flex animate-marquee gap-0 whitespace-nowrap">
         {repeated.map((item, i) => (

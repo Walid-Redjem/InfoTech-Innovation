@@ -13,7 +13,7 @@ export default function PageHeader({ badge, title, subtitle }: Props) {
 
   return (
     <section className="relative overflow-hidden py-14 md:py-20 px-5 md:px-6"
-      style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #2EC4B6 100%)" }}>
+      style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #29B6F6 100%)" }}>
       <div className="relative max-w-3xl mx-auto text-center">
 
         {/* Badge */}

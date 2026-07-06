@@ -31,7 +31,7 @@ export default function ActivitiesPage() {
       </AnimatedSection>
 
       {/* Activity cards */}
-      <section className="py-20 px-6 bg-gradient-to-b from-white to-lilac/20">
+      <section className="py-20 px-6 bg-gradient-to-b from-lilac/20 to-white">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {activities.map((item, i) => (
@@ -45,18 +45,25 @@ export default function ActivitiesPage() {
                     {/* Image area */}
                     <div className="relative">
                       <div
-                        className="h-48 rounded-t-3xl overflow-hidden relative"
+                        className="h-56 rounded-t-3xl overflow-hidden relative"
                         style={{ background: item.gradient }}
                       >
-                        {/* Decorative dots */}
-                        {item.dots.map((pos, j) => (
-                          <div
-                            key={j}
-                            className={`absolute w-2.5 h-2.5 rounded-full bg-white/25 ${pos}`}
-                          />
-                        ))}
-                        <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
-                        <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full bg-white/10" />
+                        {item.coverImage && (
+                          <div className="absolute inset-0 bg-no-repeat bg-cover" style={{ backgroundImage: `url(${item.coverImage})`, backgroundPosition: item.cardPosition || "center" }} />
+                        )}
+                        {!item.coverImage && (
+                          <>
+                            {/* Decorative dots */}
+                            {item.dots.map((pos, j) => (
+                              <div
+                                key={j}
+                                className={`absolute w-2.5 h-2.5 rounded-full bg-white/25 ${pos}`}
+                              />
+                            ))}
+                            <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
+                            <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full bg-white/10" />
+                          </>
+                        )}
                       </div>
 
                       {/* Overlapping circular icon badge */}
@@ -94,17 +101,18 @@ export default function ActivitiesPage() {
 
       {/* CTA */}
       <AnimatedSection>
-        <section className="py-16 px-6 bg-mauve text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">
+        <section className="py-16 px-6 bg-white text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
             {ar ? "هل تريد المشاركة في أنشطتنا القادمة؟" : "Want to participate in our upcoming activities?"}
           </h2>
-          <p className="text-white/70 mb-6 text-sm">
+          <p className="text-gray-500 mb-6 text-sm">
             {ar ? "سجّل الآن وكن أول من يعلم عن فعالياتنا." : "Register now and be the first to know about our events."}
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
             <Link
               href={`/${locale}/join`}
-              className="inline-block bg-gradient-to-r from-mauve to-turquoise text-white px-10 py-3.5 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30"
+              className="inline-block text-white px-10 py-3.5 rounded-full font-bold hover:opacity-90 transition-opacity shadow-xl shadow-turquoise/30"
+              style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}
             >
               {ar ? "انخرط معنا" : "Join Us"}
             </Link>

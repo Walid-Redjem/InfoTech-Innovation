@@ -16,7 +16,8 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
         <h1 className="text-2xl font-bold text-gray-800 mb-3">Something went wrong</h1>
         <p className="text-gray-500 mb-8">An unexpected error occurred. Please try again.</p>
         <button onClick={reset}
-          className="bg-gradient-to-r from-mauve to-turquoise text-white font-semibold px-8 py-3 rounded-full hover:opacity-90 transition-opacity shadow-lg">
+          className="text-white font-semibold px-8 py-3 rounded-full hover:opacity-90 transition-opacity shadow-lg"
+          style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
           Try Again
         </button>
       </motion.div>

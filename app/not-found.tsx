@@ -60,7 +60,8 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}>
             <Link href="/"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-mauve to-turquoise text-white font-semibold px-7 py-3.5 rounded-full hover:opacity-90 transition-opacity shadow-xl shadow-mauve/20">
+              className="inline-flex items-center gap-2 text-white font-semibold px-7 py-3.5 rounded-full hover:opacity-90 transition-opacity shadow-xl shadow-mauve/20"
+              style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
               <Home className="w-4 h-4" />
               Back to Home
             </Link>

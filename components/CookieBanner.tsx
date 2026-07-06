@@ -59,7 +59,8 @@ export default function CookieBanner() {
             <div className="flex gap-2">
               <button
                 onClick={accept}
-                className="flex-1 bg-gradient-to-r from-mauve to-turquoise text-white text-xs font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                className="flex-1 text-white text-xs font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}
               >
                 {ar ? "قبول الكل" : "Accept All"}
               </button>

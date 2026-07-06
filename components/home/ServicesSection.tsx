@@ -76,7 +76,7 @@ export default function ServicesSection() {
           <span className="text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: "#6B35A0" }}>
             {locale === "ar" ? "خدماتنا" : "Our Services"}
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-mauve mb-3">{t("title")}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: "#6B35A0" }}>{t("title")}</h2>
           <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mx-auto" />
         </AnimatedSection>
 

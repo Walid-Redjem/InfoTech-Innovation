@@ -293,7 +293,7 @@ export default function JoinPage() {
           <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5 }}>
             <CheckCircle2 className="w-20 h-20 text-turquoise mx-auto mb-6" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-mauve mb-2">{t("success_title")}</h2>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "#6B35A0" }}>{t("success_title")}</h2>
           <p className="text-gray-500">{t("success_message")}</p>
         </motion.div>
       </div>
@@ -309,7 +309,7 @@ export default function JoinPage() {
             <div className="w-16 h-16 bg-lilac rounded-2xl flex items-center justify-center mx-auto mb-5">
               <Mail className="w-8 h-8 text-mauve" />
             </div>
-            <h2 className="text-2xl font-bold text-mauve mb-2">
+            <h2 className="text-2xl font-bold mb-2" style={{ color: "#6B35A0" }}>
               {ar ? "تحقق من بريدك الإلكتروني" : "Check your email"}
             </h2>
             <p className="text-gray-500 text-sm mb-1">
@@ -409,13 +409,15 @@ export default function JoinPage() {
                     animate={{ scale: step.active ? 1.15 : 1 }}
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
                       step.done  ? "bg-turquoise border-turquoise text-white" :
-                      step.active? "bg-mauve border-mauve text-white shadow-lg shadow-mauve/30" :
+                      step.active? "text-white shadow-lg shadow-mauve/30" :
                                    "bg-white border-gray-200 text-gray-400"
                     }`}
+                    style={step.active ? { background: "#6B35A0", borderColor: "#6B35A0" } : undefined}
                   >
                     {step.done ? "✓" : i + 1}
                   </motion.div>
-                  <span className={`text-xs font-medium ${step.active ? "text-mauve" : step.done ? "text-turquoise" : "text-gray-400"}`}>
+                  <span className={`text-xs font-medium ${step.done ? "text-turquoise" : step.active ? "" : "text-gray-400"}`}
+                    style={step.active ? { color: "#6B35A0" } : undefined}>
                     {step.label}
                   </span>
                 </div>
@@ -434,8 +436,9 @@ export default function JoinPage() {
               <button key={key} type="button"
                 onClick={() => { setSelected(key); setForm({}); setErrors({}); setInterests([]); setFileUrls({}); }}
                 className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all font-semibold text-sm ${
-                  selected === key ? "border-mauve bg-mauve text-white shadow-md" : "border-lilac-dark bg-white text-mauve hover:border-mauve"
-                }`}>
+                  selected === key ? "text-white shadow-md" : "border-lilac-dark bg-white text-mauve hover:border-mauve"
+                }`}
+                style={selected === key ? { background: "#6B35A0", borderColor: "#6B35A0" } : undefined}>
                 <Icon className="w-6 h-6" />
                 {t(`profiles.${key}`)}
               </button>
@@ -613,7 +616,8 @@ export default function JoinPage() {
             <div className="gradient-border-outer block w-full">
               <motion.button type="submit" disabled={submitting}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                className="gradient-border-inner block w-full bg-gradient-to-r from-mauve to-turquoise text-white py-3.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 shadow-lg shadow-mauve/20">
+                className="gradient-border-inner block w-full text-white py-3.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 shadow-lg shadow-mauve/20"
+                style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
                 {submitting ? t("submitting") : t("submit")}
               </motion.button>
             </div>
@@ -667,7 +671,8 @@ export default function JoinPage() {
               <button
                 onClick={() => { if (termsChecked) setShowTerms(false); }}
                 disabled={!termsChecked}
-                className="w-full bg-gradient-to-r from-mauve to-turquoise text-white py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
+                className="w-full text-white py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
+                style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}
               >
                 {ar ? "فهمت" : "Got it"}
               </button>

@@ -58,6 +58,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Activity Media (photo/video galleries for each activity detail page)
+    // - Anyone can read (public gallery)
+    // - Only admin can create, update, delete
+    match /activityMedia/{slug}/items/{itemId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
     // Block everything else
     match /{document=**} {
       allow read, write: if false;

@@ -80,7 +80,7 @@ export default function IssuesPage() {
           <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5 }}>
             <CheckCircle2 className="w-20 h-20 text-turquoise mx-auto mb-6" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-mauve mb-2">{t("success_title")}</h2>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "#6B35A0" }}>{t("success_title")}</h2>
           <p className="text-gray-500 mb-6">{t("success_message")}</p>
           <button onClick={() => { setSuccess(false); setForm({ title: "", description: "", affected_group: "", solution: "" }); }}
             className="text-turquoise font-semibold hover:underline">
@@ -115,8 +115,8 @@ export default function IssuesPage() {
                   onClick={() => setType(key)}
                   className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 text-xs font-semibold transition-all ${
                     type === key
-                      ? "border-turquoise bg-turquoise text-white shadow-md"
-                      : "border-lilac-dark bg-white text-gray-500 hover:border-turquoise"
+                      ? "border-mauve bg-mauve text-white shadow-md"
+                      : "border-lilac-dark bg-white text-gray-500 hover:border-mauve"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -176,7 +176,8 @@ export default function IssuesPage() {
 
           <motion.button type="submit" disabled={submitting}
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="w-full bg-gradient-to-r from-mauve to-turquoise text-white py-3.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 shadow-lg shadow-mauve/20">
+            className="w-full text-white py-3.5 rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 shadow-lg shadow-mauve/20"
+            style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
             {submitting ? t("submitting") : t("submit")}
           </motion.button>
         </form>

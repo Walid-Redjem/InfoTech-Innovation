@@ -141,8 +141,8 @@ export default function Hero() {
           className="flex flex-wrap gap-4 justify-center"
         >
           {[
-            { label: t("cta_join"), href: "/join", style: "bg-gradient-to-r from-mauve to-turquoise text-white shadow-xl shadow-mauve/30 hover:opacity-90 hover:shadow-mauve/50", arrow: true, primary: true },
-            { label: t("cta_voice"), href: "/issues", style: "bg-white border-2 border-mauve/40 text-mauve hover:bg-gradient-to-r hover:from-mauve hover:to-turquoise hover:text-white hover:border-transparent shadow-lg shadow-mauve/10" },
+            { label: t("cta_join"), href: "/join", style: "bg-gradient-to-r from-[#6D28D9] to-[#4FC3E8] text-white shadow-xl shadow-mauve/30 hover:opacity-90 hover:shadow-mauve/50", arrow: true, primary: true },
+            { label: t("cta_voice"), href: "/issues", style: "bg-white border-2 border-mauve/40 text-mauve hover:bg-gradient-to-r hover:from-[#6D28D9] hover:to-[#4FC3E8] hover:text-white hover:border-transparent shadow-lg shadow-mauve/10" },
           ].map((btn) => (
             <motion.div key={btn.label} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }}>
               {btn.primary ? (

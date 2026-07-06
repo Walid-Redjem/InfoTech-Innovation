@@ -32,7 +32,7 @@ export default function AboutSection() {
           <span className="text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: "#6B35A0" }}>
             {locale === "ar" ? "من نحن" : "Who We Are"}
           </span>
-          <h2 className="text-2xl md:text-4xl font-bold text-mauve mb-4 leading-tight">{t("title")}</h2>
+          <h2 className="text-2xl md:text-4xl font-bold mb-4 leading-tight" style={{ color: "#6B35A0" }}>{t("title")}</h2>
           <div className="w-12 h-1 bg-gradient-to-r from-mauve to-turquoise rounded-full mb-5" />
           <p className="text-gray-500 leading-relaxed mb-6 text-sm md:text-base">{t("description")}</p>
           <ul className="space-y-2.5">

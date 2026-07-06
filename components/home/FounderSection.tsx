@@ -40,7 +40,7 @@ export default function FounderSection() {
 
                 {/* Header banner */}
                 <div className="relative h-28 overflow-hidden"
-                  style={{ background: "linear-gradient(135deg, #4A1880 0%, #7B45A8 55%, #2EC4B6 100%)" }}>
+                  style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #29B6F6 100%)" }}>
                   {/* Animated shimmer */}
                   <motion.div
                     className="absolute inset-0 opacity-30"
@@ -50,7 +50,7 @@ export default function FounderSection() {
                   />
                   {/* Decorative circles */}
                   <div className="absolute -top-8 -right-8 w-36 h-36 rounded-full opacity-25 blur-xl"
-                    style={{ background: "#2EC4B6" }} />
+                    style={{ background: "#29B6F6" }} />
                   <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full opacity-20 blur-xl"
                     style={{ background: "#fff" }} />
                   {/* Stars */}

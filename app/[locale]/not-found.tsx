@@ -15,7 +15,8 @@ export default function LocaleNotFound() {
         <p className="text-gray-500 mb-8">The page you&apos;re looking for doesn&apos;t exist or has been moved.</p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link href="/"
-            className="inline-block bg-gradient-to-r from-mauve to-turquoise text-white font-semibold px-8 py-3 rounded-full hover:opacity-90 transition-opacity shadow-lg">
+            className="inline-block text-white font-semibold px-8 py-3 rounded-full hover:opacity-90 transition-opacity shadow-lg"
+            style={{ background: "linear-gradient(to right, #6D28D9, #4FC3E8)" }}>
             Back to Home
           </Link>
           <Link href="/en/join"

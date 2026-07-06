@@ -11,17 +11,17 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <WaveDivider fill="#ffffff" />
+      <WaveDivider fill="#C9B0DF" />
       <StatsBar />
-      <WaveDivider fill="#f9f6fc" flip />
+      <WaveDivider fill="#C9B0DF" flip />
       <Marquee />
-      <WaveDivider fill="#ffffff" />
+      <WaveDivider fill="#C9B0DF" />
       <AboutSection />
-      <WaveDivider fill="#f8f4fc" flip />
+      <WaveDivider fill="#C9B0DF" flip />
       <ServicesSection />
-      <WaveDivider fill="#f8f4fc" flip />
+      <WaveDivider fill="#C9B0DF" flip />
       <FounderSection />
-      <WaveDivider fill="#ffffff" />
+      <WaveDivider fill="#C9B0DF" />
       <LocationSection />
     </>
   );

@@ -24,7 +24,7 @@ export default function BackToTop() {
           whileTap={{ scale: 0.9 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="fixed bottom-24 end-6 z-40 w-11 h-11 rounded-full flex items-center justify-center shadow-lg shadow-mauve/30"
-          style={{ background: "linear-gradient(135deg, #9B6B9B, #2EC4B6)" }}
+          style={{ background: "linear-gradient(135deg, #8FD3E8 0%, #B79BCB 100%)" }}
           aria-label="Back to top"
         >
           <ChevronUp className="w-5 h-5 text-white" />
