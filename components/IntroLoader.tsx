@@ -33,8 +33,8 @@ export default function IntroLoader() {
             transition={{ duration: 0.4 }}
             className="flex flex-col items-center gap-5"
           >
-            <div className="bg-white/95 rounded-2xl p-3 shadow-xl shadow-black/10">
-              <Image src="/logo.png" alt="InfoTech Innovation" width={72} height={72} className="object-contain" />
+            <div className="bg-white/95 rounded-2xl p-4 shadow-xl shadow-black/10">
+              <Image src="/logo.png" alt="InfoTech Innovation" width={120} height={120} className="object-contain" />
             </div>
             <p className="text-lg font-bold text-white tracking-tight">InfoTech Innovation</p>
 

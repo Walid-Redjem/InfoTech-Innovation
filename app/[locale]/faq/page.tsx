@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
+import PageHeader from "@/components/PageHeader";
 import Link from "next/link";
 
 const faqs = [
@@ -82,31 +83,13 @@ export default function FAQPage() {
 
   return (
     <div>
-      {/* Rich header */}
-      <div className="relative overflow-hidden py-20 px-6 text-center" style={{ background: "linear-gradient(to right, #6B35A0 0%, #7B45A8 65%, #2EC4B6 100%)" }}>
-        {/* Background decoration */}
-        <div className="absolute top-[-80px] left-[-80px] w-48 h-48 sm:w-72 sm:h-72 rounded-full bg-white/5" />
-        <div className="absolute bottom-[-60px] right-[-60px] w-56 h-56 sm:w-80 sm:h-80 rounded-full bg-white/5" />
-        <div className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+      <PageHeader
+        badge={ar ? "الأسئلة الشائعة" : "FAQ"}
+        title={ar ? "أسئلة وأجوبة" : "Frequently Asked Questions"}
+        subtitle={ar ? "كل ما تحتاج معرفته حول InfoTech Innovation" : "Everything you need to know about InfoTech Innovation"}
+      />
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10 max-w-2xl mx-auto">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/15 rounded-2xl mb-6 backdrop-blur-sm">
-            <HelpCircle className="w-8 h-8 text-white" />
-          </div>
-          <span className="block text-xs font-bold uppercase tracking-widest text-white/80 mb-3">
-            {ar ? "الأسئلة الشائعة" : "FAQ"}
-          </span>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-            {ar ? "أسئلة وأجوبة" : "Frequently Asked Questions"}
-          </h1>
-          <p className="text-white/70 text-sm md:text-base leading-relaxed">
-            {ar ? "كل ما تحتاج معرفته حول InfoTech Innovation" : "Everything you need to know about InfoTech Innovation"}
-          </p>
-        </motion.div>
-      </div>
-
-      <section className="py-16 px-6 bg-gradient-to-b from-white to-lilac/20">
+      <section className="py-16 px-6 bg-gradient-to-b from-lilac/20 to-white">
         <div className="max-w-2xl mx-auto space-y-3">
           {faqs.map((faq, i) => (
             <AnimatedSection key={i} delay={i * 0.04}>
