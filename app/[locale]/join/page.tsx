@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, limit, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Users, GraduationCap, Building2, CheckCircle2, Download, Mail, RefreshCw, X } from "lucide-react";
 import { motion } from "framer-motion";
@@ -160,7 +160,7 @@ export default function JoinPage() {
     setError(false);
     try {
       // Check for duplicate email
-      const existing = await getDocs(query(collection(db, "registrations"), where("email", "==", form.email.toLowerCase().trim())));
+      const existing = await getDocs(query(collection(db, "registrations"), where("email", "==", form.email.toLowerCase().trim()), limit(1)));
       if (!existing.empty) {
         setErrors(prev => ({ ...prev, email: true }));
         setError(true);

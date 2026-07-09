@@ -46,29 +46,28 @@ export async function POST(req: NextRequest) {
 
     // Sent by the caller (already loaded via the authenticated admin Firestore session)
     // rather than read here, so this route needs no Firestore access of its own.
-    let sent = 0;
-    for (const user of (recipients as Recipient[]).slice(0, 50)) { // cap at 50 per call
-      if (!user.email) continue;
-      const name = user.name || "";
-      const locale = user.locale || "en";
-
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "InfoTech Innovation <onboarding@resend.dev>",
-          to: [user.email],
-          subject: locale === "ar"
-            ? `استبيان جديد: ${surveyTitle}`
-            : `New survey: ${surveyTitle}`,
-          html: surveyEmailTemplate(name, surveyTitle, surveyDesc || "", locale),
-        }),
-      });
-      if (res.ok) sent++;
-    }
+    const results = await Promise.all(
+      (recipients as Recipient[]).slice(0, 50).filter(u => u.email).map((user) => {
+        const name = user.name || "";
+        const locale = user.locale || "en";
+        return fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "InfoTech Innovation <onboarding@resend.dev>",
+            to: [user.email],
+            subject: locale === "ar"
+              ? `استبيان جديد: ${surveyTitle}`
+              : `New survey: ${surveyTitle}`,
+            html: surveyEmailTemplate(name, surveyTitle, surveyDesc || "", locale),
+          }),
+        }).then(res => res.ok);
+      })
+    );
+    const sent = results.filter(Boolean).length;
 
     return NextResponse.json({ sent });
   } catch (err) {

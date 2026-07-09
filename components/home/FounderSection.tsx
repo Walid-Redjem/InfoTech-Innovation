@@ -145,7 +145,7 @@ export default function FounderSection() {
               </button>
               <div className="overflow-y-auto max-h-[90vh]">
                 <Image
-                  src="/History.png"
+                  src="/History.jpg"
                   alt={t("name") + " achievements"}
                   width={1492}
                   height={2110}
