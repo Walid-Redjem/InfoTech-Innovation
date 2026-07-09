@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import { collection, getDocs, addDoc, updateDoc, doc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { exportCSV } from "@/lib/exportCSV";
@@ -16,8 +16,8 @@ import {
   ChevronRight, Menu, X, Search, CheckCircle2, Clock,
   FileText, Eye, Mail, ThumbsUp, ThumbsDown, ExternalLink,
   Printer, Copy, ChevronsUpDown, ChevronUp, ChevronDown,
-  CalendarDays, Pencil, ImageIcon, MapPin, Star, Moon, Sun,
-  ChevronLeft, Settings, Send
+  CalendarDays, Star, Moon, Sun,
+  Settings
 } from "lucide-react";
 
 type Tab = "registrations" | "issues" | "responses" | "create" | "analytics" | "activities" | "settings";
@@ -81,9 +81,6 @@ export default function AdminDashboard() {
   // Bulk issues
   const [selectedIssueIds, setSelectedIssueIds] = useState<Set<string>>(new Set());
   const [bulkIssueLoading, setBulkIssueLoading] = useState(false);
-  // Calendar view
-  const [calendarMonth, setCalendarMonth] = useState(() => { const d = new Date(); return { year: d.getFullYear(), month: d.getMonth() }; });
-  const [calendarView, setCalendarView] = useState(false);
   // Broadcast
   const [broadcastSubject, setBroadcastSubject] = useState("");
   const [broadcastBody, setBroadcastBody]       = useState("");
@@ -102,15 +99,12 @@ export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState<Record<string, unknown>[]>([]);
   const [issues, setIssues]               = useState<Record<string, unknown>[]>([]);
   const [surveys, setSurveys]             = useState<Record<string, unknown>[]>([]);
-  const [responses, setResponses]         = useState<Record<string, unknown>[]>([]);
   const [allResponses, setAllResponses]   = useState<Record<string, unknown>[]>([]);
   const [responseSurveyFilter, setResponseSurveyFilter] = useState("");
   const [selectedResponse, setSelectedResponse] = useState<Record<string,unknown> | null>(null);
-  const [activities, setActivities] = useState<Record<string,unknown>[]>([]);
-  const [activityForm, setActivityForm] = useState({ title:"", titleAr:"", description:"", descriptionAr:"", date:"", category:"workshop", location:"", locationAr:"", imageUrl:"" });
-  const [editingActivity, setEditingActivity] = useState<string|null>(null);
-  const [savingActivity, setSavingActivity] = useState(false);
-  const [showActivityForm, setShowActivityForm] = useState(false);
+  // `activities` itself is never rendered — only the setter is needed, to clear local
+  // state after the Danger Zone bulk-deletes the Firestore "activities" collection.
+  const [, setActivities] = useState<Record<string,unknown>[]>([]);
   const [catFilter, setCatFilter]       = useState(searchParams.get("cat") || "all");
   const [regStatusFilter, setRegStatusFilter] = useState(searchParams.get("regStatus") || "all");
   const [typeFilter, setTypeFilter]     = useState(searchParams.get("type") || "all");
@@ -167,8 +161,6 @@ export default function AdminDashboard() {
   const [createSuccess, setCreateSuccess] = useState(false);
   const [notifyUsers, setNotifyUsers]     = useState(false);
 
-  useEffect(() => { fetchAll(); }, []);
-
   async function fetchAll() {
     setLoading(true);
     try {
@@ -191,10 +183,7 @@ export default function AdminDashboard() {
     }
   }
 
-  async function fetchResponses(surveyId: string) {
-    const snap = await getDocs(collection(db, "surveyResponses"));
-    setResponses(snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => (r as Record<string,unknown>).surveyId === surveyId));
-  }
+  useEffect(() => { fetchAll(); }, []);
 
   async function handleLogout() {
     await signOut(auth);
@@ -205,21 +194,36 @@ export default function AdminDashboard() {
     if (!selectedReg) return;
     setActionLoading(action);
     try {
-      await fetch("/api/review-registration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
-        body: JSON.stringify({
-          registrationId: String(selectedReg.id),
-          action,
-          email: String(selectedReg.email),
-          name: String(selectedReg.name || selectedReg.institution_name || ""),
-          locale: String(selectedReg.locale || "en"),
-          reason: action === "reject" ? rejectionReason : undefined,
-        }),
-      });
+      const registrationId = String(selectedReg.id);
+      // Write directly via the authenticated client SDK — Firestore rules require
+      // an authenticated admin session, which only exists in the browser here.
+      if (action === "approve") {
+        await updateDoc(doc(db, "registrations", registrationId), { status: "approved" });
+      } else {
+        await deleteDoc(doc(db, "registrations", registrationId));
+      }
+
+      // Best-effort notification email — a failure here shouldn't undo the review action above.
+      try {
+        const idToken = await auth.currentUser?.getIdToken();
+        await fetch("/api/review-registration", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+          body: JSON.stringify({
+            action,
+            email: String(selectedReg.email),
+            name: String(selectedReg.name || selectedReg.institution_name || ""),
+            locale: String(selectedReg.locale || "en"),
+            reason: action === "reject" ? rejectionReason : undefined,
+          }),
+        });
+      } catch {
+        // Email failed to send; the registration status change above already succeeded.
+      }
+
       // Store rejection reason in local log
       if (action === "reject" && rejectionReason) {
-        setRejectionLog(prev => ({ ...prev, [String(selectedReg.id)]: rejectionReason }));
+        setRejectionLog(prev => ({ ...prev, [registrationId]: rejectionReason }));
       }
       // Remove from local state immediately
       setRegistrations(prev => prev.filter(r => r.id !== selectedReg.id));
@@ -237,9 +241,10 @@ export default function AdminDashboard() {
     setBroadcasting(true);
     try {
       const emails = registrations.filter(r => String(r.status) === "approved" && r.email).map(r => String(r.email));
+      const idToken = await auth.currentUser?.getIdToken();
       const res = await fetch("/api/broadcast", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
         body: JSON.stringify({ subject: broadcastSubject, body: broadcastBody, emails }),
       });
       if (res.ok) { setBroadcastSuccess(true); setBroadcastSubject(""); setBroadcastBody(""); setTimeout(() => setBroadcastSuccess(false), 4000); }
@@ -290,10 +295,14 @@ export default function AdminDashboard() {
       });
       setCreateSuccess(true);
       if (notifyUsers) {
+        const recipients = registrations
+          .filter(r => String(r.status) === "approved" && r.email)
+          .map(r => ({ email: String(r.email), name: String(r.name || r.institution_name || ""), locale: String(r.locale || "en") }));
+        const idToken = await auth.currentUser?.getIdToken();
         fetch("/api/notify-survey", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
-          body: JSON.stringify({ surveyTitle, surveyDesc }),
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+          body: JSON.stringify({ surveyTitle, surveyDesc, recipients }),
         });
       }
       setSurveyTitle(""); setSurveyDesc(""); setSurveyContext("general");
@@ -2116,58 +2125,6 @@ const colorMap: Record<string, string> = {
   health: "bg-red-100 text-red-700",
 };
 
-function DataTable({ headers, rows, badges, emptyLabel = "No data yet.", onRowClick, viewCol }: {
-  headers: string[]; rows: string[][];
-  badges?: Record<number, Record<string, string>>;
-  emptyLabel?: string;
-  onRowClick?: (index: number) => void;
-  viewCol?: number;
-}) {
-  if (!rows.length) {
-    return (
-      <div className="bg-white rounded-2xl border border-gray-100 py-16 text-center">
-        <p className="text-gray-400 text-sm">{emptyLabel}</p>
-      </div>
-    );
-  }
-  return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-100 bg-gray-50/50">
-              {headers.map(h => (
-                <th key={h} className="text-left px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <motion.tr key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                onClick={() => onRowClick?.(i)}
-                className={`border-b border-gray-50 transition-colors ${onRowClick ? "cursor-pointer hover:bg-lilac/30" : "hover:bg-lilac/20"}`}>
-                {row.map((cell, j) => (
-                  <td key={j} className="px-5 py-3.5 text-gray-600">
-                    {j === viewCol ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-mauve bg-lilac px-3 py-1.5 rounded-full hover:bg-lilac-dark transition-colors">
-                        <Eye className="w-3 h-3" /> View
-                      </span>
-                    ) : badges?.[j]?.[cell.toLowerCase()] ? (
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${colorMap[cell.toLowerCase()] || "bg-gray-100 text-gray-600"}`}>
-                        {cell}
-                      </span>
-                    ) : cell}
-                  </td>
-                ))}
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
 function Select({ value, onChange, options, className }: {
   value: string; onChange: (v: string) => void;
   options: { value: string; label: string }[]; className?: string;
@@ -2177,15 +2134,6 @@ function Select({ value, onChange, options, className }: {
       className={`border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 outline-none focus:border-mauve bg-white shadow-sm ${className}`}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
-  );
-}
-
-function AdminField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{label}</label>
-      {children}
-    </div>
   );
 }
 

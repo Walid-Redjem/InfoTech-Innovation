@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateCode, signToken } from "@/lib/otp";
+import { emailLayout, safeLocale } from "@/lib/emailTemplate";
 
 // In-memory rate limiter — max 3 OTP requests per email per 10 minutes
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -16,36 +17,29 @@ function checkRateLimit(key: string): boolean {
   return true;
 }
 
-function emailTemplate(code: string, locale: string) {
-  const isAr = locale === "ar";
-  return `
-<!DOCTYPE html>
-<html dir="${isAr ? "rtl" : "ltr"}" lang="${locale}">
-<head><meta charset="utf-8"/></head>
-<body style="font-family:Arial,sans-serif;background:#f4f0f9;margin:0;padding:32px">
-  <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(155,107,155,0.1)">
-    <div style="background:linear-gradient(135deg,#9B6B9B,#2EC4B6);padding:32px;text-align:center">
-      <h1 style="color:#fff;margin:0;font-size:24px">InfoTech Innovation</h1>
-    </div>
-    <div style="padding:32px;text-align:center">
-      <p style="color:#555;font-size:16px;margin-bottom:8px">
-        ${isAr ? "رمز التحقق الخاص بك هو:" : "Your verification code is:"}
-      </p>
-      <div style="display:inline-block;background:#f4f0f9;border:2px solid #9B6B9B;border-radius:16px;padding:20px 40px;margin:16px 0">
-        <span style="font-size:42px;font-weight:bold;color:#9B6B9B;letter-spacing:12px">${code}</span>
-      </div>
-      <p style="color:#999;font-size:13px;margin-top:16px">
-        ${isAr ? "هذا الرمز صالح لمدة 10 دقائق فقط." : "This code expires in 10 minutes."}
-      </p>
-    </div>
-    <div style="background:#f9f6fc;padding:16px;text-align:center;border-top:1px solid #ede0f5">
-      <p style="color:#bbb;font-size:12px;margin:0">
-        ${isAr ? "إذا لم تطلب هذا الرمز، يرجى تجاهل هذا البريد." : "If you didn't request this, please ignore this email."}
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
+function emailTemplate(code: string, rawLocale: string) {
+  const locale = safeLocale(rawLocale);
+  const ar = locale === "ar";
+  // `code` is always our own 6-digit generateCode() output — safe to interpolate directly.
+  return emailLayout({
+    locale,
+    headerHtml: `<h1 style="color:#fff;margin:0;font-size:24px">InfoTech Innovation</h1>`,
+    bodyHtml: `
+      <div style="text-align:center">
+        <p style="color:#555;font-size:16px;margin-bottom:8px">
+          ${ar ? "رمز التحقق الخاص بك هو:" : "Your verification code is:"}
+        </p>
+        <div style="display:inline-block;background:#f4f0f9;border:2px solid #6B35A0;border-radius:16px;padding:20px 40px;margin:16px 0">
+          <span style="font-size:42px;font-weight:bold;color:#6B35A0;letter-spacing:12px">${code}</span>
+        </div>
+        <p style="color:#999;font-size:13px;margin-top:16px">
+          ${ar ? "هذا الرمز صالح لمدة 10 دقائق فقط." : "This code expires in 10 minutes."}
+        </p>
+        <p style="color:#bbb;font-size:12px;margin-top:24px">
+          ${ar ? "إذا لم تطلب هذا الرمز، يرجى تجاهل هذا البريد." : "If you didn't request this, please ignore this email."}
+        </p>
+      </div>`,
+  });
 }
 
 export async function POST(req: NextRequest) {

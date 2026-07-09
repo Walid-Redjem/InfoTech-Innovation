@@ -1,6 +1,9 @@
-import { createHmac } from "crypto";
+import { createHmac, randomInt, timingSafeEqual } from "crypto";
 
-const SECRET = process.env.OTP_SECRET || "infotech-secret-key";
+const SECRET = process.env.OTP_SECRET;
+if (!SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("OTP_SECRET environment variable is required");
+}
 
 export interface OtpPayload {
   email: string;
@@ -9,21 +12,23 @@ export interface OtpPayload {
 }
 
 export function generateCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return randomInt(100000, 1000000).toString();
 }
 
-export function signToken(payload: OtpPayload, secret = SECRET): string {
+export function signToken(payload: OtpPayload, secret = SECRET || "dev-only-insecure-secret"): string {
   const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
   const sig = createHmac("sha256", secret).update(data).digest("base64url");
   return `${data}.${sig}`;
 }
 
-export function verifyToken(token: string, secret = SECRET): OtpPayload | null {
+export function verifyToken(token: string, secret = SECRET || "dev-only-insecure-secret"): OtpPayload | null {
   try {
     const [data, sig] = token.split(".");
     if (!data || !sig) return null;
     const expected = createHmac("sha256", secret).update(data).digest("base64url");
-    if (sig !== expected) return null;
+    const sigBuf = Buffer.from(sig);
+    const expectedBuf = Buffer.from(expected);
+    if (sigBuf.length !== expectedBuf.length || !timingSafeEqual(sigBuf, expectedBuf)) return null;
     const payload: OtpPayload = JSON.parse(Buffer.from(data, "base64url").toString());
     if (payload.exp < Date.now()) return null;
     return payload;

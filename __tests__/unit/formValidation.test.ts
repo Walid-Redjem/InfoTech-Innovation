@@ -130,6 +130,7 @@ describe("Teacher form validation", () => {
   });
 
   it("fails when any document is missing", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { resume: _, ...noResume } = teacherFiles;
     const errors = validate("teacher", fullTeacher, noResume, false, false);
     expect(errors.resume).toBe(true);

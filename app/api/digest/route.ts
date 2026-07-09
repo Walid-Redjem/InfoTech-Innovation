@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeApp, getApps } from "firebase/app";
-import { getFirestore, collection, getDocs, query, where, orderBy, Timestamp } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { emailLayout, emailButton } from "@/lib/emailTemplate";
 
 function getDb() {
   const app = getApps().length === 0
@@ -21,27 +22,21 @@ function digestTemplate(data: {
   newThisWeek: number; totalIssues: number; newIssues: number;
   totalSurveys: number; totalResponses: number;
 }) {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"/></head>
-<body style="font-family:Arial,sans-serif;background:#f4f0f9;margin:0;padding:32px">
-  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(155,107,155,0.12)">
-    <div style="background:linear-gradient(135deg,#9B6B9B,#2EC4B6);padding:28px 32px">
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://innovation-club-two.vercel.app";
+  return emailLayout({
+    headerHtml: `
       <h1 style="color:#fff;margin:0;font-size:20px">📊 Weekly Digest</h1>
-      <p style="color:rgba(255,255,255,0.75);margin:4px 0 0;font-size:13px">InfoTech Innovation — ${new Date().toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
-    </div>
-    <div style="padding:32px">
-
-      <h2 style="font-size:14px;font-weight:700;color:#9B6B9B;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Registrations</h2>
+      <p style="color:rgba(255,255,255,0.75);margin:4px 0 0;font-size:13px">InfoTech Innovation — ${new Date().toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>`,
+    bodyHtml: `
+      <h2 style="font-size:14px;font-weight:700;color:#6B35A0;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Registrations</h2>
       <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px">
         <tr style="background:#f9f6fc">
           <td style="padding:10px 14px;border-radius:8px 0 0 8px;color:#555">Total</td>
-          <td style="padding:10px 14px;border-radius:0 8px 8px 0;font-weight:700;color:#9B6B9B;text-align:end">${data.totalRegs}</td>
+          <td style="padding:10px 14px;border-radius:0 8px 8px 0;font-weight:700;color:#6B35A0;text-align:end">${data.totalRegs}</td>
         </tr>
         <tr>
           <td style="padding:10px 14px;color:#555">New this week</td>
-          <td style="padding:10px 14px;font-weight:700;color:#2EC4B6;text-align:end">+${data.newThisWeek}</td>
+          <td style="padding:10px 14px;font-weight:700;color:#29B6F6;text-align:end">+${data.newThisWeek}</td>
         </tr>
         <tr style="background:#f9f6fc">
           <td style="padding:10px 14px;border-radius:8px 0 0 8px;color:#555">Pending review</td>
@@ -53,7 +48,7 @@ function digestTemplate(data: {
         </tr>
       </table>
 
-      <h2 style="font-size:14px;font-weight:700;color:#9B6B9B;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Community Activity</h2>
+      <h2 style="font-size:14px;font-weight:700;color:#6B35A0;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Community Activity</h2>
       <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:28px">
         <tr style="background:#f9f6fc">
           <td style="padding:10px 14px;border-radius:8px 0 0 8px;color:#555">Issues filed this week</td>
@@ -74,18 +69,10 @@ function digestTemplate(data: {
       </table>
 
       <div style="text-align:center">
-        <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://innovation-club-two.vercel.app"}/en/admin"
-           style="display:inline-block;background:linear-gradient(135deg,#9B6B9B,#2EC4B6);color:#fff;text-decoration:none;font-weight:bold;font-size:14px;padding:14px 32px;border-radius:30px">
-          Open Dashboard →
-        </a>
-      </div>
-    </div>
-    <div style="background:#f9f6fc;padding:16px 32px;border-top:1px solid #ede0f5;text-align:center">
-      <p style="color:#bbb;font-size:12px;margin:0">InfoTech Innovation — Weekly Admin Digest</p>
-    </div>
-  </div>
-</body>
-</html>`;
+        ${emailButton(`${SITE_URL}/en/admin`, "Open Dashboard →")}
+      </div>`,
+    footerText: "InfoTech Innovation — Weekly Admin Digest",
+  });
 }
 
 export async function GET(req: NextRequest) {

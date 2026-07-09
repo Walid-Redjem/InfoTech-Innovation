@@ -11,7 +11,7 @@ import { activities as ACTIVITIES } from "@/lib/activities-data";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Upload, Trash2, Pencil, Check, X,
-  ImageIcon, Video, LogOut, Loader2, ExternalLink,
+  Video, LogOut, Loader2, ExternalLink,
   ChevronDown, ChevronUp, ZoomIn, CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";

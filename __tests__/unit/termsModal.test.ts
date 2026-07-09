@@ -5,6 +5,7 @@ function canSubmitTerms(checked: boolean): boolean {
   return checked;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept to document the function's conceptual input
 function shouldResetOnClose(checked: boolean): boolean {
   // Checkbox should always reset when modal closes
   return false; // always returns unchecked state on close

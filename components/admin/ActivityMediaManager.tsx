@@ -43,8 +43,6 @@ export default function ActivityMediaManager({ ar }: { ar: boolean }) {
 
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => { loadAll(); }, []);
-
   async function loadAll() {
     setLoading(true);
     const result: AllMedia = {};
@@ -57,6 +55,8 @@ export default function ActivityMediaManager({ ar }: { ar: boolean }) {
     setAllMedia(result);
     setLoading(false);
   }
+
+  useEffect(() => { loadAll(); }, []);
 
   const handleUpload = useCallback(async (slug: string, files: File[]) => {
     if (!files.length) return;

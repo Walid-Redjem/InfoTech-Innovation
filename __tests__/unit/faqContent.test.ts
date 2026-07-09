@@ -30,7 +30,7 @@ describe("FAQ content structure", () => {
   });
 
   it("every item has an English question", () => {
-    faqs.forEach((faq, i) => {
+    faqs.forEach((faq) => {
       expect(faq.en.length).toBeGreaterThan(0);
     });
   });

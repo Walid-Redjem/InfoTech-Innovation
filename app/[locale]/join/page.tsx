@@ -11,7 +11,6 @@ import FileUpload from "@/components/forms/FileUpload";
 import FloatingInput from "@/components/forms/FloatingInput";
 import { useToast } from "@/components/Toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import Link from "next/link";
 
 type Profile = "youth" | "teacher" | "institution";
 
@@ -265,7 +264,7 @@ export default function JoinPage() {
       // Notify admin (fire and forget — don't block success screen)
       fetch("/api/notify-admin", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: (pendingData as Record<string,unknown>).name || (pendingData as Record<string,unknown>).institution_name,
           email: (pendingData as Record<string,unknown>).email,

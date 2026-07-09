@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { collection, getDocs, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { ClipboardList, CheckCircle2, Star, ArrowLeft, ArrowRight, Clock, ChevronRight } from "lucide-react";
+import { ClipboardList, CheckCircle2, Star, ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import PageHeader from "@/components/PageHeader";

@@ -9,9 +9,9 @@ import { motion } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
 import { activities } from "@/lib/activities-data";
 import {
-  ArrowLeft, ImageIcon, Play, BookOpen,
+  ImageIcon, Play, BookOpen,
   Clock, Camera, ZoomIn, Bell, ChevronRight, Sparkles,
-  Users, Calendar, X, Layers, ExternalLink,
+  Users, Calendar, X, Layers,
 } from "lucide-react";
 
 interface MediaItem {
@@ -538,9 +538,9 @@ function ProjectsGallery({ mediaItems, gradient, iconBg, ar }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // Report / Blog
 // ─────────────────────────────────────────────────────────────────────────────
-function TextContent({ gradient, iconBg, ar, titleEn, titleAr, descEn, descAr }: {
+function TextContent({ gradient, iconBg, ar, titleEn, titleAr }: {
   type: "blog"; gradient: string; iconBg: string; ar: boolean;
-  titleEn: string; titleAr: string; descEn: string; descAr: string;
+  titleEn: string; titleAr: string;
 }) {
   const Icon = BookOpen;
   const sections = [{ en: "Introduction", ar: "مقدمة" }, { en: "The Challenge", ar: "التحدي" }, { en: "Our Approach", ar: "منهجنا" }, { en: "Results", ar: "النتائج" }];
@@ -687,7 +687,7 @@ export default function ActivityDetailPage() {
               )}
               {activity.type === "blog" && (
                 <TextContent type="blog" gradient={activity.gradient} iconBg={activity.iconBg}
-                  ar={ar} titleEn={activity.titleEn} titleAr={activity.titleAr} descEn={activity.descEn} descAr={activity.descAr} />
+                  ar={ar} titleEn={activity.titleEn} titleAr={activity.titleAr} />
               )}
             </>
           )}

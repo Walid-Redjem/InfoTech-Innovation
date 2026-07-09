@@ -1,36 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
+import { emailLayout, emailButton, escapeHtml } from "@/lib/emailTemplate";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://innovation-club-two.vercel.app";
+
+// Triggered by any visitor completing the public registration form — not an admin
+// action, so it only requires the lightweight rate limit below, not admin auth.
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(key: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || entry.resetAt < now) {
+    rateLimitMap.set(key, { count: 1, resetAt: now + 10 * 60 * 1000 });
+    return true;
+  }
+  if (entry.count >= 5) return false;
+  entry.count++;
+  return true;
+}
 
 function adminEmailTemplate(name: string, email: string, phone: string, category: string) {
   const categoryLabel = category === "youth" ? "Youth" : category === "teacher" ? "Teacher" : "Institution";
-  const categoryColor = category === "youth" ? "#9B6B9B" : category === "teacher" ? "#2EC4B6" : "#6366f1";
+  const categoryColor = category === "youth" ? "#6B35A0" : category === "teacher" ? "#29B6F6" : "#6366f1";
+  const safeName = escapeHtml(name) || "—";
+  const safeEmail = escapeHtml(email);
+  const safePhone = escapeHtml(phone) || "—";
 
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"/></head>
-<body style="font-family:Arial,sans-serif;background:#f4f0f9;margin:0;padding:32px">
-  <div style="max-width:500px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(155,107,155,0.12)">
-    <div style="background:linear-gradient(135deg,#9B6B9B,#2EC4B6);padding:28px 32px">
+  return emailLayout({
+    headerHtml: `
       <h1 style="color:#fff;margin:0;font-size:20px">InfoTech Innovation</h1>
-      <p style="color:rgba(255,255,255,0.8);margin:4px 0 0;font-size:13px">Admin Notification</p>
-    </div>
-    <div style="padding:32px">
-      <div style="background:#f9f6fc;border-radius:12px;padding:16px 20px;margin-bottom:24px;border-left:4px solid #9B6B9B">
+      <p style="color:rgba(255,255,255,0.8);margin:4px 0 0;font-size:13px">Admin Notification</p>`,
+    bodyHtml: `
+      <div style="background:#f9f6fc;border-radius:12px;padding:16px 20px;margin-bottom:24px;border-left:4px solid #6B35A0">
         <p style="margin:0;font-size:15px;font-weight:bold;color:#333">📋 New Registration</p>
         <p style="margin:4px 0 0;color:#777;font-size:13px">A new user has just registered on the platform.</p>
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:14px">
         <tr>
           <td style="padding:10px 0;color:#999;width:40%">Name</td>
-          <td style="padding:10px 0;color:#333;font-weight:600">${name || "—"}</td>
+          <td style="padding:10px 0;color:#333;font-weight:600">${safeName}</td>
         </tr>
         <tr style="border-top:1px solid #f0e8f8">
           <td style="padding:10px 0;color:#999">Email</td>
-          <td style="padding:10px 0;color:#333">${email}</td>
+          <td style="padding:10px 0;color:#333">${safeEmail}</td>
         </tr>
         <tr style="border-top:1px solid #f0e8f8">
           <td style="padding:10px 0;color:#999">Phone</td>
-          <td style="padding:10px 0;color:#333">${phone || "—"}</td>
+          <td style="padding:10px 0;color:#333">${safePhone}</td>
         </tr>
         <tr style="border-top:1px solid #f0e8f8">
           <td style="padding:10px 0;color:#999">Category</td>
@@ -40,27 +56,21 @@ function adminEmailTemplate(name: string, email: string, phone: string, category
         </tr>
       </table>
       <div style="margin-top:28px;text-align:center">
-        <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://innovation-club-two.vercel.app"}/en/admin"
-           style="display:inline-block;background:linear-gradient(135deg,#9B6B9B,#2EC4B6);color:#fff;text-decoration:none;font-weight:bold;font-size:14px;padding:14px 32px;border-radius:30px">
-          Review in Dashboard →
-        </a>
-      </div>
-    </div>
-    <div style="background:#f9f6fc;padding:16px 32px;border-top:1px solid #ede0f5;text-align:center">
-      <p style="color:#bbb;font-size:12px;margin:0">InfoTech Innovation — Admin Portal</p>
-    </div>
-  </div>
-</body>
-</html>`;
+        ${emailButton(`${SITE_URL}/en/admin`, "Review in Dashboard →")}
+      </div>`,
+    footerText: "InfoTech Innovation — Admin Portal",
+  });
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const secret = req.headers.get("x-admin-secret");
-    if (secret !== process.env.ADMIN_API_SECRET) {
-      return NextResponse.json({ ok: false }, { status: 401 });
-    }
     const { name, email, phone, category } = await req.json();
+    if (!email || typeof email !== "string") {
+      return NextResponse.json({ ok: false }, { status: 400 });
+    }
+    if (!checkRateLimit(email.toLowerCase())) {
+      return NextResponse.json({ ok: false }, { status: 429 });
+    }
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) return NextResponse.json({ ok: false });
 

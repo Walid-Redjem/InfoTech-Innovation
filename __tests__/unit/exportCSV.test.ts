@@ -63,6 +63,25 @@ describe("exportCSV", () => {
     expect(csvContent).toContain("Alice");
   });
 
+  it("neutralizes formula-injection payloads (leading =, +, -, @)", () => {
+    let csvContent = "";
+    global.Blob = jest.fn().mockImplementation((parts: string[]) => {
+      csvContent = parts[0];
+      return {};
+    }) as unknown as typeof Blob;
+
+    exportCSV([
+      { name: "=HYPERLINK(\"http://evil.com\")", note: "+cmd", other: "-1+1", at: "@SUM(1)", safe: "hello=world" },
+    ], "test");
+
+    expect(csvContent).toContain("'=HYPERLINK");
+    expect(csvContent).toContain("'+cmd");
+    expect(csvContent).toContain("'-1+1");
+    expect(csvContent).toContain("'@SUM(1)");
+    expect(csvContent).toContain("hello=world");
+    expect(csvContent).not.toContain('"hello=world\'');
+  });
+
   it("exports multiple rows correctly", () => {
     let csvContent = "";
     global.Blob = jest.fn().mockImplementation((parts: string[]) => {
