@@ -1,21 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeApp, getApps } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { emailLayout, emailButton } from "@/lib/emailTemplate";
-
-function getDb() {
-  const app = getApps().length === 0
-    ? initializeApp({
-        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-      })
-    : getApps()[0];
-  return getFirestore(app);
-}
 
 function digestTemplate(data: {
   totalRegs: number; pending: number; approved: number;
@@ -83,14 +68,14 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const db = getDb();
+    const db = getAdminDb();
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const [regSnap, issueSnap, surveySnap, responseSnap] = await Promise.all([
-      getDocs(collection(db, "registrations")),
-      getDocs(collection(db, "issues")),
-      getDocs(collection(db, "surveys")),
-      getDocs(collection(db, "surveyResponses")),
+      db.collection("registrations").get(),
+      db.collection("issues").get(),
+      db.collection("surveys").get(),
+      db.collection("surveyResponses").get(),
     ]);
 
     const regs = regSnap.docs.map(d => d.data());
