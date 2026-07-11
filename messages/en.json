@@ -1,4 +1,15 @@
 {
+  "mascot": {
+    "messages": [
+      "Hey there! 👋",
+      "Have you joined our community yet?",
+      "Got an idea? We'd love to hear it!",
+      "Check out our latest activities!",
+      "Your voice matters here.",
+      "Let's build something great together!",
+      "Don't mind me, just floating around."
+    ]
+  },
   "nav": {
     "home": "Home",
     "about": "About",

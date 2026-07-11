@@ -8,6 +8,7 @@ import HtmlAttributes from "@/components/HtmlAttributes";
 import ScrollProgress from "@/components/ScrollProgress";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BackToTop from "@/components/BackToTop";
+import RobotMascot from "@/components/RobotMascot";
 import IntroLoader from "@/components/IntroLoader";
 import PageTransition from "@/components/PageTransition";
 import { ToastProvider } from "@/components/Toast";
@@ -47,6 +48,7 @@ export default async function LocaleLayout({
         <Footer />
         <WhatsAppButton />
         <BackToTop />
+        <RobotMascot />
         <PWAInstallBanner />
         <CookieBanner />
       </ToastProvider>
