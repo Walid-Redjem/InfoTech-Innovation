@@ -69,7 +69,7 @@ export default function AboutPage() {
             {values.map((v, i) => (
               <AnimatedSection key={i} delay={i * 0.1}>
                 <motion.div whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}
-                  className="rounded-3xl p-6 text-center border border-white hover:shadow-xl transition-shadow"
+                  className="h-full rounded-3xl p-6 text-center border border-white hover:shadow-xl transition-shadow"
                   style={{ background: "linear-gradient(135deg, #7C5CFA 0%, #4FD9E8 100%)" }}>
                   <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-4">
                     <v.icon className="w-6 h-6" style={{ color: v.color }} />
