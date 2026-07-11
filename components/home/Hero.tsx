@@ -38,19 +38,19 @@ export default function Hero() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-[30%_center] md:object-center"
         />
       </motion.div>
       <div className="absolute inset-0 bg-black/5" />
 
       <motion.div className="relative max-w-4xl mx-auto text-center w-full" style={{ y: contentY }}>
-        <div className="bg-white/40 backdrop-blur-md border border-white/50 rounded-3xl px-6 py-10 md:px-12 md:py-12 shadow-2xl shadow-black/10">
+        <div className="bg-white/40 backdrop-blur-md border border-white/50 rounded-3xl px-6 py-7 md:px-12 md:py-12 shadow-2xl shadow-black/10">
 
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 bg-white border border-indigo-100 rounded-full px-4 py-1.5 text-sm font-medium shadow-sm mb-8"
+          className="inline-flex items-center gap-2 bg-white border border-indigo-100 rounded-full px-4 py-1.5 text-sm font-medium shadow-sm mb-5 md:mb-8"
           style={{ color: "#4338CA" }}
         >
           <Sparkles className="w-4 h-4 text-turquoise" />
@@ -92,7 +92,7 @@ export default function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35 }}
-          className="text-base md:text-lg mb-12 max-w-xl mx-auto leading-relaxed" style={{ color: "#374151" }}
+          className="text-base md:text-lg mb-7 md:mb-12 max-w-xl mx-auto leading-relaxed" style={{ color: "#374151" }}
         >
           {t("subtitle")}
         </motion.p>
@@ -131,7 +131,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 1.4 }}
-          className="mt-16 flex flex-col items-center gap-1"
+          className="hidden md:flex mt-16 flex-col items-center gap-1"
         >
           <span className="text-xs text-gray-400 tracking-widest uppercase">
             {locale === "ar" ? "اكتشف" : "Scroll"}
