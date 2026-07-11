@@ -44,3 +44,7 @@ next-env.d.ts
 # playwright
 test-results/
 playwright-report/
+
+# claude code (local/regenerable — see skills-lock.json for reproducibility)
+.claude/settings.local.json
+.agents/skills/
