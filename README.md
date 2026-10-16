@@ -152,3 +152,8 @@ Firestore is currently in **test mode** — security rules should be tightened b
 ## License
 
 Private project — built for InfoTech Innovation, Algeria. All rights reserved.
+
+
+Suggested Improvement
+
+Needs more asterisks and vertical bars 
